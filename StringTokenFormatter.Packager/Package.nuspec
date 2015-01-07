@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>StringTokenFormatter</id>
+    <version>1.1.1</version>
+    <title>String Token Formatter</title>
+    <authors>Andy Wilson</authors>
+    <owners>Andy Wilson</owners>
+    <description>
+      Provides string extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.
+    </description>
+    <releaseNotes>
+1.1.0 
+  - Updated to use string.format internally so that non-string value types can be formatted (e.g. {token:D4})
+  - Allowed format provider to be specified
+  - Provided overload to allow for anonymous objects to be used
+1.0.0 
+  - Initial version.
+    </releaseNotes>
+    <language>en-GB</language>
+    <projectUrl>https://nuget.org/packages/StringTokenFormatter</projectUrl>
+    <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
+    <copyright>Andy Wilson</copyright>
+    <dependencies>
+    </dependencies>
+    <references></references>
+    <tags>string token formatter replace extension</tags>
+  </metadata>
+  <files>
+    <file src="lib\" target="lib" />
+    <file src="tools\" target="tools" />
+    <file src="content\" target="content" />
+  </files>
+</package>
