@@ -93,9 +93,11 @@ namespace StringTokenFormatter
 
         private KeyValuePair<string, string> GetTokenPair(string token)
         {
-            string[] split = token.Trim(StartToken, EndToken).Split(':');
-            if (split.Length == 1) return new KeyValuePair<string, string>(token, null);
-            return new KeyValuePair<string, string>(this.FormattedToken(split[0]), ':' + split[1]);
+            string strippedToken = token.Trim(StartToken, EndToken);
+            int index = strippedToken.IndexOfAny(new char[] { ':', ',' });
+            if (index == -1) return new KeyValuePair<string, string>(token, null);
+
+            return new KeyValuePair<string, string>(this.FormattedToken(strippedToken.Substring(0, index)), strippedToken.Substring(index));
         }
 
         private int MatchTokenKeyIndex(string key)

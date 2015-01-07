@@ -25,13 +25,24 @@ namespace StringTokenFormatter.Tests
         }
 
         [TestMethod]
-        public void PaddedInteger()
+        public void PaddedZeroInteger()
         {
             string pattern = "{0:D4}";
 
             string actual = string.Format(pattern, 5);
 
             string expected = "0005";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void PaddedAlignmentInteger()
+        {
+            string pattern = "{0,10:D}";
+
+            string actual = string.Format(pattern, -27);
+
+            string expected = "       -27";
             Assert.AreEqual(expected, actual);
         }
     }

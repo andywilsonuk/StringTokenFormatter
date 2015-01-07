@@ -130,6 +130,18 @@ namespace StringTokenFormatter.Tests
         }
 
         [TestMethod]
+        public void SingleIntegerWithPadding()
+        {
+            string pattern = "first{two,10:D4} third";
+            var tokenValues = new Dictionary<string, object> { { "two", 5 } };
+
+            string actual = new TokenReplacer().Format(null, pattern, tokenValues);
+
+            string expected = "first      0005 third";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void OpenEscapedCharacterYieldsNothing()
         {
             string pattern = "first {{ third";
