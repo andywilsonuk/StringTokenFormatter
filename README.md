@@ -1,5 +1,5 @@
 #StringTokenFormatter
-Available on NuGet at http://www.nuget.org/packages/StringTokenFormatter/
+Available on NuGet at https://www.nuget.org/packages/StringTokenFormatter/
 
 Usage 1:
 ```C#
