@@ -13,8 +13,8 @@ Assert.AreEqual("replace that value", result);
 ```
 Usage 3:
 ```C#
-var tokenValues = new { this = "that" };
-string result = "replace {this} value".FormatToken(tokenValues);
+var tokenValues = new { athis = "that" };
+string result = "replace {athis} value".FormatToken(tokenValues);
 Assert.AreEqual("replace that value", result);
 ```
 
