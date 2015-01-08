@@ -1,21 +1,31 @@
 #StringTokenFormatter
+Provides string extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.
+
 Available on NuGet at https://www.nuget.org/packages/StringTokenFormatter/
+
+Include the using statement so that the extension methods are available:
+```C#
+using StringTokenFormatter;
+```
 
 Usage 1:
 ```C#
-string result = "replace {this} value".FormatToken("this", "that");
+string original = "replace {this} value";
+string result = original.FormatToken("this", "that");
 Assert.AreEqual("replace that value", result);
 ```
 Usage 2:
 ```C#
+string original = "replace {this} value";
 var tokenValues = new Dictionary<string, object> { { "this", "that" } };
-string result = "replace {this} value".FormatToken(tokenValues);
+string result = original.FormatToken(tokenValues);
 Assert.AreEqual("replace that value", result);
 ```
 Usage 3:
 ```C#
+string original = "replace {athis} value";
 var tokenValues = new { athis = "that" };
-string result = "replace {athis} value".FormatToken(tokenValues);
+string result = original.FormatToken(tokenValues);
 Assert.AreEqual("replace that value", result);
 ```
 
