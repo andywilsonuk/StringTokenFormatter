@@ -77,5 +77,29 @@ namespace StringTokenFormatter
         {
             return new TokenReplacer().Format(provider, input, tokenValues);
         }
+
+        /// <summary>
+        /// Replaces each format token in a specified string with the equivalent matching token's string value.
+        /// </summary>
+        /// <param name="input">The string containing the tokens to be replaced.</param>
+        /// <param name="tokenValues">The token keys and associated values.</param>
+        /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
+        public static string FormatToken(this string input, IDictionary<string, string> tokenValues)
+        {
+            return FormatToken(input, null, tokenValues);
+        }
+
+        /// <summary>
+        /// Replaces each format token in a specified string with the equivalent matching token's string value using the format provider specified.
+        /// </summary>
+        /// <param name="input">The string containing the tokens to be replaced.</param>
+        /// <param name="provider">The formatting provider.</param>
+        /// <param name="tokenValues">The token keys and associated values.</param>
+        /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
+        public static string FormatToken(this string input, IFormatProvider provider, IDictionary<string, string> tokenValues)
+        {
+            var tokenValues2 = tokenValues.Select(p => new KeyValuePair<string, object>(p.Key, p.Value)).ToDictionary(p => p.Key, p => p.Value);
+            return new TokenReplacer().Format(provider, input, tokenValues2);
+        }
     }
 }

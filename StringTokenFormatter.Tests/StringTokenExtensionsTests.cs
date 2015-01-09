@@ -54,5 +54,17 @@ namespace StringTokenFormatter.Tests
             string expected = "first second third";
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void StringDictionariesAreNotHandledAsObject()
+        {
+            string pattern = "first {two} third";
+            var tokenValues = new Dictionary<string, string> { { "two", "second" } };
+
+            string actual = pattern.FormatToken(tokenValues);
+
+            string expected = "first second third";
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

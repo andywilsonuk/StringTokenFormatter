@@ -2,14 +2,16 @@
 <package >
   <metadata>
     <id>StringTokenFormatter</id>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
     <title>String Token Formatter</title>
     <authors>Andy Wilson</authors>
     <owners>Andy Wilson</owners>
     <description>
       Provides string extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.
     </description>
-    <releaseNotes>1.2.0
+    <releaseNotes>1.3.0
+- Added specific extension methods for IDictionary&lt;string, string&gt;
+1.2.0
 - Added support for alignment padding
 1.1.0 
 - Updated to use string.format internally so that non-string value types can be formatted (e.g. {token:D4})
