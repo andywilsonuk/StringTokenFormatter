@@ -56,7 +56,7 @@ namespace StringTokenFormatter
         }
 
         /// <summary>
-        /// Replaces each format token in a specified string with the equivalent property's text equivalent value.
+        /// Replaces each format token in a specified string with the equivalent property's text equivalent value in the object.
         /// </summary>
         /// <param name="input">The string containing the token to be replaced.</param>
         /// <param name="tokenValues">The object containing the property values to be used in replacements.</param>
