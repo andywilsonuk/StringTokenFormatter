@@ -8,25 +8,32 @@ Include the using statement so that the extension methods are available:
 using StringTokenFormatter;
 ```
 
-Usage 1:
+Usage 1: Passing a single token and value
 ```C#
-string original = "replace {this} value";
-string result = original.FormatToken("this", "that");
-Assert.AreEqual("replace that value", result);
+string original = "start {middle} end";
+string result = original.FormatToken("middle", "centre");
+Assert.AreEqual("start centre end", result);
 ```
-Usage 2:
+Usage 2: Passing a token/value dictionary
 ```C#
-string original = "replace {this} value";
-var tokenValues = new Dictionary<string, object> { { "this", "that" } };
+string original = "start {middle} end";
+var tokenValues = new Dictionary<string, object> { { "middle", "centre" } };
 string result = original.FormatToken(tokenValues);
-Assert.AreEqual("replace that value", result);
+Assert.AreEqual("start centre end", result);
 ```
-Usage 3:
+Usage 3: Passing object with properties to be used as token dictionary
 ```C#
-string original = "replace {athis} value";
-var tokenValues = new { athis = "that" };
+string original = "start {middle} end";
+var tokenValues = new { Middle = "centre" };
 string result = original.FormatToken(tokenValues);
-Assert.AreEqual("replace that value", result);
+Assert.AreEqual("start centre end", result);
+```
+Usage 4: Passing on-demand token value functions (for single or dictionary tokens)
+```C#
+string original = "start {middle} end";
+Func<string, object> func = (token) => { return "centre"; };
+string result = original.FormatToken("middle", func);
+Assert.AreEqual("start centre end", result);
 ```
 
 An ```IFormatProvider``` can be passed using the method overloads.
