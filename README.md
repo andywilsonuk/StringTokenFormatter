@@ -35,7 +35,13 @@ Func<string, object> func = (token) => { return "centre"; };
 string result = original.FormatToken("middle", func);
 Assert.AreEqual("start centre end", result);
 ```
-
+Usage 5: Passing lazy loading objects (for single or dictionary tokens)
+```C#
+string original = "start {middle} end";
+Lazy<object> lazy = () => { return "centre"; };
+string result = original.FormatToken("middle", lazy);
+Assert.AreEqual("start centre end", result);
+```
 An ```IFormatProvider``` can be passed using the method overloads.
 
 Tokens with formatting and alignment can be specified in the same way as string.Format for example: ```{token,10:D4}``` see this page on MSDN: http://msdn.microsoft.com/en-us/library/system.string.format(v=vs.110).aspx#FormatItem
