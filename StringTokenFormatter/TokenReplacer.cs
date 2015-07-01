@@ -31,6 +31,14 @@ namespace StringTokenFormatter
         public string Format(IFormatProvider provider, string input, IDictionary<string, object> tokenValues)
         {
             if (string.IsNullOrEmpty(input)) return input;
+            this.FormatPreview(provider, input, tokenValues);
+            this.FormatString();
+            return workingInput;
+        }
+
+        public string FormatPreview(IFormatProvider provider, string input, IDictionary<string, object> tokenValues)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
             if (tokenValues == null || tokenValues.Count == 0) throw new ArgumentNullException("tokenValues", "The token values dictionary cannot be null or empty.");
             this.formatProvider = provider;
             this.workingInput = input;
@@ -38,10 +46,9 @@ namespace StringTokenFormatter
 
             this.NormalisedTokenValues();
             this.ReplaceTokensWithValues();
-            this.FormatString();
             return workingInput;
         }
-
+        
         private void NormalisedTokenValues()
         {
             var normalisedTokens = new Dictionary<string, object>(this.tokenValueDictionary.Count, keyComparer);
@@ -83,7 +90,10 @@ namespace StringTokenFormatter
                     continue;
                 }
 
-                tokenPair = this.ExpandFunctions(tokenPair);
+                this.ExpandFunction(tokenPair);
+                this.ExpandFunctionString(tokenPair);
+                this.ExpandLazy(tokenPair);
+                this.ExpandLazyString(tokenPair);
 
                 sb.Append(string.Format(TokenFormat, matchIndex.ToString() + tokenPair.Value));
             }
@@ -110,14 +120,32 @@ namespace StringTokenFormatter
             return MissingToken;
         }
 
-        private KeyValuePair<string, string> ExpandFunctions(KeyValuePair<string, string> tokenPair)
+        private void ExpandFunction(KeyValuePair<string, string> tokenPair)
         {
             Func<string, object> func = this.tokenValueDictionary[tokenPair.Key] as Func<string, object>;
-            if (func != null)
-            {
-                this.tokenValueDictionary[tokenPair.Key] = func(tokenPair.Key);
-            }
-            return tokenPair;
+            if (func == null) return;
+            this.tokenValueDictionary[tokenPair.Key] = func(tokenPair.Key);
+        }
+
+        private void ExpandFunctionString(KeyValuePair<string, string> tokenPair)
+        {
+            Func<string, string> func = this.tokenValueDictionary[tokenPair.Key] as Func<string, string>;
+            if (func == null) return;
+            this.tokenValueDictionary[tokenPair.Key] = func(tokenPair.Key);
+        }
+
+        private void ExpandLazy(KeyValuePair<string, string> tokenPair)
+        {
+            Lazy<object> lazy = this.tokenValueDictionary[tokenPair.Key] as Lazy<object>;
+            if (lazy == null) return;
+            this.tokenValueDictionary[tokenPair.Key] = lazy.Value.ToString();
+        }
+
+        private void ExpandLazyString(KeyValuePair<string, string> tokenPair)
+        {
+            Lazy<string> lazy = this.tokenValueDictionary[tokenPair.Key] as Lazy<string>;
+            if (lazy == null) return;
+            this.tokenValueDictionary[tokenPair.Key] = lazy.Value;
         }
 
         private void FormatString()

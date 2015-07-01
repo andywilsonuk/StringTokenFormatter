@@ -51,7 +51,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="TokenReplacerTests.cs" />
+    <Compile Include="TokenReplacerFuncTests.cs" />
+    <Compile Include="TokenReplacerPreviewTests.cs" />
+    <Compile Include="TokenReplacerFormatTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringTokenExtensionsTests.cs" />
     <Compile Include="StringFormatTests.cs" />
