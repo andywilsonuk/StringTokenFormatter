@@ -29,7 +29,6 @@
     </releaseNotes>
     <language>en-GB</language>
     <projectUrl>https://github.com/andywilsonuk/StringTokenFormatter</projectUrl>
-    <iconUrl>https://nuget.org/Content/Images/packageDefaultIcon-50x50.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
     <copyright>Andy Wilson</copyright>
