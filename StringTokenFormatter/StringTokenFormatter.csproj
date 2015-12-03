@@ -46,8 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultTokenMarkers.cs" />
+    <Compile Include="StringFormatBuilder.cs" />
     <Compile Include="StringTokenExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TokenMarkers.cs" />
     <Compile Include="TokenReplacer.cs" />
   </ItemGroup>
   <ItemGroup>

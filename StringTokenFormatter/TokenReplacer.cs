@@ -10,17 +10,21 @@ namespace StringTokenFormatter
 {
     public class TokenReplacer
     {
-        private const string Pattern = @"(.*?)(\{.*?\})(.*?)";
+        private TokenMarkers markers;
         private const int MissingToken = -1;
-        private const char StartToken = '{';
-        private const char EndToken = '}';
-        private const string StartTokenEscaped = "{{";
-        private const string EndTokenEscape = "}}";
-        private const string TokenFormat = @"{{{0}}}";
-        private static readonly StringComparer keyComparer = StringComparer.InvariantCultureIgnoreCase;
         private IDictionary<string, object> tokenValueDictionary;
         private IFormatProvider formatProvider;
         private string workingInput;
+
+        public TokenReplacer(TokenMarkers markers)
+        {
+            this.markers = markers;
+        }
+
+        public TokenReplacer()
+            : this(new DefaultTokenMarkers())
+        {
+        }
 
         public string Format(IFormatProvider provider, string input, object tokenValues)
         {
@@ -51,32 +55,38 @@ namespace StringTokenFormatter
         
         private void NormalisedTokenValues()
         {
-            var normalisedTokens = new Dictionary<string, object>(this.tokenValueDictionary.Count, keyComparer);
+            var normalisedTokens = new Dictionary<string, object>(this.tokenValueDictionary.Count, this.markers.TokenNameComparer);
             foreach (var pair in this.tokenValueDictionary)
             {
                 string key = pair.Key;
                 if (string.IsNullOrEmpty(key)) continue;
 
-                if (key[0] != StartToken) key = string.Format(TokenFormat, key);
+                if (!key.StartsWith(this.markers.StartToken)) key = this.FullyQualifiedToken(key);
 
                 normalisedTokens.Add(key, pair.Value);
             }
             this.tokenValueDictionary = normalisedTokens;
         }
 
+        private string FullyQualifiedToken(string token)
+        {
+            return this.markers.StartToken + token + this.markers.EndToken;
+        }
+
         private void ReplaceTokensWithValues()
         {
-            string[] segments = Regex.Split(this.workingInput, Pattern, RegexOptions.Singleline);
-            StringBuilder sb = new StringBuilder();
+            string pattern = @"(.*?)(" + Regex.Escape(this.markers.StartToken) + @".*?" + Regex.Escape(this.markers.EndToken) + @")(.*?)";
+            string[] segments = Regex.Split(this.workingInput, pattern, RegexOptions.Singleline);
+            StringFormatBuilder sb = new StringFormatBuilder(this.markers);
             foreach (string segment in segments.Where(s => !string.IsNullOrEmpty(s)))
             {
                 string segment2 = segment;
-                if (segment2.StartsWith(StartTokenEscaped))
+                if (segment2.StartsWith(this.markers.StartTokenEscaped))
                 {
-                    sb.Append(StartTokenEscaped);
-                    segment2 = segment2.Remove(0, StartTokenEscaped.Length);
+                    segment2 = segment2.Remove(0, this.markers.StartTokenEscaped.Length);
+                    sb.Append(this.markers.StartTokenEscaped);
                 }
-                if (segment2[0] != StartToken)
+                if (!segment2.StartsWith(this.markers.StartToken))
                 {
                     sb.Append(segment2);
                     continue;
@@ -86,27 +96,29 @@ namespace StringTokenFormatter
                 int matchIndex = this.MatchTokenKeyIndex(tokenPair.Key);
                 if (matchIndex == MissingToken)
                 {
-                    sb.Append(string.Format(TokenFormat, segment2));
+                    sb.Append(segment2);
                     continue;
                 }
+
+                sb.AppendToken(matchIndex + tokenPair.Value);
 
                 this.ExpandFunction(tokenPair);
                 this.ExpandFunctionString(tokenPair);
                 this.ExpandLazy(tokenPair);
                 this.ExpandLazyString(tokenPair);
-
-                sb.Append(string.Format(TokenFormat, matchIndex.ToString() + tokenPair.Value));
             }
             this.workingInput = sb.ToString();
         }
 
         private KeyValuePair<string, string> GetTokenPair(string token)
         {
-            string strippedToken = token.Trim(StartToken, EndToken);
+            string strippedToken = token;
+            if (token.StartsWith(this.markers.StartToken)) strippedToken = strippedToken.Remove(0, this.markers.StartToken.Length);
+            if (token.EndsWith(this.markers.EndToken)) strippedToken = strippedToken.Remove(strippedToken.Length - this.markers.EndToken.Length);
             int index = strippedToken.IndexOfAny(new char[] { ':', ',' });
             if (index == -1) return new KeyValuePair<string, string>(token, null);
 
-            return new KeyValuePair<string, string>(string.Format(TokenFormat, strippedToken.Substring(0, index)), strippedToken.Substring(index));
+            return new KeyValuePair<string, string>(this.FullyQualifiedToken(strippedToken.Substring(0, index)), strippedToken.Substring(index));
         }
 
         private int MatchTokenKeyIndex(string key)
@@ -114,7 +126,7 @@ namespace StringTokenFormatter
             int counter = 0;
             foreach (var pair in this.tokenValueDictionary)
             {
-                if (pair.Key.Equals(key, StringComparison.CurrentCultureIgnoreCase)) return counter;
+                if (this.markers.TokenNameComparer.Equals(pair.Key, key)) return counter;
                 counter++;
             }
             return MissingToken;
@@ -162,12 +174,12 @@ namespace StringTokenFormatter
 
         private IDictionary<string, object> ConvertObjectToDictionary(object values)
         {
-            Dictionary<string, object> mappings = new Dictionary<string, object>(keyComparer);
+            Dictionary<string, object> mappings = new Dictionary<string, object>(this.markers.TokenNameComparer);
 
             foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(values))
             {
                 object obj2 = descriptor.GetValue(values);
-                mappings.Add(string.Format(TokenFormat, descriptor.Name), obj2);
+                mappings.Add(this.FullyQualifiedToken(descriptor.Name), obj2);
             }
 
             return mappings;

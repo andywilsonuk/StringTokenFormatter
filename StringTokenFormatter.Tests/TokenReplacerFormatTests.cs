@@ -22,18 +22,6 @@ namespace StringTokenFormatter.Tests
         }
 
         [TestMethod]
-        public void Single()
-        {
-            string pattern = "first {two} third";
-            var tokenValues = new Dictionary<string, object> { { "two", "second" } };
-
-            string actual = new TokenReplacer().Format(null, pattern, tokenValues);
-
-            string expected = "first second third";
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
         public void NotUsed()
         {
             string pattern = "first second";
@@ -118,30 +106,6 @@ namespace StringTokenFormatter.Tests
         }
 
         [TestMethod]
-        public void MissingTokenValue()
-        {
-            string pattern = "first {missing} third";
-            var tokenValues = new Dictionary<string, object> { { "{two}", "second" } };
-
-            string actual = new TokenReplacer().Format(null, pattern, tokenValues);
-
-            string expected = "first {missing} third";
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
-        public void SingleInteger()
-        {
-            string pattern = "first {two:D4} third";
-            var tokenValues = new Dictionary<string, object> { { "two", 5 } };
-
-            string actual = new TokenReplacer().Format(null, pattern, tokenValues);
-
-            string expected = "first 0005 third";
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
         public void SingleIntegerWithPadding()
         {
             string pattern = "first{two,10:D4} third";
@@ -150,30 +114,6 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first      0005 third";
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
-        public void OpenEscapedCharacterYieldsNothing()
-        {
-            string pattern = "first {{ third";
-            var tokenValues = new Dictionary<string, object> { { "two", "second" } };
-
-            string actual = new TokenReplacer().Format(null, pattern, tokenValues);
-
-            string expected = "first { third";
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
-        public void OpenEscapedCharacterYieldsReplacement()
-        {
-            string pattern = "first {{{two} third";
-            var tokenValues = new Dictionary<string, object> { { "two", "second" } };
-
-            string actual = new TokenReplacer().Format(null, pattern, tokenValues);
-
-            string expected = "first {second third";
             Assert.AreEqual(expected, actual);
         }
 
@@ -202,13 +142,15 @@ namespace StringTokenFormatter.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(FormatException))]
-        public void InvalidFormatThrowsFormatException()
+        public void InvalidStringFormatIsHandled()
         {
             string pattern = "{{nothing}";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            new TokenReplacer().Format(null, pattern, tokenValues);
+            string actual = new TokenReplacer().Format(null, pattern, tokenValues);
+
+            string expected = "{nothing}";
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]
