@@ -20,7 +20,7 @@ namespace StringTokenFormatter
 
         public string StartTokenEscaped
         {
-            get { return this.StartToken + this.StartToken; }
+            get { return StartToken + StartToken; }
         }
 
         public IEqualityComparer<string> TokenNameComparer

@@ -17,22 +17,22 @@ namespace StringTokenFormatter
 
         public void Append(string value)
         {
-            value = value.Replace(this.markers.StartTokenEscaped, this.markers.StartToken);
+            value = value.Replace(markers.StartTokenEscaped, markers.StartToken);
             value = value.Replace("{{", "{");
             value = value.Replace("}}", "}");
             value = value.Replace("{", "{{");
             value = value.Replace("}", "}}");
-            this.builder.Append(value);
+            builder.Append(value);
         }
 
         public void AppendToken(string token)
         {
-            this.builder.Append("{" + token + "}");
+            builder.Append("{" + token + "}");
         }
 
         public override string ToString()
         {
-            return this.builder.ToString();
+            return builder.ToString();
         }
     }
 }

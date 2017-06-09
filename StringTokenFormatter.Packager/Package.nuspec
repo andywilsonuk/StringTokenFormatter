@@ -2,14 +2,16 @@
 <package >
   <metadata>
     <id>StringTokenFormatter</id>
-    <version>1.6.0</version>
+    <version>1.6.1</version>
     <title>String Token Formatter</title>
     <authors>Andy Wilson</authors>
     <owners>Andy Wilson</owners>
     <description>
       Provides string extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.
     </description>
-    <releaseNotes>1.6.0
+    <releaseNotes>1.6.1
+- Fixed issue whereby orphan starting tokens were stopping actual tokens from being matched
+1.6.0
 - Alternative token markers can now used     
 1.5.1
 - Bug fix on empty string when calling Format method

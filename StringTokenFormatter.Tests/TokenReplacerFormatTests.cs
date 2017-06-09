@@ -149,7 +149,7 @@ namespace StringTokenFormatter.Tests
 
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
-            string expected = "{nothing}";
+            string expected = "{{nothing}";
             Assert.AreEqual(expected, actual);
         }
 
@@ -210,6 +210,18 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first {";
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void NonTokenisedOpenBracketsAreIgnored()
+        {
+            string pattern = "first { {two}";
+            var tokenValues = new Dictionary<string, object> { { "two", "second" } };
+
+            string actual = new TokenReplacer().Format(null, pattern, tokenValues);
+
+            string expected = "first { second";
             Assert.AreEqual(expected, actual);
         }
     }

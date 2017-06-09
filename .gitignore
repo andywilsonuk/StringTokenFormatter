@@ -1,0 +1,12 @@
+﻿*.suo
+*.user
+*.coverage
+*.exe
+.vs/
+[Bb]in/
+[Oo]bj/
+packages/
+[Tt]est[Rr]esult*/
+*.nupkg
+*.bak
+/StringTokenFormatter.Packager/NuGet.log
