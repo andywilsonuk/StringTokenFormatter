@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>7c232228-e18a-47f6-b7db-ede10485e727</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>StringTokenFormatter.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DefaultTokenMarkers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StringFormatBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StringTokenExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TokenMarkers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TokenReplacer.cs" />
+  </ItemGroup>
+</Project>

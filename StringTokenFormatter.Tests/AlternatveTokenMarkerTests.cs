@@ -1,10 +1,10 @@
-﻿using System;
+﻿using AndyWilsonUk.StringTokenFormatter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
 namespace StringTokenFormatter.Tests
 {
-    [TestClass]
+	[TestClass]
     public class AlternatveTokenMarkerTests
     {
         [TestMethod]

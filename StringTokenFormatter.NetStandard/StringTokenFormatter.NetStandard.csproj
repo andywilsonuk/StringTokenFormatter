@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>AndyWilsonUk.StringTokenFormatter</AssemblyName>
+    <RootNamespace>AndyWilsonUk.StringTokenFormatter</RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>StringTokenFormatter.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <Import Project="..\StringTokenFormatter.Shared\StringTokenFormatter.Shared.projitems" Label="Shared" />
+
+</Project>
