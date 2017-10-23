@@ -13,6 +13,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "StringTokenFormatter.Shared
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringTokenFormatter.NetStandard", "StringTokenFormatter.NetStandard\StringTokenFormatter.NetStandard.csproj", "{FBF29F48-A1C2-409E-8CAA-334168875FEA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringTokenFormatter.NetStandard.Tests", "StringTokenFormatter.NetStandard.Tests\StringTokenFormatter.NetStandard.Tests.csproj", "{74E6B215-A816-47B9-9822-DBA139FF880D}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		StringTokenFormatter.Shared\StringTokenFormatter.Shared.projitems*{7c232228-e18a-47f6-b7db-ede10485e727}*SharedItemsImports = 13
@@ -39,6 +41,10 @@ Global
 		{FBF29F48-A1C2-409E-8CAA-334168875FEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBF29F48-A1C2-409E-8CAA-334168875FEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBF29F48-A1C2-409E-8CAA-334168875FEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74E6B215-A816-47B9-9822-DBA139FF880D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74E6B215-A816-47B9-9822-DBA139FF880D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74E6B215-A816-47B9-9822-DBA139FF880D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74E6B215-A816-47B9-9822-DBA139FF880D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
