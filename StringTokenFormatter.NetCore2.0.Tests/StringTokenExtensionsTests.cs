@@ -1,13 +1,14 @@
 ﻿using AndyWilsonUk.StringTokenFormatter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Globalization;
-using Xunit;
 
 namespace StringTokenFormatter.Tests
 {
+	[TestClass]
     public class StringTokenExtensionsTests
     {
-        [Fact]
+        [TestMethod]
         public void SingleValueThroughExtension()
         {
             string pattern = "first {two} third";
@@ -15,10 +16,10 @@ namespace StringTokenFormatter.Tests
             string actual = pattern.FormatToken("two", "second");
 
             string expected = "first second third";
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void DictionaryValueThroughExtension()
         {
             string pattern = "first {two} third";
@@ -27,10 +28,10 @@ namespace StringTokenFormatter.Tests
             string actual = pattern.FormatToken(tokenValues);
 
             string expected = "first second third";
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void SingleValueThroughExtensionWithCulture()
         {
             string pattern = "first {two} third";
@@ -38,10 +39,10 @@ namespace StringTokenFormatter.Tests
             string actual = pattern.FormatToken(CultureInfo.CurrentCulture, "two", "second");
 
             string expected = "first second third";
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void DictionaryValueThroughExtensionWithCulture()
         {
             string pattern = "first {two} third";
@@ -50,10 +51,10 @@ namespace StringTokenFormatter.Tests
             string actual = pattern.FormatToken(CultureInfo.CurrentCulture, tokenValues);
 
             string expected = "first second third";
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void StringDictionariesAreNotHandledAsObject()
         {
             string pattern = "first {two} third";
@@ -62,7 +63,7 @@ namespace StringTokenFormatter.Tests
             string actual = pattern.FormatToken(tokenValues);
 
             string expected = "first second third";
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
     }
 }

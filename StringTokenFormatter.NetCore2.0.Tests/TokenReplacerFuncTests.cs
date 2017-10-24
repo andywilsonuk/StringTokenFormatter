@@ -1,14 +1,14 @@
 ﻿using AndyWilsonUk.StringTokenFormatter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using Xunit;
 
 namespace StringTokenFormatter.Tests
 {
-
-	public class TokenReplacerFuncTests
+	[TestClass]
+    public class TokenReplacerFuncTests
     {
-        [Fact]
+        [TestMethod]
         public void CallbackFunctionForValue()
         {
             string pattern = "first {two} third";
@@ -18,10 +18,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second third";
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void CallbackFunctionForValueMixedCase()
         {
             string pattern = "first {Two} third";
@@ -31,10 +31,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second third";
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void CallbackFunctionForValueUnused()
         {
             string pattern = "first {two} third";
@@ -45,11 +45,11 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first {two} third";
-            Assert.Equal(expected, actual);
-            Assert.True(notCalled);
+            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(notCalled);
         }
 
-        [Fact]
+        [TestMethod]
         public void CallbackFunctionForStringValue()
         {
             string pattern = "first {two} third";
@@ -59,10 +59,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second third";
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void CallbackLazyFunctionForValue()
         {
             string pattern = "first {two} third";
@@ -72,10 +72,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second third";
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void CallbackLazyFunctionForStringValue()
         {
             string pattern = "first {two} third";
@@ -85,7 +85,7 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second third";
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
     }
 }

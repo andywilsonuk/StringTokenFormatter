@@ -6,4 +6,6 @@
     <RootNamespace>AndyWilsonUk.StringTokenFormatter</RootNamespace>
   </PropertyGroup>
 
+  <Import Project="..\StringTokenFormatter.Shared\StringTokenFormatter.Shared.projitems" Label="Shared" />
+
 </Project>

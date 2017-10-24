@@ -1,13 +1,13 @@
 ﻿using AndyWilsonUk.StringTokenFormatter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using Xunit;
 
 namespace StringTokenFormatter.Tests
 {
-
-	public class TokenReplacerPreviewTests
+	[TestClass]
+    public class TokenReplacerPreviewTests
     {
-        [Fact]
+        [TestMethod]
         public void EmptyStringValue()
         {
             string pattern = string.Empty;
@@ -16,10 +16,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().FormatPreview(null, pattern, tokenValues);
 
             string expected = string.Empty;
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void FormatPreview()
         {
             string pattern = "first {two,10:D4} third {fourth}";
@@ -28,7 +28,7 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().FormatPreview(null, pattern, tokenValues);
 
             string expected = "first {0,10:D4} third {1}";
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
     }
 }

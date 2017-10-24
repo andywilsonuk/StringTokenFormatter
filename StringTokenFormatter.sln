@@ -11,9 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringTokenFormatter.Packag
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "StringTokenFormatter.Shared", "StringTokenFormatter.Shared\StringTokenFormatter.Shared.shproj", "{7C232228-E18A-47F6-B7DB-EDE10485E727}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringTokenFormatter.NetCore2.0", "StringTokenFormatter.NetCore2.0\StringTokenFormatter.NetCore2.0.csproj", "{73222C4D-4E34-4604-AEF9-CC5F4DC7D6F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringTokenFormatter.NetCore2.0", "StringTokenFormatter.NetCore2.0\StringTokenFormatter.NetCore2.0.csproj", "{73222C4D-4E34-4604-AEF9-CC5F4DC7D6F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringTokenFormatter.Netcore1.1", "StringTokenFormatter.Netcore1.1\StringTokenFormatter.Netcore1.1.csproj", "{EAEBF3CC-3A4D-4C76-AB40-C9E6881305F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringTokenFormatter.NetCore2.0.Tests", "StringTokenFormatter.NetCore2.0.Tests\StringTokenFormatter.NetCore2.0.Tests.csproj", "{8B04ABA5-C98F-47FF-A0BB-DA08E09ADEFA}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -41,10 +41,10 @@ Global
 		{73222C4D-4E34-4604-AEF9-CC5F4DC7D6F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73222C4D-4E34-4604-AEF9-CC5F4DC7D6F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73222C4D-4E34-4604-AEF9-CC5F4DC7D6F7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EAEBF3CC-3A4D-4C76-AB40-C9E6881305F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EAEBF3CC-3A4D-4C76-AB40-C9E6881305F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EAEBF3CC-3A4D-4C76-AB40-C9E6881305F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EAEBF3CC-3A4D-4C76-AB40-C9E6881305F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B04ABA5-C98F-47FF-A0BB-DA08E09ADEFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B04ABA5-C98F-47FF-A0BB-DA08E09ADEFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B04ABA5-C98F-47FF-A0BB-DA08E09ADEFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B04ABA5-C98F-47FF-A0BB-DA08E09ADEFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

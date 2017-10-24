@@ -1,25 +1,25 @@
 ﻿using AndyWilsonUk.StringTokenFormatter;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using Xunit;
 
 namespace StringTokenFormatter.Tests
 {
-	
+	[TestClass]
     public class AlternatveTokenMarkerTests
     {
-        [Fact]
+        [TestMethod]
         public void Single()
         {
             SingleInternal(new DefaultTokenMarkers(), "first {two} third", "first second third");
         }
 
-        [Fact]
+        [TestMethod]
         public void SingleRound()
         {
             SingleInternal(new AlternatveMarkersRound(), "first $(two) third", "first second third");
         }
 
-        [Fact]
+        [TestMethod]
         public void SingleCurly()
         {
             SingleInternal(new AlternatveMarkersCurly(), "first ${two} third", "first second third");
@@ -31,22 +31,22 @@ namespace StringTokenFormatter.Tests
 
             string actual = new TokenReplacer(markers).Format(null, original, tokenValues);
 
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void SingleInteger()
         {
             SingleIntegerInternal(new DefaultTokenMarkers(), "first {two:D4} third", "first 0005 third");
         }
 
-        [Fact]
+        [TestMethod]
         public void SingleIntegerRound()
         {
             SingleIntegerInternal(new AlternatveMarkersRound(), "first $(two:D4) third", "first 0005 third");
         }
 
-        [Fact]
+        [TestMethod]
         public void SingleIntegerCurly()
         {
             SingleIntegerInternal(new AlternatveMarkersCurly(), "first ${two:D4} third", "first 0005 third");
@@ -58,22 +58,22 @@ namespace StringTokenFormatter.Tests
 
             string actual = new TokenReplacer(markers).Format(null, original, tokenValues);
 
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void OpenEscapedCharacterYieldsNothing()
         {
             OpenEscapedCharacterYieldsNothingInternal(new DefaultTokenMarkers(), "first {{ third", "first { third");
         }
 
-        [Fact]
+        [TestMethod]
         public void OpenEscapedCharacterYieldsNothingRound()
         {
             OpenEscapedCharacterYieldsNothingInternal(new AlternatveMarkersRound(), "first $(( third", "first $( third");
         }
 
-        [Fact]
+        [TestMethod]
         public void OpenEscapedCharacterYieldsNothingCurly()
         {
             OpenEscapedCharacterYieldsNothingInternal(new AlternatveMarkersCurly(), "first ${{ third", "first ${ third");
@@ -85,22 +85,22 @@ namespace StringTokenFormatter.Tests
 
             string actual = new TokenReplacer(markers).Format(null, original, tokenValues);
 
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void OpenEscapedCharacterYieldsReplacement()
         {
             OpenEscapedCharacterYieldsReplacementInternal(new DefaultTokenMarkers(), "first {{{two} third", "first {second third");
         }
 
-        [Fact]
+        [TestMethod]
         public void OpenEscapedCharacterYieldsReplacementRound()
         {
             OpenEscapedCharacterYieldsReplacementInternal(new AlternatveMarkersRound(), "first $(($(two) third", "first $(second third");
         }
 
-        [Fact]
+        [TestMethod]
         public void OpenEscapedCharacterYieldsReplacementCurly()
         {
             OpenEscapedCharacterYieldsReplacementInternal(new AlternatveMarkersCurly(), "first ${{${two} third", "first ${second third");
@@ -112,22 +112,22 @@ namespace StringTokenFormatter.Tests
 
             string actual = new TokenReplacer(markers).Format(null, original, tokenValues);
 
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void MissingTokenValue()
         {
             MissingTokenValueInternal(new DefaultTokenMarkers(), "first {missing} third", "first {missing} third");
         }
 
-        [Fact]
+        [TestMethod]
         public void MissingTokenValueRound()
         {
             MissingTokenValueInternal(new AlternatveMarkersRound(), "first $(missing) third", "first $(missing) third");
         }
 
-        [Fact]
+        [TestMethod]
         public void MissingTokenValueCurly()
         {
             MissingTokenValueInternal(new AlternatveMarkersCurly(), "first ${missing} third", "first ${missing} third");
@@ -139,7 +139,7 @@ namespace StringTokenFormatter.Tests
 
             string actual = new TokenReplacer(markers).Format(null, original, tokenValues);
 
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
     }
 }

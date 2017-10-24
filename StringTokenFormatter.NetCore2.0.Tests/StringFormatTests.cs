@@ -1,33 +1,30 @@
 ﻿using System;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace StringTokenFormatter.Tests
 {
-
-	public class StringFormatTests
+    [TestClass]
+    public class StringFormatTests
     {
-        [Fact]
+        [TestMethod]
+        [ExpectedException(typeof(FormatException))]
         public void InvalidStringFormatThrowsFormatException()
         {
             string pattern = "{{0}";
 
-			var ex = Assert.Throws<FormatException>(() => string.Format(pattern, "a"));
+            string.Format(pattern, "a");
+        }
 
-			Assert.Equal("Input string was not in a correct format.", ex.Message);
-		}
-
-        [Fact]
-        //[ExpectedException(typeof(FormatException))]
+        [TestMethod]
+        [ExpectedException(typeof(FormatException))]
         public void InvalidStringFormatThrowsFormatException2()
         {
             string pattern = "{0";
 
-			var ex = Assert.Throws<FormatException>(() => string.Format(pattern, "a"));
+            string.Format(pattern, "a");
+        }
 
-			Assert.Equal("Input string was not in a correct format.", ex.Message);
-		}
-
-		[Fact]
+        [TestMethod]
         public void PaddedZeroInteger()
         {
             string pattern = "{0:D4}";
@@ -35,10 +32,10 @@ namespace StringTokenFormatter.Tests
             string actual = string.Format(pattern, 5);
 
             string expected = "0005";
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
 
-        [Fact]
+        [TestMethod]
         public void PaddedAlignmentInteger()
         {
             string pattern = "{0,10:D}";
@@ -46,7 +43,7 @@ namespace StringTokenFormatter.Tests
             string actual = string.Format(pattern, -27);
 
             string expected = "       -27";
-            Assert.Equal(expected, actual);
+            Assert.AreEqual(expected, actual);
         }
     }
 }
