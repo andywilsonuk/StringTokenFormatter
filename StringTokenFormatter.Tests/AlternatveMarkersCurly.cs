@@ -1,11 +1,10 @@
-﻿using System;
+﻿using AndyWilsonUk.StringTokenFormatter;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace StringTokenFormatter.Tests
 {
-    internal class AlternatveMarkersCurly : TokenMarkers
+	internal class AlternatveMarkersCurly : TokenMarkers
     {
         public string StartToken
         {

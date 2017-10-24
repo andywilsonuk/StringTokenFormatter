@@ -1,12 +1,10 @@
-﻿using System;
+﻿using AndyWilsonUk.StringTokenFormatter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using StringTokenFormatter;
-using System.Globalization;
 
 namespace StringTokenFormatter.Tests
 {
-    [TestClass]
+	[TestClass]
     public class TokenReplacerPreviewTests
     {
         [TestMethod]

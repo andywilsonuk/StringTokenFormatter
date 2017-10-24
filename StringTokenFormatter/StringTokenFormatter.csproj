@@ -7,8 +7,8 @@
     <ProjectGuid>{F4B7425A-2A79-4665-A58F-6BCE3E9C1730}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StringTokenFormatter</RootNamespace>
-    <AssemblyName>StringTokenFormatter</AssemblyName>
+    <RootNamespace>AndyWilsonUk.StringTokenFormatter</RootNamespace>
+    <AssemblyName>AndyWilsonUk.StringTokenFormatter</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -46,16 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DefaultTokenMarkers.cs" />
-    <Compile Include="StringFormatBuilder.cs" />
-    <Compile Include="StringTokenExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TokenMarkers.cs" />
-    <Compile Include="TokenReplacer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="StringTokenFormatter.snk" />
   </ItemGroup>
+  <Import Project="..\StringTokenFormatter.Shared\StringTokenFormatter.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

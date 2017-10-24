@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>AndyWilsonUk.StringTokenFormatter</AssemblyName>
+    <RootNamespace>AndyWilsonUk.StringTokenFormatter</RootNamespace>
+  </PropertyGroup>
+
+  <Import Project="..\StringTokenFormatter.Shared\StringTokenFormatter.Shared.projitems" Label="Shared" />
+
+</Project>
