@@ -64,7 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\net40\StringTokenFormatter.dll" />
-    <Content Include="lib\net40\StringTokenFormatter.pdb" />
+    <Content Include="lib\netstandard2.0\StringTokenFormatter.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -87,6 +87,7 @@
     <Message Text="SUCCESS: Published package." Condition=" '$(Configuration)|$(Platform)|$(ExitCode)' == 'Release|AnyCPU|0' " Importance="High" />
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>xcopy "$(SolutionDir)StringTokenFormatter\bin\$(ConfigurationName)\*.*" "$(ProjectDir)lib\net40" /Ys</PreBuildEvent>
+    <PreBuildEvent>xcopy "$(SolutionDir)StringTokenFormatter\bin\Release\StringTokenFormatter.dll" "$(ProjectDir)lib\net40" /Ys
+xcopy "$(SolutionDir)StringTokenFormatterStandard\bin\Release\netstandard2.0\StringTokenFormatter.dll" "$(ProjectDir)lib\netstandard2.0" /Ys</PreBuildEvent>
   </PropertyGroup>
 </Project>

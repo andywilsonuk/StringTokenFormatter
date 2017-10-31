@@ -2,14 +2,16 @@
 <package >
   <metadata>
     <id>StringTokenFormatter</id>
-    <version>1.6.1</version>
+    <version>1.7.0</version>
     <title>String Token Formatter</title>
     <authors>Andy Wilson</authors>
     <owners>Andy Wilson</owners>
     <description>
       Provides string extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.
     </description>
-    <releaseNotes>1.6.1
+    <releaseNotes>1.7.0
+- Added .net Standard 2.0 implementation
+1.6.1
 - Fixed issue whereby orphan starting tokens were stopping actual tokens from being matched
 1.6.0
 - Alternative token markers can now used     
@@ -37,6 +39,8 @@
     <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
     <copyright>Andy Wilson</copyright>
     <dependencies>
+      <group targetFramework=".NETFramework4.0" />
+      <group targetFramework=".NETStandard2.0" />
     </dependencies>
     <references></references>
     <tags>string token formatter replace extension</tags>
