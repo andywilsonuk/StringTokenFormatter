@@ -1,15 +1,12 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using System.Collections.Generic;
-using StringTokenFormatter;
 using System.Globalization;
 
 namespace StringTokenFormatter.Tests
 {
-    [TestClass]
     public class TokenReplacerFormatTests
     {
-        [TestMethod]
+        [Fact]
         public void EmptyStringValue()
         {
             string pattern = string.Empty;
@@ -18,10 +15,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = string.Empty;
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void NotUsed()
         {
             string pattern = "first second";
@@ -30,10 +27,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void MixedCase()
         {
             string pattern = "first {Two} third";
@@ -42,10 +39,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second third";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void Duplicate()
         {
             string pattern = "first {two} third {two}";
@@ -54,10 +51,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second third second";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void MixedIn()
         {
             string pattern = "first{two}third";
@@ -66,10 +63,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "firstsecondthird";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void Multiple()
         {
             string pattern = "first {two} third {four}";
@@ -78,10 +75,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second third fourth";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void MultipleReversed()
         {
             string pattern = "first {two} third {four}";
@@ -90,10 +87,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second third fourth";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void NormalisedTokenKey()
         {
             string pattern = "first {two} third";
@@ -102,10 +99,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second third";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void SingleIntegerWithPadding()
         {
             string pattern = "first{two,10:D4} third";
@@ -114,10 +111,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first      0005 third";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void CloseEscapeCharacterYieldsReplacement()
         {
             string pattern = "first {two}}} third";
@@ -126,10 +123,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second} third";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void BothEscapeCharacterYieldsReplacement()
         {
             string pattern = "first {{{two}}} third";
@@ -138,10 +135,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first {second} third";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void InvalidStringFormatIsHandled()
         {
             string pattern = "{{nothing}";
@@ -150,10 +147,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "{{nothing}";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void AnonymousObject()
         {
             string pattern = "first {two} third";
@@ -162,10 +159,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second third";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void AnonymousObjectCaseMatch()
         {
             string pattern = "first {two} third";
@@ -174,10 +171,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first second third";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void AnonymousObjectWithCulture()
         {
             string pattern = "first {two} third";
@@ -186,10 +183,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(CultureInfo.CurrentCulture, pattern, tokenValues);
 
             string expected = "first second third";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void SingleDictionaryWithCulture()
         {
             string pattern = "first {two} third";
@@ -198,10 +195,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(CultureInfo.CurrentCulture, pattern, tokenValues);
 
             string expected = "first second third";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void EscapeAsLastCharacter()
         {
             string pattern = "first {{";
@@ -210,10 +207,10 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first {";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [TestMethod]
+        [Fact]
         public void NonTokenisedOpenBracketsAreIgnored()
         {
             string pattern = "first { {two}";
@@ -222,7 +219,7 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().Format(null, pattern, tokenValues);
 
             string expected = "first { second";
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
     }
 }

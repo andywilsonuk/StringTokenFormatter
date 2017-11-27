@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace StringTokenFormatter
 {
@@ -75,9 +73,7 @@ namespace StringTokenFormatter
 
         private void ReplaceTokensWithValues()
         {
-            string escapedStartToken = Regex.Escape(markers.StartToken);
-            string escapedEndToken = Regex.Escape(markers.EndToken);
-            string pattern = $"(.*?)({escapedStartToken}[^{escapedStartToken}{escapedEndToken}]*?{escapedEndToken})(.*?)";
+            string pattern = BuildPattern();
             string[] segments = Regex.Split(workingInput, pattern, RegexOptions.Singleline);
             StringFormatBuilder sb = new StringFormatBuilder(markers);
             foreach (string segment in segments.Where(s => !string.IsNullOrEmpty(s)))
@@ -110,6 +106,14 @@ namespace StringTokenFormatter
                 ExpandLazyString(tokenPair);
             }
             workingInput = sb.ToString();
+        }
+
+        private string BuildPattern()
+        {
+            string escapedStartToken = Regex.Escape(markers.StartToken);
+            string escapedEndToken = Regex.Escape(markers.EndToken);
+            string pattern = $"(.*?)({escapedStartToken}[^{escapedStartToken}{escapedEndToken}]*?{escapedEndToken})(.*?)";
+            return pattern;
         }
 
         private KeyValuePair<string, string> GetTokenPair(string token)

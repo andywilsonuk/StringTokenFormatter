@@ -2,7 +2,6 @@ using System;
 using Xunit;
 using System.Collections.Generic;
 using StringTokenFormatter;
-using System.Globalization;
 
 namespace StringTokenFormatterStandard.Tests
 {
