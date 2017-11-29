@@ -2,7 +2,7 @@
 
 namespace StringTokenFormatter
 {
-    public class TokenMatchingSegment : IMatchingSegment
+    public class TokenMatchingSegment : IMatchingSegment, IMatchedToken
     {
         public TokenMatchingSegment(string original, string token, string padding, string format)
         {

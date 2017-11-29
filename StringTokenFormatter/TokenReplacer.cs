@@ -54,6 +54,8 @@ namespace StringTokenFormatter
             tokenValueDictionary = tokenValues;
             NormalisedTokenValues();
 
+            var mapper = new DictionaryValueMapper(tokenValueDictionary);
+
             StringBuilder sb = new StringBuilder();
             foreach (var segment in matcher.SplitSegments(input))
             {
@@ -64,19 +66,7 @@ namespace StringTokenFormatter
                 }
 
                 var tokenSegment = (TokenMatchingSegment)segment;
-                string token = tokenSegment.Token;
-
-                if (!tokenValueDictionary.TryGetValue(token, out object value))
-                {
-                    sb.Append(tokenSegment.Original);
-                    continue;
-                }
-
-                ExpandFunction(token);
-                ExpandFunctionString(token);
-                ExpandLazy(token);
-                ExpandLazyString(token);
-                value = tokenValueDictionary[token];
+                object value = mapper.Map(tokenSegment);
                 if (value == null) continue;
 
                 sb.Append(formatter.Format(tokenSegment, value));
@@ -84,6 +74,19 @@ namespace StringTokenFormatter
             return sb.ToString();
         }
         
+        private IDictionary<string, object> ConvertObjectToDictionary(object values)
+        {
+            Dictionary<string, object> mappings = new Dictionary<string, object>(matcher.TokenNameComparer);
+
+            foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(values))
+            {
+                object obj2 = descriptor.GetValue(values);
+                mappings.Add(matcher.RemoveTokenMarkers(descriptor.Name), obj2);
+            }
+
+            return mappings;
+        }
+
         private void NormalisedTokenValues()
         {
             var normalisedTokens = new Dictionary<string, object>(tokenValueDictionary.Count, matcher.TokenNameComparer);
@@ -96,47 +99,6 @@ namespace StringTokenFormatter
                 normalisedTokens.Add(key, pair.Value);
             }
             tokenValueDictionary = normalisedTokens;
-        }
-
-        private void ExpandFunction(string token)
-        {
-            Func<string, object> func = tokenValueDictionary[token] as Func<string, object>;
-            if (func == null) return;
-            tokenValueDictionary[token] = func(token);
-        }
-
-        private void ExpandFunctionString(string token)
-        {
-            Func<string, string> func = tokenValueDictionary[token] as Func<string, string>;
-            if (func == null) return;
-            tokenValueDictionary[token] = func(token);
-        }
-
-        private void ExpandLazy(string token)
-        {
-            Lazy<object> lazy = tokenValueDictionary[token] as Lazy<object>;
-            if (lazy == null) return;
-            tokenValueDictionary[token] = lazy.Value.ToString();
-        }
-
-        private void ExpandLazyString(string token)
-        {
-            Lazy<string> lazy = tokenValueDictionary[token] as Lazy<string>;
-            if (lazy == null) return;
-            tokenValueDictionary[token] = lazy.Value;
-        }
-
-        private IDictionary<string, object> ConvertObjectToDictionary(object values)
-        {
-            Dictionary<string, object> mappings = new Dictionary<string, object>(matcher.TokenNameComparer);
-
-            foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(values))
-            {
-                object obj2 = descriptor.GetValue(values);
-                mappings.Add(matcher.RemoveTokenMarkers(descriptor.Name), obj2);
-            }
-
-            return mappings;
         }
     }
 }
