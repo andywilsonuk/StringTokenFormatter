@@ -10,3 +10,4 @@ packages/
 *.nupkg
 *.bak
 /StringTokenFormatter.Packager/NuGet.log
+*.dll

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace StringTokenFormatter
@@ -33,9 +34,41 @@ namespace StringTokenFormatter
         public string Format(IFormatProvider provider, string input, IDictionary<string, object> tokenValues)
         {
             if (string.IsNullOrEmpty(input)) return input;
-            FormatPreview(provider, input, tokenValues);
-            FormatString();
-            return workingInput;
+            tokenValueDictionary = tokenValues;
+            NormalisedTokenValues();
+
+            var matcher = new DefaultTokenMatcher(markers);
+            StringBuilder sb = new StringBuilder();
+            foreach (var segment in matcher.SplitSegments(input))
+            {
+                if (segment is TextMatchingSegment textSegment)
+                {
+                    sb.Append(textSegment.Text);
+                    continue;
+                }
+
+                var tokenSegment = (TokenMatchingSegment)segment;
+                string fullToken = markers.StartToken + tokenSegment.Token + markers.EndToken;
+
+
+                if (!tokenValueDictionary.TryGetValue(fullToken, out object value))
+                { 
+                    sb.Append(tokenSegment.Original);
+                    continue;
+                }
+
+                ExpandFunction(fullToken);
+                ExpandFunctionString(fullToken);
+                ExpandLazy(fullToken);
+                ExpandLazyString(fullToken);
+                value = tokenValueDictionary[fullToken];
+                if (value == null) continue;
+
+                string padding = string.IsNullOrEmpty(tokenSegment.Padding) ? "0" : tokenSegment.Padding;
+
+                sb.AppendFormat(provider, "{0," + padding + ":" + tokenSegment.Format + "}", value);
+            }
+            return sb.ToString();
         }
 
         public string FormatPreview(IFormatProvider provider, string input, IDictionary<string, object> tokenValues)
@@ -100,10 +133,10 @@ namespace StringTokenFormatter
 
                 sb.AppendToken(matchIndex + tokenPair.Value);
 
-                ExpandFunction(tokenPair);
-                ExpandFunctionString(tokenPair);
-                ExpandLazy(tokenPair);
-                ExpandLazyString(tokenPair);
+                ExpandFunction(tokenPair.Key);
+                ExpandFunctionString(tokenPair.Key);
+                ExpandLazy(tokenPair.Key);
+                ExpandLazyString(tokenPair.Key);
             }
             workingInput = sb.ToString();
         }
@@ -138,32 +171,32 @@ namespace StringTokenFormatter
             return MissingToken;
         }
 
-        private void ExpandFunction(KeyValuePair<string, string> tokenPair)
+        private void ExpandFunction(string token)
         {
-            Func<string, object> func = tokenValueDictionary[tokenPair.Key] as Func<string, object>;
+            Func<string, object> func = tokenValueDictionary[token] as Func<string, object>;
             if (func == null) return;
-            tokenValueDictionary[tokenPair.Key] = func(tokenPair.Key);
+            tokenValueDictionary[token] = func(token);
         }
 
-        private void ExpandFunctionString(KeyValuePair<string, string> tokenPair)
+        private void ExpandFunctionString(string token)
         {
-            Func<string, string> func = tokenValueDictionary[tokenPair.Key] as Func<string, string>;
+            Func<string, string> func = tokenValueDictionary[token] as Func<string, string>;
             if (func == null) return;
-            tokenValueDictionary[tokenPair.Key] = func(tokenPair.Key);
+            tokenValueDictionary[token] = func(token);
         }
 
-        private void ExpandLazy(KeyValuePair<string, string> tokenPair)
+        private void ExpandLazy(string token)
         {
-            Lazy<object> lazy = tokenValueDictionary[tokenPair.Key] as Lazy<object>;
+            Lazy<object> lazy = tokenValueDictionary[token] as Lazy<object>;
             if (lazy == null) return;
-            tokenValueDictionary[tokenPair.Key] = lazy.Value.ToString();
+            tokenValueDictionary[token] = lazy.Value.ToString();
         }
 
-        private void ExpandLazyString(KeyValuePair<string, string> tokenPair)
+        private void ExpandLazyString(string token)
         {
-            Lazy<string> lazy = tokenValueDictionary[tokenPair.Key] as Lazy<string>;
+            Lazy<string> lazy = tokenValueDictionary[token] as Lazy<string>;
             if (lazy == null) return;
-            tokenValueDictionary[tokenPair.Key] = lazy.Value;
+            tokenValueDictionary[token] = lazy.Value;
         }
 
         private void FormatString()

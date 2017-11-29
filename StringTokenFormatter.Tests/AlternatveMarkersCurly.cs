@@ -20,6 +20,11 @@ namespace StringTokenFormatter.Tests
             get { return "${{"; }
         }
 
+        public string EndTokenEscaped
+        {
+            get { return "}}"; }
+        }
+
         public IEqualityComparer<string> TokenNameComparer
         {
             get { return StringComparer.InvariantCultureIgnoreCase; }

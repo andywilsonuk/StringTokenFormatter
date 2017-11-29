@@ -46,11 +46,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DefaultTokenMarkers.cs" />
+    <Compile Include="Matching\DefaultTokenMarkers.cs" />
+    <Compile Include="Matching\DefaultTokenMatcher.cs" />
+    <Compile Include="Matching\IMatchingSegment.cs" />
+    <Compile Include="Matching\TokenMatchingSegment.cs" />
+    <Compile Include="Matching\TextMatchingSegment.cs" />
+    <Compile Include="Matching\ITokenMatcher.cs" />
     <Compile Include="StringFormatBuilder.cs" />
     <Compile Include="StringTokenExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TokenMarkers.cs" />
+    <Compile Include="Matching\TokenMarkers.cs" />
     <Compile Include="TokenReplacer.cs" />
   </ItemGroup>
   <ItemGroup>
