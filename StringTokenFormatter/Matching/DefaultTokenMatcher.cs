@@ -33,15 +33,14 @@ namespace StringTokenFormatter
             string[] segments = Regex.Split(input, segmentPattern, RegexOptions.Singleline);
             foreach (string segment in segments.Where(s => !string.IsNullOrEmpty(s)))
             {
-                string segment2 = segment.Replace(markers.StartTokenEscaped, markers.StartToken);
+                string unescapedSegment = segment.Replace(markers.StartTokenEscaped, markers.StartToken);
+                unescapedSegment = unescapedSegment.Replace(markers.EndTokenEscaped, markers.EndToken);
                 if (segment.StartsWith(markers.StartToken) && segment.EndsWith(markers.EndToken))
                 {
-                    yield return ConvertTokenTripleToSegment(segment2);
+                    yield return ConvertTokenTripleToSegment(unescapedSegment);
                     continue;
                 }
-
-                segment2 = segment2.Replace(markers.EndTokenEscaped, markers.EndToken);
-                yield return new TextMatchingSegment(segment2);
+                yield return new TextMatchingSegment(unescapedSegment);
             }
         }
 

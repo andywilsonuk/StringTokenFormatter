@@ -15,15 +15,25 @@ namespace StringTokenFormatter
         private IFormatProvider formatProvider;
         private string workingInput;
 
+        private readonly ITokenMatcher matcher;
+        private IValueFormatter formatter;
+
+        public TokenReplacer()
+        {
+            this.markers = new DefaultTokenMarkers();
+            matcher = DefaultMatcher;
+            formatter = DefaultFormatter;
+        }
+
         public TokenReplacer(TokenMarkers markers)
         {
             this.markers = markers;
+            matcher = new DefaultTokenMatcher(markers);
+            formatter = DefaultFormatter;
         }
 
-        public TokenReplacer()
-            : this(new DefaultTokenMarkers())
-        {
-        }
+        public static ITokenMatcher DefaultMatcher = new DefaultTokenMatcher();
+        public static IValueFormatter DefaultFormatter = new DefaultValueFormatter();
 
         public string Format(IFormatProvider provider, string input, object tokenValues)
         {
@@ -37,7 +47,7 @@ namespace StringTokenFormatter
             tokenValueDictionary = tokenValues;
             NormalisedTokenValues();
 
-            var matcher = new DefaultTokenMatcher(markers);
+            formatter = new DefaultValueFormatter(provider);
             StringBuilder sb = new StringBuilder();
             foreach (var segment in matcher.SplitSegments(input))
             {
@@ -64,9 +74,7 @@ namespace StringTokenFormatter
                 value = tokenValueDictionary[fullToken];
                 if (value == null) continue;
 
-                string padding = string.IsNullOrEmpty(tokenSegment.Padding) ? "0" : tokenSegment.Padding;
-
-                sb.AppendFormat(provider, "{0," + padding + ":" + tokenSegment.Format + "}", value);
+                sb.Append(formatter.Format(tokenSegment, value));
             }
             return sb.ToString();
         }
