@@ -46,7 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Formattting\DefaultValueFormatter.cs" />
+    <Compile Include="Formattting\FormatProviderValueFormatter.cs" />
     <Compile Include="Formattting\IValueFormatter.cs" />
     <Compile Include="Matching\DefaultTokenMarkers.cs" />
     <Compile Include="Matching\DefaultTokenMatcher.cs" />

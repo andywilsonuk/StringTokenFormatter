@@ -64,7 +64,6 @@
     <Compile Include="StringTokenExtensionsTests.cs" />
     <Compile Include="TokenReplacerFormatTests.cs" />
     <Compile Include="TokenReplacerFuncTests.cs" />
-    <Compile Include="TokenReplacerPreviewTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

@@ -27,7 +27,7 @@ namespace StringTokenFormatter.Tests
         {
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer(markers).Format(null, original, tokenValues);
+            string actual = new TokenReplacer(markers).Format(original, tokenValues);
 
             Assert.Equal(expected, actual);
         }
@@ -54,7 +54,7 @@ namespace StringTokenFormatter.Tests
         {
             var tokenValues = new Dictionary<string, object> { { "two", 5 } };
 
-            string actual = new TokenReplacer(markers).Format(null, original, tokenValues);
+            string actual = new TokenReplacer(markers).Format(original, tokenValues);
 
             Assert.Equal(expected, actual);
         }
@@ -81,7 +81,7 @@ namespace StringTokenFormatter.Tests
         {
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer(markers).Format(null, original, tokenValues);
+            string actual = new TokenReplacer(markers).Format(original, tokenValues);
 
             Assert.Equal(expected, actual);
         }
@@ -108,7 +108,7 @@ namespace StringTokenFormatter.Tests
         {
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer(markers).Format(null, original, tokenValues);
+            string actual = new TokenReplacer(markers).Format(original, tokenValues);
 
             Assert.Equal(expected, actual);
         }
@@ -135,7 +135,7 @@ namespace StringTokenFormatter.Tests
         {
             var tokenValues = new Dictionary<string, object> { { "$(two)", "second" } };
 
-            string actual = new TokenReplacer(markers).Format(null, original, tokenValues);
+            string actual = new TokenReplacer(markers).Format(original, tokenValues);
 
             Assert.Equal(expected, actual);
         }

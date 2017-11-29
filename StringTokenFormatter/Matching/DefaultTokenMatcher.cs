@@ -46,11 +46,26 @@ namespace StringTokenFormatter
 
         private TokenMatchingSegment ConvertTokenTripleToSegment(string tokenTriple)
         {
-            string tripleWithoutMarkers = tokenTriple.Remove(0, markers.StartToken.Length);
-            tripleWithoutMarkers = tripleWithoutMarkers.Remove(tripleWithoutMarkers.Length - markers.EndToken.Length);
-
+            string tripleWithoutMarkers = RemoveTokenMarkers(tokenTriple);
             string[] split = Regex.Split(tripleWithoutMarkers, tokenTriplePattern, RegexOptions.Singleline);
             return new TokenMatchingSegment(tokenTriple, split[1], split[2], split[3]);
         }
+
+        public string RemoveTokenMarkers(string token)
+        {
+            string strippedToken = token;
+
+            if (token.StartsWith(markers.StartToken) && !token.StartsWith(markers.StartTokenEscaped))
+            {
+                strippedToken = strippedToken.Remove(0, markers.StartToken.Length);
+            }
+            if (token.EndsWith(markers.EndToken) && !token.EndsWith(markers.EndTokenEscaped))
+            {
+                strippedToken = strippedToken.Remove(strippedToken.Length - markers.EndToken.Length);
+            }
+            return strippedToken;
+        }
+
+        public IEqualityComparer<string> TokenNameComparer => markers.TokenNameComparer;
     }
 }

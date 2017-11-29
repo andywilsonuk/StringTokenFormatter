@@ -5,15 +5,15 @@ using System.Text;
 
 namespace StringTokenFormatter
 {
-    public class DefaultValueFormatter : IValueFormatter
+    public class FormatProviderValueFormatter : IValueFormatter
     {
         private readonly IFormatProvider provider;
 
-        public DefaultValueFormatter()
+        public FormatProviderValueFormatter()
         {
         }
 
-        public DefaultValueFormatter(IFormatProvider formatProvider)
+        public FormatProviderValueFormatter(IFormatProvider formatProvider)
         {
             provider = formatProvider;
         }
