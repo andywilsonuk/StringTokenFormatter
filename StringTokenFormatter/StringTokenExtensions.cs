@@ -27,7 +27,7 @@ namespace StringTokenFormatter
         /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
         public static string FormatToken(this string input, IFormatProvider provider, string token, object replacementValue)
         {
-            return new TokenReplacer(TokenReplacer.DefaultMatcher, new FormatProviderValueFormatter(provider), TokenReplacer.DefaultMappers).FormatFromDictionary(input, new Dictionary<string, object> { { token, replacementValue } });
+            return new TokenReplacer(TokenReplacer.DefaultMatcher, new FormatProviderValueFormatter(provider), TokenReplacer.DefaultMappers).FormatFromSingle(input, token, replacementValue);
         }
 
         /// <summary>

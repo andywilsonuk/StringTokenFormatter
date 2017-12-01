@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Containers\SingleTokenValueContainer.cs" />
     <Compile Include="Formattting\FormatProviderValueFormatter.cs" />
     <Compile Include="Formattting\IValueFormatter.cs" />
     <Compile Include="Containers\ITokenValueContainer.cs" />

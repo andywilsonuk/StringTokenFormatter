@@ -70,8 +70,18 @@ namespace StringTokenFormatter
 
         public string FormatFromDictionary(string input, IDictionary<string, string> tokenValues)
         {
+            if (string.IsNullOrEmpty(input)) return input;
+            if (tokenValues == null) throw new ArgumentNullException(nameof(tokenValues));
             var tokenValues2 = tokenValues.ToDictionary(p => p.Key, p => (object)p.Value);
             return FormatFromDictionary(input, tokenValues2);
+        }
+
+        public string FormatFromSingle(string input, string token, object value)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
+
+            ITokenValueContainer mapper = new SingleTokenValueContainer(token, value, matcher);
+            return MapTokens(input, mapper);
         }
 
         private string MapTokens(string input, ITokenValueContainer container)
