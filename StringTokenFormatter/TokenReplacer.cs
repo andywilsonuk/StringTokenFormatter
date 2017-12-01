@@ -70,6 +70,12 @@ namespace StringTokenFormatter
             return MapTokens(input, mapper);
         }
 
+        public string FormatFromDictionary(string input, IDictionary<string, string> tokenValues)
+        {
+            var tokenValues2 = tokenValues.ToDictionary(p => p.Key, p => (object)p.Value);
+            return FormatFromDictionary(input, tokenValues2);
+        }
+
         private string MapTokens(string input, ITokenValueContainer container)
         {
             StringBuilder sb = new StringBuilder();
