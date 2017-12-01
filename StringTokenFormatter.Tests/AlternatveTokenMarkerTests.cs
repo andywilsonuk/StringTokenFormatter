@@ -1,5 +1,7 @@
 using Xunit;
 using System.Collections.Generic;
+using Moq;
+using System;
 
 namespace StringTokenFormatter.Tests
 {
@@ -136,6 +138,26 @@ namespace StringTokenFormatter.Tests
             var tokenValues = new Dictionary<string, object> { { "$(two)", "second" } };
 
             string actual = new TokenReplacer(markers).FormatFromDictionary(original, tokenValues);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Custom_Matcher_Resolves_Tokens_And_Returns_Mapped_String()
+        {
+            string expected = "first second third";
+            string input = "first $(two) third";
+            var mockTokenMatcher = new Mock<ITokenMatcher>();
+            mockTokenMatcher.Setup(x => x.SplitSegments(input)).Returns(new IMatchingSegment[]
+            {
+                new TextMatchingSegment("first "),
+                new TokenMatchingSegment("$(two)", "two", null, null),
+                new TextMatchingSegment(" third"),
+            });
+            mockTokenMatcher.SetupGet(x => x.TokenNameComparer).Returns(StringComparer.InvariantCultureIgnoreCase);
+            mockTokenMatcher.Setup(x => x.RemoveTokenMarkers("$(two)")).Returns("two");
+
+            string actual = new TokenReplacer(mockTokenMatcher.Object, TokenReplacer.DefaultFormatter, TokenReplacer.DefaultMappers).FormatFromSingle(input, "$(two)", "second");
 
             Assert.Equal(expected, actual);
         }

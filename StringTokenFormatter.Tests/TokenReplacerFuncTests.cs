@@ -85,5 +85,16 @@ namespace StringTokenFormatter.Tests
             string expected = "first second third";
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void Formatting_Single_Value_Using_A_Function_Returns_In_Mapped_String()
+        {
+            string pattern = "first {two} third";
+            Func<string> func = () => { return "second"; };
+
+            var actual = new TokenReplacer().FormatFromSingle(pattern, "two", func);
+
+            Assert.Equal("first second third", actual);
+        }
     }
 }

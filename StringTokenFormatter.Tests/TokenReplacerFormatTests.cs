@@ -275,6 +275,16 @@ namespace StringTokenFormatter.Tests
         }
 
         [Fact]
+        public void Formatting_Single_Value_With_Markers_Returns_In_Mapped_String()
+        {
+            string pattern = "first {two} third";
+
+            var actual = new TokenReplacer().FormatFromSingle(pattern, "{two}", "second");
+
+            Assert.Equal("first second third", actual);
+        }
+
+        [Fact]
         public void Formatting_Incorrect_Single_Value_Returns_In_Original_String()
         {
             string pattern = "first {two} third";
@@ -295,6 +305,19 @@ namespace StringTokenFormatter.Tests
             var mappers = new List<ITokenToValueMapper> { mockMapper.Object };
 
             var actual = new TokenReplacer(TokenReplacer.DefaultMatcher, TokenReplacer.DefaultFormatter, mappers).FormatFromSingle(pattern, "two", "second");
+
+            Assert.Equal("first custom third", actual);
+        }
+
+        [Fact]
+        public void Formatting_Single_Value_With_Custom_Formatter_Returns_In_Mapped_String()
+        {
+            string pattern = "first {two} third";
+            var mockFormatter = new Mock<IValueFormatter>();
+            mockFormatter.Setup(x => x.Format(It.Is<TokenMatchingSegment>(y => y.Token == "two"), "second"))
+                .Returns("custom");
+
+            var actual = new TokenReplacer(TokenReplacer.DefaultMatcher, mockFormatter.Object, TokenReplacer.DefaultMappers).FormatFromSingle(pattern, "two", "second");
 
             Assert.Equal("first custom third", actual);
         }
