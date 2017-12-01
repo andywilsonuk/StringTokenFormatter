@@ -6,12 +6,12 @@ using System.Text;
 
 namespace StringTokenFormatter
 {
-    public class ObjectTokenValueContainer : ITokenValueContainer
+    public class ObjectPropertiesTokenValueContainer : ITokenValueContainer
     {
         private IDictionary<string, object> dictionary;
         private readonly ITokenMatcher matcher;
 
-        public ObjectTokenValueContainer(object tokenValueObject, ITokenMatcher tokenMatcher)
+        public ObjectPropertiesTokenValueContainer(object tokenValueObject, ITokenMatcher tokenMatcher)
         {
             if (tokenValueObject == null) throw new ArgumentNullException(nameof(tokenValueObject));
             matcher = tokenMatcher ?? throw new ArgumentNullException(nameof(tokenMatcher));

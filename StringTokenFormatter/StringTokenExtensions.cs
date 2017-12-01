@@ -28,7 +28,7 @@ namespace StringTokenFormatter
         /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
         public static string FormatToken(this string input, IFormatProvider provider, string token, object replacementValue)
         {
-            return new TokenReplacer(TokenReplacer.DefaultMatcher, new FormatProviderValueFormatter(provider), TokenReplacer.DefaultMappers).Format(input, new Dictionary<string, object> { { token, replacementValue } });
+            return new TokenReplacer(TokenReplacer.DefaultMatcher, new FormatProviderValueFormatter(provider), TokenReplacer.DefaultMappers).FormatFromDictionary(input, new Dictionary<string, object> { { token, replacementValue } });
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace StringTokenFormatter
         /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
         public static string FormatToken(this string input, IFormatProvider provider, IDictionary<string, object> tokenValues)
         {
-            return new TokenReplacer(TokenReplacer.DefaultMatcher, new FormatProviderValueFormatter(provider), TokenReplacer.DefaultMappers).Format(input, tokenValues);
+            return new TokenReplacer(TokenReplacer.DefaultMatcher, new FormatProviderValueFormatter(provider), TokenReplacer.DefaultMappers).FormatFromDictionary(input, tokenValues);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace StringTokenFormatter
         /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
         public static string FormatToken(this string input, IFormatProvider provider, object tokenValues)
         {
-            return new TokenReplacer(TokenReplacer.DefaultMatcher, new FormatProviderValueFormatter(provider), TokenReplacer.DefaultMappers).Format(input, tokenValues);
+            return new TokenReplacer(TokenReplacer.DefaultMatcher, new FormatProviderValueFormatter(provider), TokenReplacer.DefaultMappers).FormatFromProperties(input, tokenValues);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace StringTokenFormatter
         public static string FormatToken(this string input, IFormatProvider provider, IDictionary<string, string> tokenValues)
         {
             var tokenValues2 = tokenValues.Select(p => new KeyValuePair<string, object>(p.Key, p.Value)).ToDictionary(p => p.Key, p => p.Value);
-            return new TokenReplacer(TokenReplacer.DefaultMatcher, new FormatProviderValueFormatter(provider), TokenReplacer.DefaultMappers).Format(input, tokenValues2);
+            return new TokenReplacer(TokenReplacer.DefaultMatcher, new FormatProviderValueFormatter(provider), TokenReplacer.DefaultMappers).FormatFromDictionary(input, tokenValues2);
         }
     }
 }

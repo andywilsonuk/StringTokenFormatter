@@ -49,7 +49,7 @@
     <Compile Include="Formattting\FormatProviderValueFormatter.cs" />
     <Compile Include="Formattting\IValueFormatter.cs" />
     <Compile Include="Containers\ITokenValueContainer.cs" />
-    <Compile Include="Containers\ObjectTokenValueContainer.cs" />
+    <Compile Include="Containers\ObjectPropertiesTokenValueContainer.cs" />
     <Compile Include="Containers\DictionaryTokenValueContainer.cs" />
     <Compile Include="Mapping\TokenToFunctionObjectNoInputValueMapper.cs" />
     <Compile Include="Mapping\TokenToFunctionStringNoInputValueMapper.cs" />

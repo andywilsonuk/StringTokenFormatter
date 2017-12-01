@@ -53,15 +53,15 @@ namespace StringTokenFormatter
             new TokenToFunctionObjectValueMapper(),
         };
 
-        public string Format(string input, object tokenValues)
+        public string FormatFromProperties(string input, object propertyContainer)
         {
             if (string.IsNullOrEmpty(input)) return input;
 
-            ITokenValueContainer mapper = new ObjectTokenValueContainer(tokenValues, matcher);
+            ITokenValueContainer mapper = new ObjectPropertiesTokenValueContainer(propertyContainer, matcher);
             return MapTokens(input, mapper);
         }
 
-        public string Format(string input, IDictionary<string, object> tokenValues)
+        public string FormatFromDictionary(string input, IDictionary<string, object> tokenValues)
         {
             if (string.IsNullOrEmpty(input)) return input;
             if (tokenValues == null) throw new ArgumentNullException(nameof(tokenValues));
