@@ -9,53 +9,69 @@ namespace StringTokenFormatter
 {
     public class TokenReplacer
     {
-        private IDictionary<string, object> tokenValueDictionary;
         private readonly ITokenMatcher matcher;
         private readonly IValueFormatter formatter;
+        private readonly TokenToValueCompositeMapper mapper;
 
         public TokenReplacer()
-            : this(DefaultMatcher, DefaultFormatter)
+            : this(DefaultMatcher, DefaultFormatter, DefaultMappers)
         {
         }
 
         public TokenReplacer(TokenMarkers markers)
-            : this(new DefaultTokenMatcher(markers), DefaultFormatter)
+            : this(new DefaultTokenMatcher(markers), DefaultFormatter, DefaultMappers)
         {
         }
 
         public TokenReplacer(IFormatProvider provider)
-            : this(DefaultMatcher, new FormatProviderValueFormatter(provider))
+            : this(DefaultMatcher, new FormatProviderValueFormatter(provider), DefaultMappers)
         {
         }
 
         public TokenReplacer(TokenMarkers markers, IFormatProvider provider)
-            : this(new DefaultTokenMatcher(markers), new FormatProviderValueFormatter(provider))
+            : this(new DefaultTokenMatcher(markers), new FormatProviderValueFormatter(provider), DefaultMappers)
         {
         }
 
-        public TokenReplacer(ITokenMatcher tokenMatcher, IValueFormatter valueFormatter)
+        public TokenReplacer(ITokenMatcher tokenMatcher, IValueFormatter valueFormatter, IEnumerable<ITokenToValueMapper> valueMappers)
         {
             matcher = tokenMatcher;
             formatter = valueFormatter;
+            mapper = new TokenToValueCompositeMapper(valueMappers);
         }
 
         public static ITokenMatcher DefaultMatcher = new DefaultTokenMatcher();
         public static IValueFormatter DefaultFormatter = new FormatProviderValueFormatter();
+        public static IEnumerable<ITokenToValueMapper> DefaultMappers = new ITokenToValueMapper[]
+        {
+            new TokenToNullValueMapper(),
+            new TokenToLazyStringValueMapper(),
+            new TokenToLazyObjectValueMapper(),
+            new TokenToFunctionStringNoInputValueMapper(),
+            new TokenToFunctionObjectNoInputValueMapper(),
+            new TokenToFunctionStringValueMapper(),
+            new TokenToFunctionObjectValueMapper(),
+        };
 
         public string Format(string input, object tokenValues)
         {
-            var mappings = ConvertObjectToDictionary(tokenValues);
-            return Format(input, mappings);
+            if (string.IsNullOrEmpty(input)) return input;
+
+            ITokenValueContainer mapper = new ObjectTokenValueContainer(tokenValues, matcher);
+            return MapTokens(input, mapper);
         }
 
         public string Format(string input, IDictionary<string, object> tokenValues)
         {
             if (string.IsNullOrEmpty(input)) return input;
-            tokenValueDictionary = tokenValues;
-            NormalisedTokenValues();
+            if (tokenValues == null) throw new ArgumentNullException(nameof(tokenValues));
 
-            var mapper = new DictionaryValueMapper(tokenValueDictionary);
+            ITokenValueContainer mapper = new DictionaryTokenValueContainer(tokenValues, matcher);
+            return MapTokens(input, mapper);
+        }
 
+        private string MapTokens(string input, ITokenValueContainer container)
+        {
             StringBuilder sb = new StringBuilder();
             foreach (var segment in matcher.SplitSegments(input))
             {
@@ -66,39 +82,15 @@ namespace StringTokenFormatter
                 }
 
                 var tokenSegment = (TokenMatchingSegment)segment;
-                object value = mapper.Map(tokenSegment);
-                if (value == null) continue;
+                object mappedValue = tokenSegment.Original;
+                if (container.TryMap(tokenSegment, out object value))
+                {
+                    mappedValue = mapper.TryMap(tokenSegment, value, out object value2) ? value2 : value;
+                }
 
-                sb.Append(formatter.Format(tokenSegment, value));
+                sb.Append(formatter.Format(tokenSegment, mappedValue));
             }
             return sb.ToString();
-        }
-        
-        private IDictionary<string, object> ConvertObjectToDictionary(object values)
-        {
-            Dictionary<string, object> mappings = new Dictionary<string, object>(matcher.TokenNameComparer);
-
-            foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(values))
-            {
-                object obj2 = descriptor.GetValue(values);
-                mappings.Add(matcher.RemoveTokenMarkers(descriptor.Name), obj2);
-            }
-
-            return mappings;
-        }
-
-        private void NormalisedTokenValues()
-        {
-            var normalisedTokens = new Dictionary<string, object>(tokenValueDictionary.Count, matcher.TokenNameComparer);
-            foreach (var pair in tokenValueDictionary)
-            {
-                string key = pair.Key;
-                if (string.IsNullOrEmpty(key)) continue;
-
-                key = matcher.RemoveTokenMarkers(key);
-                normalisedTokens.Add(key, pair.Value);
-            }
-            tokenValueDictionary = normalisedTokens;
         }
     }
 }

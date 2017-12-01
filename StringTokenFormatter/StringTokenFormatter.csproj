@@ -48,12 +48,17 @@
   <ItemGroup>
     <Compile Include="Formattting\FormatProviderValueFormatter.cs" />
     <Compile Include="Formattting\IValueFormatter.cs" />
-    <Compile Include="Mapping\DictionaryValueMapper.cs" />
+    <Compile Include="Containers\ITokenValueContainer.cs" />
+    <Compile Include="Containers\ObjectTokenValueContainer.cs" />
+    <Compile Include="Containers\DictionaryTokenValueContainer.cs" />
+    <Compile Include="Mapping\TokenToFunctionObjectNoInputValueMapper.cs" />
+    <Compile Include="Mapping\TokenToFunctionStringNoInputValueMapper.cs" />
     <Compile Include="Mapping\TokenToLazyObjectValueMapper.cs" />
+    <Compile Include="Mapping\TokenToNullValueMapper.cs" />
     <Compile Include="Mapping\TokenToLazyStringValueMapper.cs" />
-    <Compile Include="Mapping\TokenToLiteralValueMapper.cs" />
     <Compile Include="Mapping\TokenToFunctionStringValueMapper.cs" />
     <Compile Include="Mapping\TokenToFunctionObjectValueMapper.cs" />
+    <Compile Include="Mapping\TokenToValueCompositeMapper.cs" />
     <Compile Include="Matching\DefaultTokenMarkers.cs" />
     <Compile Include="Matching\DefaultTokenMatcher.cs" />
     <Compile Include="Matching\IMatchingSegment.cs" />
@@ -66,7 +71,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Matching\TokenMarkers.cs" />
     <Compile Include="TokenReplacer.cs" />
-    <Compile Include="Mapping\TokenToValueMapper.cs" />
+    <Compile Include="Mapping\ITokenToValueMapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="StringTokenFormatter.snk" />

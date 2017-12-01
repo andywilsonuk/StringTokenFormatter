@@ -7,6 +7,6 @@ namespace StringTokenFormatter
 {
     public interface ITokenToValueMapper
     {
-        object Map(IMatchedToken token);
+        bool TryMap(IMatchedToken matchedToken, object value, out object mapped);
     }
 }

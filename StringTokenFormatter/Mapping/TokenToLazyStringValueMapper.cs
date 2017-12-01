@@ -7,16 +7,16 @@ namespace StringTokenFormatter
 {
     public class TokenToLazyStringValueMapper : ITokenToValueMapper
     {
-        private Lazy<string> mapper;
-
-        public TokenToLazyStringValueMapper(Lazy<string> lazyMapper)
+        public bool TryMap(IMatchedToken token, object value, out object mapped)
         {
-            mapper = lazyMapper ?? throw new ArgumentNullException(nameof(lazyMapper));
-        }
-
-        public object Map(IMatchedToken token)
-        {
-            return mapper.Value;
+            var lazy = value as Lazy<string>;
+            if (lazy == null)
+            {
+                mapped = null;
+                return false;
+            }
+            mapped = lazy.Value;
+            return true;
         }
     }
 }

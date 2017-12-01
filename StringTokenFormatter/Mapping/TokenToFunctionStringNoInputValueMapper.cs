@@ -5,17 +5,17 @@ using System.Text;
 
 namespace StringTokenFormatter
 {
-    public class TokenToFunctionStringValueMapper : ITokenToValueMapper
+    public class TokenToFunctionStringNoInputValueMapper : ITokenToValueMapper
     {
         public bool TryMap(IMatchedToken token, object value, out object mapped)
         {
-            var func = value as Func<string, string>;
+            var func = value as Func<string>;
             if (func == null)
             {
                 mapped = null;
                 return false;
             }
-            mapped = func(token.Token);
+            mapped = func();
             return true;
         }
     }
