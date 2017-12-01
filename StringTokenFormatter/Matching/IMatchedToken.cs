@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace StringTokenFormatter
+﻿namespace StringTokenFormatter
 {
     public interface IMatchedToken
     {
