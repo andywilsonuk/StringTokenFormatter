@@ -6,7 +6,10 @@
 	<Title>StringTokenFormatter</Title>
     <AssemblyName>StringTokenFormatter</AssemblyName>
     <RootNamespace>StringTokenFormatter</RootNamespace>
-    <PackageReleaseNotes>2.0.0
+    <PackageReleaseNotes>2.0.1
+- Added Uri extension methods (FormatToken)
+- MapTokens method is now public to allow for further customisation
+2.0.0
 - Reworked pipeline so that each step (match, value lookup, value format) is configurable via an interface
 - Removed FormatPreview as we are no longer building a complete input for string.format
 - IFormatProvider is now passed via constructor
@@ -36,9 +39,9 @@
 - Provided overload to allow for anonymous objects to be used
 1.0.0
 - Initial version.</PackageReleaseNotes>
-    <Version>2.0.0</Version>
-	<AssemblyVersion>2.0.0</AssemblyVersion>
-	<FileVersion>2.0.0</FileVersion>
+    <Version>2.0.1</Version>
+	<AssemblyVersion>2.0.1</AssemblyVersion>
+	<FileVersion>2.0.1</FileVersion>
     <Product>String Token Formatter</Product>
     <Authors>Andy Wilson</Authors>
     <Company>Andy Wilson</Company>

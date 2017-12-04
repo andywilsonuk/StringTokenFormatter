@@ -12,30 +12,30 @@ namespace StringTokenFormatter
         private readonly TokenToValueCompositeMapper mapper;
 
         public TokenReplacer()
-            : this(DefaultMatcher, DefaultFormatter, DefaultMappers)
+            : this(DefaultMatcher, DefaultMappers, DefaultFormatter)
         {
         }
 
         public TokenReplacer(TokenMarkers markers)
-            : this(new DefaultTokenMatcher(markers), DefaultFormatter, DefaultMappers)
+            : this(new DefaultTokenMatcher(markers), DefaultMappers, DefaultFormatter)
         {
         }
 
         public TokenReplacer(IFormatProvider provider)
-            : this(DefaultMatcher, new FormatProviderValueFormatter(provider), DefaultMappers)
+            : this(DefaultMatcher, DefaultMappers, new FormatProviderValueFormatter(provider))
         {
         }
 
         public TokenReplacer(TokenMarkers markers, IFormatProvider provider)
-            : this(new DefaultTokenMatcher(markers), new FormatProviderValueFormatter(provider), DefaultMappers)
+            : this(new DefaultTokenMatcher(markers), DefaultMappers, new FormatProviderValueFormatter(provider))
         {
         }
 
-        public TokenReplacer(ITokenMatcher tokenMatcher, IValueFormatter valueFormatter, IEnumerable<ITokenToValueMapper> valueMappers)
+        public TokenReplacer(ITokenMatcher tokenMatcher, IEnumerable<ITokenToValueMapper> valueMappers, IValueFormatter valueFormatter)
         {
             matcher = tokenMatcher;
-            formatter = valueFormatter;
             mapper = new TokenToValueCompositeMapper(valueMappers);
+            formatter = valueFormatter;
         }
 
         public static ITokenMatcher DefaultMatcher = new DefaultTokenMatcher();
@@ -53,15 +53,12 @@ namespace StringTokenFormatter
 
         public string FormatFromProperties(string input, object propertyContainer)
         {
-            if (string.IsNullOrEmpty(input)) return input;
-
             ITokenValueContainer mapper = new ObjectPropertiesTokenValueContainer(propertyContainer, matcher);
             return MapTokens(input, mapper);
         }
 
         public string FormatFromDictionary(string input, IDictionary<string, object> tokenValues)
         {
-            if (string.IsNullOrEmpty(input)) return input;
             if (tokenValues == null) throw new ArgumentNullException(nameof(tokenValues));
 
             ITokenValueContainer mapper = new DictionaryTokenValueContainer(tokenValues, matcher);
@@ -70,7 +67,6 @@ namespace StringTokenFormatter
 
         public string FormatFromDictionary(string input, IDictionary<string, string> tokenValues)
         {
-            if (string.IsNullOrEmpty(input)) return input;
             if (tokenValues == null) throw new ArgumentNullException(nameof(tokenValues));
             var tokenValues2 = tokenValues.ToDictionary(p => p.Key, p => (object)p.Value);
             return FormatFromDictionary(input, tokenValues2);
@@ -78,14 +74,15 @@ namespace StringTokenFormatter
 
         public string FormatFromSingle(string input, string token, object value)
         {
-            if (string.IsNullOrEmpty(input)) return input;
-
             ITokenValueContainer mapper = new SingleTokenValueContainer(token, value, matcher);
             return MapTokens(input, mapper);
         }
 
-        private string MapTokens(string input, ITokenValueContainer container)
+        public string MapTokens(string input, ITokenValueContainer container)
         {
+            if (string.IsNullOrEmpty(input)) return input;
+            if (container == null) throw new ArgumentNullException(nameof(container));
+
             StringBuilder sb = new StringBuilder();
             foreach (var segment in matcher.SplitSegments(input))
             {

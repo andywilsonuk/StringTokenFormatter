@@ -304,7 +304,7 @@ namespace StringTokenFormatter.Tests
                 .Returns(true);
             var mappers = new List<ITokenToValueMapper> { mockMapper.Object };
 
-            var actual = new TokenReplacer(TokenReplacer.DefaultMatcher, TokenReplacer.DefaultFormatter, mappers).FormatFromSingle(pattern, "two", "second");
+            var actual = new TokenReplacer(TokenReplacer.DefaultMatcher, mappers, TokenReplacer.DefaultFormatter).FormatFromSingle(pattern, "two", "second");
 
             Assert.Equal("first custom third", actual);
         }
@@ -317,7 +317,7 @@ namespace StringTokenFormatter.Tests
             mockFormatter.Setup(x => x.Format(It.Is<TokenMatchingSegment>(y => y.Token == "two"), "second"))
                 .Returns("custom");
 
-            var actual = new TokenReplacer(TokenReplacer.DefaultMatcher, mockFormatter.Object, TokenReplacer.DefaultMappers).FormatFromSingle(pattern, "two", "second");
+            var actual = new TokenReplacer(TokenReplacer.DefaultMatcher, TokenReplacer.DefaultMappers, mockFormatter.Object).FormatFromSingle(pattern, "two", "second");
 
             Assert.Equal("first custom third", actual);
         }

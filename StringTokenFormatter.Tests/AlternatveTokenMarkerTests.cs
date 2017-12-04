@@ -157,7 +157,7 @@ namespace StringTokenFormatter.Tests
             mockTokenMatcher.SetupGet(x => x.TokenNameComparer).Returns(StringComparer.CurrentCultureIgnoreCase);
             mockTokenMatcher.Setup(x => x.RemoveTokenMarkers("$(two)")).Returns("two");
 
-            string actual = new TokenReplacer(mockTokenMatcher.Object, TokenReplacer.DefaultFormatter, TokenReplacer.DefaultMappers).FormatFromSingle(input, "$(two)", "second");
+            string actual = new TokenReplacer(mockTokenMatcher.Object, TokenReplacer.DefaultMappers, TokenReplacer.DefaultFormatter).FormatFromSingle(input, "$(two)", "second");
 
             Assert.Equal(expected, actual);
         }
