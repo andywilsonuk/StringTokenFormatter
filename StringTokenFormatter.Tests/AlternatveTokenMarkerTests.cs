@@ -154,7 +154,7 @@ namespace StringTokenFormatter.Tests
                 new TokenMatchingSegment("$(two)", "two", null, null),
                 new TextMatchingSegment(" third"),
             });
-            mockTokenMatcher.SetupGet(x => x.TokenNameComparer).Returns(StringComparer.InvariantCultureIgnoreCase);
+            mockTokenMatcher.SetupGet(x => x.TokenNameComparer).Returns(StringComparer.CurrentCultureIgnoreCase);
             mockTokenMatcher.Setup(x => x.RemoveTokenMarkers("$(two)")).Returns("two");
 
             string actual = new TokenReplacer(mockTokenMatcher.Object, TokenReplacer.DefaultFormatter, TokenReplacer.DefaultMappers).FormatFromSingle(input, "$(two)", "second");

@@ -17,7 +17,7 @@ namespace StringTokenFormatter
 
         public IEqualityComparer<string> TokenNameComparer
         {
-            get { return StringComparer.InvariantCultureIgnoreCase; }
+            get { return StringComparer.CurrentCultureIgnoreCase; }
         }
     }
 }

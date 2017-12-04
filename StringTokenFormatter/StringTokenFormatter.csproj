@@ -1,88 +1,66 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F4B7425A-2A79-4665-A58F-6BCE3E9C1730}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>StringTokenFormatter</RootNamespace>
+    <TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net40;netstandard2.0</TargetFrameworks>
+	<TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
     <AssemblyName>StringTokenFormatter</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <RootNamespace>StringTokenFormatter</RootNamespace>
+    <PackageReleaseNotes>2.0.0
+- Reworked pipeline so that each step (match, value lookup, value format) is configurable via an interface
+- Removed FormatPreview as we are no longer building a complete input for string.format
+- IFormatProvider is now passed via constructor
+- String.FormatToken interface renames the same so compatibility should be retained
+- Added mappings for Func&lt;string&gt; and Func&lt;object&gt; whereby the token isn't passed as an input
+- Mapping should now be consistent between all the different format methods
+1.7.0
+- Added .net Standard 2.0 implementation
+1.6.1
+- Fixed issue whereby orphan starting tokens were stopping actual tokens from being matched
+1.6.0
+- Alternative token markers can now used     
+1.5.1
+- Bug fix on empty string when calling Format method
+1.5.0
+- Added support for Lazy&amp;lt;string, object&amp;gt;, Lazy&amp;lt;string, string&amp;gt;, Func&amp;lt;string, string&amp;gt;
+- Added format preview (to show the string.Format pattern rather than the result)
+1.4.0
+- Added support for Func&amp;lt;string, object&amp;gt; as token value to support on-demand lookups
+1.3.0
+- Added specific extension methods for IDictionary&amp;lt;string, string&amp;gt;
+1.2.0
+- Added support for alignment padding
+1.1.0
+- Updated to use string.format internally so that non-string value types can be formatted (e.g. {token:D4})
+- Allowed format provider to be specified
+- Provided overload to allow for anonymous objects to be used
+1.0.0
+- Initial version.</PackageReleaseNotes>
+    <Version>2.0.0</Version>
+	<AssemblyVersion>2.0.0</AssemblyVersion>
+	<FileVersion>2.0.0</FileVersion>
+    <Product>String Token Formatter</Product>
+    <Authors>Andy Wilson</Authors>
+    <Company>Andy Wilson</Company>
+    <Description>Provides string extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.</Description>
+    <Copyright>Andy Wilson</Copyright>
+    <PackageLicenseUrl>http://opensource.org/licenses/Apache-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/andywilsonuk/StringTokenFormatter</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/andywilsonuk/StringTokenFormatter</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>string token formatter replace extension</PackageTags>
+	<NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
+	<MinClientVersion>2.12</MinClientVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>StringTokenFormatter.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <Folder Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Containers\SingleTokenValueContainer.cs" />
-    <Compile Include="Formattting\FormatProviderValueFormatter.cs" />
-    <Compile Include="Formattting\IValueFormatter.cs" />
-    <Compile Include="Containers\ITokenValueContainer.cs" />
-    <Compile Include="Containers\ObjectPropertiesTokenValueContainer.cs" />
-    <Compile Include="Containers\DictionaryTokenValueContainer.cs" />
-    <Compile Include="Mapping\TokenToFunctionObjectNoInputValueMapper.cs" />
-    <Compile Include="Mapping\TokenToFunctionStringNoInputValueMapper.cs" />
-    <Compile Include="Mapping\TokenToLazyObjectValueMapper.cs" />
-    <Compile Include="Mapping\TokenToNullValueMapper.cs" />
-    <Compile Include="Mapping\TokenToLazyStringValueMapper.cs" />
-    <Compile Include="Mapping\TokenToFunctionStringValueMapper.cs" />
-    <Compile Include="Mapping\TokenToFunctionObjectValueMapper.cs" />
-    <Compile Include="Mapping\TokenToValueCompositeMapper.cs" />
-    <Compile Include="Matching\DefaultTokenMarkers.cs" />
-    <Compile Include="Matching\DefaultTokenMatcher.cs" />
-    <Compile Include="Matching\IMatchingSegment.cs" />
-    <Compile Include="Matching\IMatchedToken.cs" />
-    <Compile Include="Matching\TokenMatchingSegment.cs" />
-    <Compile Include="Matching\TextMatchingSegment.cs" />
-    <Compile Include="Matching\ITokenMatcher.cs" />
-    <Compile Include="StringFormatBuilder.cs" />
-    <Compile Include="StringTokenExtensions.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Matching\TokenMarkers.cs" />
-    <Compile Include="TokenReplacer.cs" />
-    <Compile Include="Mapping\ITokenToValueMapper.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="StringTokenFormatter.snk" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <AssemblyTitle>String Token Formatter .NET Standard 2.0</AssemblyTitle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
+    <AssemblyTitle>String Token Formatter .NET 4.0</AssemblyTitle>
+  </PropertyGroup>
+
 </Project>

@@ -3,15 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringTokenFormatter", "StringTokenFormatter\StringTokenFormatter.csproj", "{F4B7425A-2A79-4665-A58F-6BCE3E9C1730}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringTokenFormatter", "StringTokenFormatter\StringTokenFormatter.csproj", "{F4B7425A-2A79-4665-A58F-6BCE3E9C1730}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringTokenFormatter.Packager", "StringTokenFormatter.Packager\StringTokenFormatter.Packager.csproj", "{0451BAEF-DF2E-4B98-8644-94EE9415E389}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringTokenFormatterStandard", "StringTokenFormatterStandard\StringTokenFormatterStandard.csproj", "{A07B720D-8B5F-43C6-A3FF-6BC1E3A96706}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringTokenFormatterStandard.Tests", "StringTokenFormatterStandard.Tests\StringTokenFormatterStandard.Tests.csproj", "{CAA72DE9-7608-4C0F-9598-719465F85876}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringTokenFormatter.Tests", "StringTokenFormatter.Tests\StringTokenFormatter.Tests.csproj", "{717ECE3B-EE2D-4966-ABB7-15A1F3593C9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringTokenFormatter.Tests", "StringTokenFormatter.Tests\StringTokenFormatter.Tests.csproj", "{717ECE3B-EE2D-4966-ABB7-15A1F3593C9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,18 +17,6 @@ Global
 		{F4B7425A-2A79-4665-A58F-6BCE3E9C1730}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4B7425A-2A79-4665-A58F-6BCE3E9C1730}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4B7425A-2A79-4665-A58F-6BCE3E9C1730}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0451BAEF-DF2E-4B98-8644-94EE9415E389}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A07B720D-8B5F-43C6-A3FF-6BC1E3A96706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A07B720D-8B5F-43C6-A3FF-6BC1E3A96706}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A07B720D-8B5F-43C6-A3FF-6BC1E3A96706}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A07B720D-8B5F-43C6-A3FF-6BC1E3A96706}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CAA72DE9-7608-4C0F-9598-719465F85876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CAA72DE9-7608-4C0F-9598-719465F85876}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CAA72DE9-7608-4C0F-9598-719465F85876}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CAA72DE9-7608-4C0F-9598-719465F85876}.Release|Any CPU.Build.0 = Release|Any CPU
 		{717ECE3B-EE2D-4966-ABB7-15A1F3593C9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{717ECE3B-EE2D-4966-ABB7-15A1F3593C9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{717ECE3B-EE2D-4966-ABB7-15A1F3593C9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
