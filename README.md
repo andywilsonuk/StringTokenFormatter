@@ -66,7 +66,7 @@ Lazy<string> lazy = () => { return "centre"; };
 string result = original.FormatToken("middle", lazy);
 Assert.AreEqual("start centre end", result);
 ```
-## Usage 6: Further customation
+## Usage 6: Further customisation
 The extension methods wrap most of the functionality provided by  class ```TokenReplacer``` however as of v2 more customisation can be achieved using the interfaces:
 * ```ITokenMatcher``` - matches the tokens within the string
 * ```ITokenToValueMapper``` - provides a implementation for converting a single token to a value (multiple can be passed to the constructor)
