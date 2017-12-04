@@ -50,17 +50,11 @@
     <PackageTags>string token formatter replace extension</PackageTags>
 	<NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
 	<MinClientVersion>2.12</MinClientVersion>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  
+  </PropertyGroup>  
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <AssemblyTitle>String Token Formatter .NET Standard 2.0</AssemblyTitle>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
     <AssemblyTitle>String Token Formatter .NET 4.0</AssemblyTitle>
   </PropertyGroup>
-
 </Project>
