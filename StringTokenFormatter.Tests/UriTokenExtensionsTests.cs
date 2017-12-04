@@ -62,5 +62,16 @@ namespace StringTokenFormatter.Tests
 
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void Relative_Url_With_Single_Token_Is_Mapped_Successfully()
+        {
+            Uri input = new Uri("/{id}", UriKind.Relative);
+            Uri expected = new Uri("/10", UriKind.Relative);
+
+            Uri actual = input.FormatToken("id", "10");
+
+            Assert.Equal(expected, actual);
+        }
     }
 }
