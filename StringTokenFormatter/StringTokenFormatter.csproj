@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net40;netstandard2.0</TargetFrameworks>
 	<TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
+	<Title>StringTokenFormatter</Title>
     <AssemblyName>StringTokenFormatter</AssemblyName>
     <RootNamespace>StringTokenFormatter</RootNamespace>
     <PackageReleaseNotes>2.0.0
@@ -42,6 +43,7 @@
     <Authors>Andy Wilson</Authors>
     <Company>Andy Wilson</Company>
     <Description>Provides string extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.</Description>
+	<Summary>Provides string extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.</Summary>
     <Copyright>Andy Wilson</Copyright>
     <PackageLicenseUrl>http://opensource.org/licenses/Apache-2.0</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/andywilsonuk/StringTokenFormatter</PackageProjectUrl>
