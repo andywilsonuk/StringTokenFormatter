@@ -6,7 +6,9 @@
 	<Title>StringTokenFormatter</Title>
     <AssemblyName>StringTokenFormatter</AssemblyName>
     <RootNamespace>StringTokenFormatter</RootNamespace>
-    <PackageReleaseNotes>2.0.5
+    <PackageReleaseNotes>2.0.6
+- Changed DefaultTokenMatcher.MatchedTokens to return just the token name 
+2.0.5
 - DefaultTokenMatcher class now includes a method that returns the token found within a string
 2.0.4
 - Assembly is now signed
@@ -47,9 +49,9 @@
 - Provided overload to allow for anonymous objects to be used
 1.0.0
 - Initial version.</PackageReleaseNotes>
-    <Version>2.0.5</Version>
-	<AssemblyVersion>2.0.5</AssemblyVersion>
-	<FileVersion>2.0.5</FileVersion>
+    <Version>2.0.6</Version>
+	<AssemblyVersion>2.0.6</AssemblyVersion>
+	<FileVersion>2.0.6</FileVersion>
     <Product>String Token Formatter</Product>
     <Authors>Andy Wilson</Authors>
     <Company>Andy Wilson</Company>
