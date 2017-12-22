@@ -71,7 +71,7 @@ namespace StringTokenFormatter
 
         public IEnumerable<string> MatchedTokens(string input)
         {
-            return SplitSegments(input).OfType<TokenMatchingSegment>().Select(x => x.Original);
+            return SplitSegments(input).OfType<TokenMatchingSegment>().Select(x => x.Token);
         }
     }
 }

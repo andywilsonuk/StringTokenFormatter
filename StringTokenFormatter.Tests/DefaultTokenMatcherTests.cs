@@ -12,8 +12,8 @@ namespace StringTokenFormatter.Tests
         [Fact]
         public void When_Passed_A_String_Containing_Tokens_The_TokensMatched_Method_Returns_The_Matched_Tokens()
         {
-            string input = "{a}, {b}";
-            var expected = new[] { "{a}", "{b}" };
+            string input = "{a}, {b,10:D}";
+            var expected = new[] { "a", "b" };
 
             var actual = matcher.MatchedTokens(input);
 
