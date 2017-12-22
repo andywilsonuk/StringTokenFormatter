@@ -6,7 +6,9 @@
 	<Title>StringTokenFormatter</Title>
     <AssemblyName>StringTokenFormatter</AssemblyName>
     <RootNamespace>StringTokenFormatter</RootNamespace>
-    <PackageReleaseNotes>2.0.3
+    <PackageReleaseNotes>2.0.4
+- Assembly is now signed
+2.0.3
 - Relative URLs are now supported
 2.0.2
 - Reordered constructor parameters of TokenReplacer to match workflow
@@ -43,9 +45,9 @@
 - Provided overload to allow for anonymous objects to be used
 1.0.0
 - Initial version.</PackageReleaseNotes>
-    <Version>2.0.3</Version>
-	<AssemblyVersion>2.0.3</AssemblyVersion>
-	<FileVersion>2.0.3</FileVersion>
+    <Version>2.0.4</Version>
+	<AssemblyVersion>2.0.4</AssemblyVersion>
+	<FileVersion>2.0.4</FileVersion>
     <Product>String Token Formatter</Product>
     <Authors>Andy Wilson</Authors>
     <Company>Andy Wilson</Company>
@@ -59,6 +61,8 @@
     <PackageTags>string token formatter replace extension</PackageTags>
 	<NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
 	<MinClientVersion>2.12</MinClientVersion>
+	<SignAssembly>true</SignAssembly>
+	<AssemblyOriginatorKeyFile>StringTokenFormatter.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>  
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <AssemblyTitle>String Token Formatter .NET Standard 2.0</AssemblyTitle>
