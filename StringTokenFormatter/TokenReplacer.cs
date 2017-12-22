@@ -33,9 +33,10 @@ namespace StringTokenFormatter
 
         public TokenReplacer(ITokenMatcher tokenMatcher, IEnumerable<ITokenToValueMapper> valueMappers, IValueFormatter valueFormatter)
         {
-            matcher = tokenMatcher;
+            matcher = tokenMatcher ?? throw new ArgumentNullException(nameof(tokenMatcher));
+            if (valueMappers == null) throw new ArgumentNullException(nameof(valueMappers));
             mapper = new TokenToValueCompositeMapper(valueMappers);
-            formatter = valueFormatter;
+            formatter = valueFormatter ?? throw new ArgumentNullException(nameof(valueFormatter));
         }
 
         public static ITokenMatcher DefaultMatcher = new DefaultTokenMatcher();

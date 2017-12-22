@@ -29,6 +29,8 @@ namespace StringTokenFormatter
 
         public IEnumerable<IMatchingSegment> SplitSegments(string input)
         {
+            if (string.IsNullOrEmpty(input)) yield break;
+
             string[] segments = Regex.Split(input, segmentPattern, RegexOptions.Singleline);
             foreach (string segment in segments.Where(s => !string.IsNullOrEmpty(s)))
             {
@@ -66,5 +68,10 @@ namespace StringTokenFormatter
         }
 
         public IEqualityComparer<string> TokenNameComparer => markers.TokenNameComparer;
+
+        public IEnumerable<string> MatchedTokens(string input)
+        {
+            return SplitSegments(input).OfType<TokenMatchingSegment>().Select(x => x.Original);
+        }
     }
 }
