@@ -20,6 +20,12 @@ namespace StringTokenFormatter.Tests
         }
 
         [Fact]
+        public void Single_End_Marker_Matches_Escaped_End_Marker()
+        {
+            SingleInternal(new AlternatveMarkersRound2(), "first $(two) third", "first second third");
+        }
+
+        [Fact]
         public void SingleCurly()
         {
             SingleInternal(new AlternatveMarkersCurly(), "first ${two} third", "first second third");

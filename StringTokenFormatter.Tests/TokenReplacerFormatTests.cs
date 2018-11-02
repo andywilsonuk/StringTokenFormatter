@@ -129,6 +129,18 @@ namespace StringTokenFormatter.Tests
         }
 
         [Fact]
+        public void Close_Escape_Character_Same_As_End_Character_Yields_Replacement_And_Escape_Marker()
+        {
+            string pattern = "first $(two)) third";
+            var tokenValues = new Dictionary<string, object> { { "two", "second" } };
+
+            string actual = new TokenReplacer(new AlternatveMarkersRound2()).FormatFromDictionary(pattern, tokenValues);
+
+            string expected = "first second) third";
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void BothEscapeCharacterYieldsReplacement()
         {
             string pattern = "first {{{two}}} third";
@@ -320,6 +332,18 @@ namespace StringTokenFormatter.Tests
             var actual = new TokenReplacer(TokenReplacer.DefaultMatcher, TokenReplacer.DefaultMappers, mockFormatter.Object).FormatFromSingle(pattern, "two", "second");
 
             Assert.Equal("first custom third", actual);
+        }
+
+        [Fact]
+        public void Multiple_Line_Text_Replaces_All_Occurrences()
+        {
+            string pattern = "first {two}" + Environment.NewLine + "third {two}";
+            var tokenValues = new Dictionary<string, object> { { "two", "sec" + Environment.NewLine + "ond" } };
+
+            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+
+            string expected = "first sec" + Environment.NewLine + "ond" + Environment.NewLine + "third sec" + Environment.NewLine + "ond";
+            Assert.Equal(expected, actual);
         }
     }
 }

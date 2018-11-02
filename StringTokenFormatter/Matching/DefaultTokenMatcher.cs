@@ -54,17 +54,17 @@ namespace StringTokenFormatter
 
         public string RemoveTokenMarkers(string token)
         {
-            string strippedToken = token;
-
             if (token.StartsWith(markers.StartToken) && !token.StartsWith(markers.StartTokenEscaped))
             {
-                strippedToken = strippedToken.Remove(0, markers.StartToken.Length);
+                string strippedToken = token.Remove(0, markers.StartToken.Length);
+
+                if (token.EndsWith(markers.EndToken))
+                {
+                    strippedToken = strippedToken.Remove(strippedToken.Length - markers.EndToken.Length);
+                }
+                return strippedToken;
             }
-            if (token.EndsWith(markers.EndToken) && !token.EndsWith(markers.EndTokenEscaped))
-            {
-                strippedToken = strippedToken.Remove(strippedToken.Length - markers.EndToken.Length);
-            }
-            return strippedToken;
+            return token;
         }
 
         public IEqualityComparer<string> TokenNameComparer => markers.TokenNameComparer;
