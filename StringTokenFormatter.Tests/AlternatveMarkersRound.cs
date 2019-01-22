@@ -5,25 +5,9 @@ namespace StringTokenFormatter.Tests
 {
     internal class AlternatveMarkersRound : TokenMarkers
     {
-        public string StartToken
-        {
-            get { return "$("; }
-        }
-
-        public string EndToken
-        {
-            get { return ")"; }
-        }
-
-        public string StartTokenEscaped
-        {
-            get { return "$(("; }
-        }
-
-        public string EndTokenEscaped
-        {
-            get { return "))"; }
-        }
+        public string StartToken { get; } = "$(";
+        public string EndToken { get; } = ")";
+        public string StartTokenEscaped { get; } = "$((";
 
         public IEqualityComparer<string> TokenNameComparer
         {

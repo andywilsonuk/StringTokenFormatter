@@ -119,7 +119,7 @@ namespace StringTokenFormatter.Tests
         [Fact]
         public void CloseEscapeCharacterYieldsReplacement()
         {
-            string pattern = "first {two}}} third";
+            string pattern = "first {two}} third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
             string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
@@ -143,7 +143,7 @@ namespace StringTokenFormatter.Tests
         [Fact]
         public void BothEscapeCharacterYieldsReplacement()
         {
-            string pattern = "first {{{two}}} third";
+            string pattern = "first {{{two}} third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
             string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
@@ -155,12 +155,12 @@ namespace StringTokenFormatter.Tests
         [Fact]
         public void InvalidStringFormatIsHandled()
         {
-            string pattern = "{{nothing}";
+            string pattern = "{{two}";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
             string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
 
-            string expected = "{{nothing}";
+            string expected = "{two}";
             Assert.Equal(expected, actual);
         }
 
@@ -343,6 +343,18 @@ namespace StringTokenFormatter.Tests
             string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
 
             string expected = "first sec" + Environment.NewLine + "ond" + Environment.NewLine + "third sec" + Environment.NewLine + "ond";
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Space_Within_Token_Matches()
+        {
+            string pattern = "first {The Token} third";
+            var tokenValues = new Dictionary<string, object> { { "The Token", "second" } };
+
+            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+
+            string expected = "first second third";
             Assert.Equal(expected, actual);
         }
     }

@@ -6,7 +6,10 @@
 	<Title>StringTokenFormatter</Title>
     <AssemblyName>StringTokenFormatter</AssemblyName>
     <RootNamespace>StringTokenFormatter</RootNamespace>
-    <PackageReleaseNotes>2.0.7
+    <PackageReleaseNotes>2.0.8
+- Massively improved performance for long input by reworked token matching 
+- Breaking change: Removed concept of escape end markers (only downside is that you can no longer use an escape marker as part of a token name)
+2.0.7
 - Fixed issue when end token marker and escaped end token marker are the same.
 2.0.6
 - Changed DefaultTokenMatcher.MatchedTokens to return just the token name 
@@ -51,9 +54,9 @@
 - Provided overload to allow for anonymous objects to be used
 1.0.0
 - Initial version.</PackageReleaseNotes>
-    <Version>2.0.7</Version>
-	<AssemblyVersion>2.0.7</AssemblyVersion>
-	<FileVersion>2.0.7</FileVersion>
+    <Version>2.0.8</Version>
+	<AssemblyVersion>2.0.8</AssemblyVersion>
+	<FileVersion>2.0.8</FileVersion>
     <Product>String Token Formatter</Product>
     <Authors>Andy Wilson</Authors>
     <Company>Andy Wilson</Company>
