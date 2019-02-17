@@ -154,12 +154,12 @@ namespace StringTokenFormatter.Tests
             string expected = "first second third";
             string input = "first $(two) third";
             var mockTokenMatcher = new Mock<ITokenMatcher>();
-            mockTokenMatcher.Setup(x => x.SplitSegments(input)).Returns(new IMatchingSegment[]
+            mockTokenMatcher.Setup(x => x.SplitSegments(input)).Returns(new SegmentedString(new IMatchingSegment[]
             {
                 new TextMatchingSegment("first "),
                 new TokenMatchingSegment("$(two)", "two", null, null),
                 new TextMatchingSegment(" third"),
-            });
+            }));
             mockTokenMatcher.SetupGet(x => x.TokenNameComparer).Returns(StringComparer.CurrentCultureIgnoreCase);
             mockTokenMatcher.Setup(x => x.RemoveTokenMarkers("$(two)")).Returns("two");
 
