@@ -15,7 +15,8 @@ namespace StringTokenFormatter
         private readonly string segmentPattern;
         private readonly Regex segmentRegex;
 
-        public DefaultTokenMatcher(TokenMarkers tokenMarkers) {
+        public DefaultTokenMatcher(TokenMarkers tokenMarkers)
+        {
             markers = tokenMarkers ?? throw new ArgumentNullException(nameof(tokenMarkers));
             string regexEscapedStartToken = Regex.Escape(markers.StartToken);
             string regexEscapedEscapedStartToken = Regex.Escape(markers.StartTokenEscaped);
@@ -28,11 +29,13 @@ namespace StringTokenFormatter
             : this(new DefaultTokenMarkers()) {
         }
 
-        public SegmentedString SplitSegments(string Input) {
+        public SegmentedString SplitSegments(string Input)
+        {
             return new SegmentedString(SplitSegmentsInternal(Input));
         }
 
-        private IEnumerable<IMatchingSegment> SplitSegmentsInternal(string input) {
+        private IEnumerable<IMatchingSegment> SplitSegmentsInternal(string input)
+        {
             if (string.IsNullOrEmpty(input)) yield break;
             int index = 0;
             foreach (Match match in segmentRegex.Matches(input)) {
@@ -41,11 +44,16 @@ namespace StringTokenFormatter
                     string text = input.Substring(index, match.Index - index);
                     yield return new TextMatchingSegment(text);
                 }
-                if (segment == markers.StartTokenEscaped) {
+                if (segment == markers.StartTokenEscaped)
+                {
                     yield return new TextMatchingSegment(markers.StartToken);
-                } else if (!segment.StartsWith(markers.StartToken)) {
+                }
+                else if (!segment.StartsWith(markers.StartToken))
+                {
                     yield return new TextMatchingSegment(segment);
-                } else {
+                }
+                else
+                {
                     int middleLength = segment.Length - markers.StartToken.Length - markers.EndToken.Length;
                     string tripleWithoutMarkers = segment.Substring(markers.StartToken.Length, middleLength);
                     string[] split = tokenTripleRegex.Split(tripleWithoutMarkers);
@@ -53,12 +61,14 @@ namespace StringTokenFormatter
                 }
                 index = match.Index + match.Length;
             }
-            if (index < input.Length) {
+            if (index < input.Length)
+            {
                 yield return new TextMatchingSegment(input.Substring(index));
             }
         }
 
-        public string RemoveTokenMarkers(string token) {
+        public string RemoveTokenMarkers(string token)
+        {
             if (token.StartsWith(markers.StartToken) && !token.StartsWith(markers.StartTokenEscaped)) {
                 string strippedToken = token.Remove(0, markers.StartToken.Length);
 
@@ -72,7 +82,8 @@ namespace StringTokenFormatter
 
         public IEqualityComparer<string> TokenNameComparer => markers.TokenNameComparer;
 
-        public IEnumerable<string> MatchedTokens(string input) {
+        public IEnumerable<string> MatchedTokens(string input)
+        {
             return SplitSegments(input).OfType<TokenMatchingSegment>().Select(x => x.Token);
         }
     }

@@ -46,20 +46,24 @@ namespace StringTokenFormatter
             new TokenToFunctionObjectValueMapper(),
         };
 
-        public string FormatFromProperties(string input, object propertyContainer) {
+        public string FormatFromProperties(string input, object propertyContainer)
+        {
             return FormatFromProperties(matcher.SplitSegments(input), propertyContainer);
         }
 
-        public string FormatFromProperties(SegmentedString input, object propertyContainer) {
+        public string FormatFromProperties(SegmentedString input, object propertyContainer)
+        {
             ITokenValueContainer mapper = new ObjectPropertiesTokenValueContainer(propertyContainer, matcher);
             return MapTokens(input, mapper);
         }
 
-        public string FormatFromDictionary(string input, IDictionary<string, object> tokenValues) {
+        public string FormatFromDictionary(string input, IDictionary<string, object> tokenValues)
+        {
             return FormatFromDictionary(matcher.SplitSegments(input), tokenValues);
         }
 
-        public string FormatFromDictionary(SegmentedString input, IDictionary<string, object> tokenValues) {
+        public string FormatFromDictionary(SegmentedString input, IDictionary<string, object> tokenValues)
+        {
             if (tokenValues == null) throw new ArgumentNullException(nameof(tokenValues));
 
             ITokenValueContainer mapper = new DictionaryTokenValueContainer(tokenValues, matcher);
@@ -67,7 +71,8 @@ namespace StringTokenFormatter
         }
 
 
-        public string FormatFromDictionary(string input, IDictionary<string, string> tokenValues) {
+        public string FormatFromDictionary(string input, IDictionary<string, string> tokenValues)
+        {
             return FormatFromDictionary(matcher.SplitSegments(input), tokenValues);
         }
 

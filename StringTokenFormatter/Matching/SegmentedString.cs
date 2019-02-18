@@ -13,19 +13,23 @@ namespace StringTokenFormatter {
             segments = allsegments.ToList();
         }
 
-        public IEnumerator<IMatchingSegment> GetEnumerator() {
+        public IEnumerator<IMatchingSegment> GetEnumerator()
+        {
             return segments.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator() {
+        IEnumerator IEnumerable.GetEnumerator()
+        {
             return segments.GetEnumerator();
         }
 
-        public static SegmentedString Create(string input) {
+        public static SegmentedString Create(string input)
+        {
             return Create(input, TokenReplacer.DefaultMatcher);
         }
 
-        public static SegmentedString Create(string input, ITokenMatcher Matcher) {
+        public static SegmentedString Create(string input, ITokenMatcher Matcher)
+        {
             return Matcher.SplitSegments(input);
         }
     }

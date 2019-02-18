@@ -10,12 +10,14 @@ namespace StringTokenFormatter.Tests {
 
         private readonly ITestOutputHelper output;
 
-        public PerformanceTests(ITestOutputHelper output) {
+        public PerformanceTests(ITestOutputHelper output)
+        {
             this.output = output;
         }
 
         [Fact]
-        public void MiscellaneousTest() {
+        public void MiscellaneousTest()
+        {
 
             var OUTER = System.Diagnostics.Stopwatch.StartNew();
             var Args = new ExampleClass();
@@ -23,7 +25,8 @@ namespace StringTokenFormatter.Tests {
 
             var INNER = System.Diagnostics.Stopwatch.StartNew();
 
-            for (int i = 0; i < COUNT; i++) {
+            for (int i = 0; i < COUNT; i++)
+            {
                 Format.FormatToken(Args);
             }
             INNER.Stop();
@@ -36,19 +39,23 @@ namespace StringTokenFormatter.Tests {
 
         //These two methods allow me to see the performance comparison by comparing the elapsed time in the test explorer.
         [Fact]
-        public void SegmentedStringFormat() {
+        public void SegmentedStringFormat()
+        {
             var Args = new ExampleClass();
 
             var Segment = SegmentedString.Create(Format);
-            for (int i = 0; i < COUNT; i++) {
+            for (int i = 0; i < COUNT; i++)
+            {
                 Segment.FormatToken(Args);
             }
         }
 
         [Fact]
-        public void StringFormat() {
+        public void StringFormat()
+        {
             var Args = new ExampleClass();
-            for (int i = 0; i < COUNT; i++) {
+            for (int i = 0; i < COUNT; i++)
+            {
                 Format.FormatToken(Args);
             }
         }
@@ -57,7 +64,8 @@ namespace StringTokenFormatter.Tests {
         const int COUNT = 100_000;
 
 
-        public class ExampleClass {
+        public class ExampleClass
+        {
             public string Property0 { get; set; } = "0";
             public int Property1 { get; set; } = 1;
             public long Property2 { get; set; } = 2;
@@ -71,8 +79,10 @@ namespace StringTokenFormatter.Tests {
 
             public bool Property10 { get; set; } = true;
 
-            public string SlowProperty {
-                get {
+            public string SlowProperty
+            {
+                get 
+                {
                     System.Threading.Thread.Sleep(1);
                     return "Slow!";
                 }
