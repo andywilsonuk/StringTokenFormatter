@@ -83,7 +83,8 @@ namespace StringTokenFormatter
             return FormatFromDictionary(input, tokenValues2);
         }
 
-        public string FormatFromSingle(string input, string token, object value) {
+        public string FormatFromSingle(string input, string token, object value)
+        {
             return FormatFromSingle(matcher.SplitSegments(input), token, value);
         }
 
