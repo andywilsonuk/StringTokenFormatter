@@ -31,7 +31,7 @@ namespace StringTokenFormatter.Tests {
             OUTER.Stop();
 
             output.WriteLine($@"OUTER: {OUTER.Elapsed}");
-            output.WriteLine($@"INNER: {OUTER.Elapsed}");
+            output.WriteLine($@"INNER: {INNER.Elapsed}");
         }
 
         //These two methods allow me to see the performance comparison by comparing the elapsed time in the test explorer.
