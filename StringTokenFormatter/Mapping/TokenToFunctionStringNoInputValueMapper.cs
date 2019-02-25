@@ -6,14 +6,13 @@ namespace StringTokenFormatter
     {
         public bool TryMap(IMatchedToken token, object value, out object mapped)
         {
-            var func = value as Func<string>;
-            if (func == null)
+            if (value is Func<string> func)
             {
-                mapped = null;
-                return false;
+                mapped = func();
+                return true;
             }
-            mapped = func();
-            return true;
+            mapped = null;
+            return false;
         }
     }
 }

@@ -61,7 +61,6 @@ namespace StringTokenFormatter
         public string FormatFromDictionary(string input, IDictionary<string, object> tokenValues)
         {
             if (tokenValues == null) throw new ArgumentNullException(nameof(tokenValues));
-
             ITokenValueContainer mapper = new DictionaryTokenValueContainer(tokenValues, matcher);
             return FormatFromContainer(input, mapper);
         }

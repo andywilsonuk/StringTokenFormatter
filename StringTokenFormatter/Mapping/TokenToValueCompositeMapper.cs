@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace StringTokenFormatter
 {
     public class TokenToValueCompositeMapper : ITokenToValueMapper
     {
-        private IEnumerable<ITokenToValueMapper> mappers;
+        private readonly IEnumerable<ITokenToValueMapper> mappers;
 
         public TokenToValueCompositeMapper(IEnumerable<ITokenToValueMapper> tokenValueMappers)
         {
@@ -16,10 +17,7 @@ namespace StringTokenFormatter
         {
             foreach (var mapper in mappers)
             {
-                if (mapper.TryMap(matchedToken, value, out mapped))
-                {
-                    return true;
-                }
+                if (mapper.TryMap(matchedToken, value, out mapped)) return true;
             }
             mapped = null;
             return false;

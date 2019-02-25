@@ -6,14 +6,13 @@ namespace StringTokenFormatter
     {
         public bool TryMap(IMatchedToken token, object value, out object mapped)
         {
-            var lazy = value as Lazy<string>;
-            if (lazy == null)
+            if (value is Lazy<string> lazy)
             {
-                mapped = null;
-                return false;
+                mapped = lazy.Value;
+                return true;
             }
-            mapped = lazy.Value;
-            return true;
+            mapped = null;
+            return false;
         }
     }
 }
