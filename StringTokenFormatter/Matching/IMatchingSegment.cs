@@ -2,5 +2,6 @@
 {
     public interface IMatchingSegment
     {
+        string Original { get; }
     }
 }

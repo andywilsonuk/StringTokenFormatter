@@ -16,7 +16,7 @@ namespace StringTokenFormatter
         {
         }
 
-        public TokenReplacer(TokenMarkers markers)
+        public TokenReplacer(ITokenMarkers markers)
             : this(new DefaultTokenMatcher(markers), DefaultMappers, DefaultFormatter)
         {
         }
@@ -26,7 +26,7 @@ namespace StringTokenFormatter
         {
         }
 
-        public TokenReplacer(TokenMarkers markers, IFormatProvider provider)
+        public TokenReplacer(ITokenMarkers markers, IFormatProvider provider)
             : this(new DefaultTokenMatcher(markers), DefaultMappers, new FormatProviderValueFormatter(provider))
         {
         }
@@ -55,7 +55,7 @@ namespace StringTokenFormatter
         public string FormatFromProperties(string input, object propertyContainer)
         {
             ITokenValueContainer mapper = new ObjectPropertiesTokenValueContainer(propertyContainer, matcher);
-            return MapTokens(input, mapper);
+            return FormatFromContainer(input, mapper);
         }
 
         public string FormatFromDictionary(string input, IDictionary<string, object> tokenValues)
@@ -63,7 +63,7 @@ namespace StringTokenFormatter
             if (tokenValues == null) throw new ArgumentNullException(nameof(tokenValues));
 
             ITokenValueContainer mapper = new DictionaryTokenValueContainer(tokenValues, matcher);
-            return MapTokens(input, mapper);
+            return FormatFromContainer(input, mapper);
         }
 
         public string FormatFromDictionary(string input, IDictionary<string, string> tokenValues)
@@ -76,10 +76,10 @@ namespace StringTokenFormatter
         public string FormatFromSingle(string input, string token, object value)
         {
             ITokenValueContainer mapper = new SingleTokenValueContainer(token, value, matcher);
-            return MapTokens(input, mapper);
+            return FormatFromContainer(input, mapper);
         }
 
-        public string MapTokens(string input, ITokenValueContainer container)
+        public string FormatFromContainer(string input, ITokenValueContainer container)
         {
             if (string.IsNullOrEmpty(input)) return input;
             if (container == null) throw new ArgumentNullException(nameof(container));
@@ -89,7 +89,7 @@ namespace StringTokenFormatter
             {
                 if (segment is TextMatchingSegment textSegment)
                 {
-                    sb.Append(textSegment.Text);
+                    sb.Append(textSegment.Original);
                     continue;
                 }
 

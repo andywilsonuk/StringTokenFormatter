@@ -16,7 +16,6 @@ namespace StringTokenFormatter
         public string Token { get; }
         public string Padding { get; }
         public string Format { get; }
-
         public override string ToString() => Original;
     }
 }

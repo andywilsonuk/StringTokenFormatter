@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace StringTokenFormatter.Tests
 {
-    internal class AlternatveMarkersRound2 : TokenMarkers
+    internal class AlternatveMarkersRound2 : ITokenMarkers
     {
         public string StartToken { get; } = "$(";
         public string EndToken { get; } = ")";

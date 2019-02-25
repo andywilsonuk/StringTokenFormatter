@@ -10,10 +10,10 @@ namespace StringTokenFormatter
         private static readonly string regexEscapedPaddingSeparator = Regex.Escape(",");
         private static readonly string regexEscapedFormattingSeparator = Regex.Escape(":");
         private static readonly string tokenTriplePattern = $"^([^{regexEscapedPaddingSeparator}{regexEscapedFormattingSeparator}]*){regexEscapedPaddingSeparator}?([^{regexEscapedFormattingSeparator}]*){regexEscapedFormattingSeparator }?(.*)$";
-        private readonly TokenMarkers markers;
+        private readonly ITokenMarkers markers;
         private readonly string segmentPattern;
 
-        public DefaultTokenMatcher(TokenMarkers tokenMarkers)
+        public DefaultTokenMatcher(ITokenMarkers tokenMarkers)
         {
             markers = tokenMarkers ?? throw new ArgumentNullException(nameof(tokenMarkers));
             string regexEscapedStartToken = Regex.Escape(markers.StartToken);

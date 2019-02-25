@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 namespace StringTokenFormatter
 {
-    public interface TokenMarkers
+    public interface ITokenMarkers
     {
         string StartToken { get; }
         string EndToken { get; }

@@ -31,7 +31,7 @@ namespace StringTokenFormatter.Tests
             SingleInternal(new AlternatveMarkersCurly(), "first ${two} third", "first second third");
         }
 
-        private void SingleInternal(TokenMarkers markers, string original, string expected)
+        private void SingleInternal(ITokenMarkers markers, string original, string expected)
         {
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -58,7 +58,7 @@ namespace StringTokenFormatter.Tests
             SingleIntegerInternal(new AlternatveMarkersCurly(), "first ${two:D4} third", "first 0005 third");
         }
 
-        private void SingleIntegerInternal(TokenMarkers markers, string original, string expected)
+        private void SingleIntegerInternal(ITokenMarkers markers, string original, string expected)
         {
             var tokenValues = new Dictionary<string, object> { { "two", 5 } };
 
@@ -85,7 +85,7 @@ namespace StringTokenFormatter.Tests
             OpenEscapedCharacterYieldsNothingInternal(new AlternatveMarkersCurly(), "first ${{ third", "first ${ third");
         }
 
-        private void OpenEscapedCharacterYieldsNothingInternal(TokenMarkers markers, string original, string expected)
+        private void OpenEscapedCharacterYieldsNothingInternal(ITokenMarkers markers, string original, string expected)
         {
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -112,7 +112,7 @@ namespace StringTokenFormatter.Tests
             OpenEscapedCharacterYieldsReplacementInternal(new AlternatveMarkersCurly(), "first ${{${two} third", "first ${second third");
         }
 
-        private void OpenEscapedCharacterYieldsReplacementInternal(TokenMarkers markers, string original, string expected)
+        private void OpenEscapedCharacterYieldsReplacementInternal(ITokenMarkers markers, string original, string expected)
         {
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -139,7 +139,7 @@ namespace StringTokenFormatter.Tests
             MissingTokenValueInternal(new AlternatveMarkersCurly(), "first ${missing} third", "first ${missing} third");
         }
 
-        private void MissingTokenValueInternal(TokenMarkers markers, string original, string expected)
+        private void MissingTokenValueInternal(ITokenMarkers markers, string original, string expected)
         {
             var tokenValues = new Dictionary<string, object> { { "$(two)", "second" } };
 
