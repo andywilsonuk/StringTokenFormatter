@@ -34,11 +34,11 @@ namespace StringTokenFormatter
         /// Replaces each format token in a specified string with the equivalent matching token object's text equivalent value.
         /// </summary>
         /// <param name="input">The string containing the tokens to be replaced.</param>
-        /// <param name="tokenValues">The token keys and associated values.</param>
+        /// <param name="dictionaryValues">The token keys and associated values.</param>
         /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
-        public static string FormatToken(this string input, IDictionary<string, object> tokenValues)
+        public static string FormatToken(this string input, IDictionary<string, object> dictionaryValues)
         {
-            return FormatToken(input, null, tokenValues);
+            return FormatToken(input, null, dictionaryValues);
         }
 
         /// <summary>
@@ -46,45 +46,23 @@ namespace StringTokenFormatter
         /// </summary>
         /// <param name="input">The string containing the tokens to be replaced.</param>
         /// <param name="provider">The formatting provider.</param>
-        /// <param name="tokenValues">The token keys and associated values.</param>
+        /// <param name="dictionaryValues">The token keys and associated values.</param>
         /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
-        public static string FormatToken(this string input, IFormatProvider provider, IDictionary<string, object> tokenValues)
+        public static string FormatToken(this string input, IFormatProvider provider, IDictionary<string, object> dictionaryValues)
         {
-            return new TokenReplacer(TokenReplacer.DefaultMatcher, TokenReplacer.DefaultMappers, new FormatProviderValueFormatter(provider)).FormatFromDictionary(input, tokenValues);
+            return new TokenReplacer(TokenReplacer.DefaultMatcher, TokenReplacer.DefaultMappers, new FormatProviderValueFormatter(provider)).FormatFromDictionary(input, dictionaryValues);
         }
 
-        /// <summary>
-        /// Replaces each format token in a specified string with the equivalent property's text equivalent value in the object.
-        /// </summary>
-        /// <param name="input">The string containing the token to be replaced.</param>
-        /// <param name="tokenValues">The object containing the property values to be used in replacements.</param>
-        /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
-        public static string FormatToken(this string input, object tokenValues)
-        {
-            return FormatToken(input, (IFormatProvider)null, tokenValues);
-        }
-
-        /// <summary>
-        /// Replaces each format token in a specified string with the equivalent property's text equivalent value using the format provider specified.
-        /// </summary>
-        /// <param name="input">The string containing the token to be replaced.</param>
-        /// <param name="provider">The formatting provider.</param>
-        /// <param name="tokenValues">The object containing the property values to be used in replacements.</param>
-        /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
-        public static string FormatToken(this string input, IFormatProvider provider, object tokenValues)
-        {
-            return new TokenReplacer(TokenReplacer.DefaultMatcher, TokenReplacer.DefaultMappers, new FormatProviderValueFormatter(provider)).FormatFromProperties(input, tokenValues);
-        }
 
         /// <summary>
         /// Replaces each format token in a specified string with the equivalent matching token's string value.
         /// </summary>
         /// <param name="input">The string containing the tokens to be replaced.</param>
-        /// <param name="tokenValues">The token keys and associated values.</param>
+        /// <param name="dictionaryValues">The token keys and associated values.</param>
         /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
-        public static string FormatToken(this string input, IDictionary<string, string> tokenValues)
+        public static string FormatToken(this string input, IDictionary<string, string> dictionaryValues)
         {
-            return FormatToken(input, null, tokenValues);
+            return FormatToken(input, null, dictionaryValues);
         }
 
         /// <summary>
@@ -92,11 +70,34 @@ namespace StringTokenFormatter
         /// </summary>
         /// <param name="input">The string containing the tokens to be replaced.</param>
         /// <param name="provider">The formatting provider.</param>
-        /// <param name="tokenValues">The token keys and associated values.</param>
+        /// <param name="dictionaryValues">The token keys and associated values.</param>
         /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
-        public static string FormatToken(this string input, IFormatProvider provider, IDictionary<string, string> tokenValues)
+        public static string FormatToken(this string input, IFormatProvider provider, IDictionary<string, string> dictionaryValues)
         {
-            return new TokenReplacer(TokenReplacer.DefaultMatcher, TokenReplacer.DefaultMappers, new FormatProviderValueFormatter(provider)).FormatFromDictionary(input, tokenValues);
+            return new TokenReplacer(TokenReplacer.DefaultMatcher, TokenReplacer.DefaultMappers, new FormatProviderValueFormatter(provider)).FormatFromDictionary(input, dictionaryValues);
+        }
+
+        /// <summary>
+        /// Replaces each format token in a specified string with the equivalent property's text equivalent value in the object.
+        /// </summary>
+        /// <param name="input">The string containing the tokens to be replaced.</param>
+        /// <param name="propertyValues">The object containing the property values to be used in replacements.</param>
+        /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
+        public static string FormatToken(this string input, object propertyValues)
+        {
+            return FormatToken(input, (IFormatProvider)null, propertyValues);
+        }
+
+        /// <summary>
+        /// Replaces each format token in a specified string with the equivalent property's text equivalent value using the format provider specified.
+        /// </summary>
+        /// <param name="input">The string containing the tokens to be replaced.</param>
+        /// <param name="provider">The formatting provider.</param>
+        /// <param name="propertyValues">The object containing the property values to be used in replacements.</param>
+        /// <returns>A copy of input in which the format tokens have been replaced by the string representation of the corresponding object's values.</returns>
+        public static string FormatToken(this string input, IFormatProvider provider, object propertyValues)
+        {
+            return new TokenReplacer(TokenReplacer.DefaultMatcher, TokenReplacer.DefaultMappers, new FormatProviderValueFormatter(provider)).FormatFromProperties(input, propertyValues);
         }
     }
 }
