@@ -357,5 +357,37 @@ namespace StringTokenFormatter.Tests
             string expected = "first second third";
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void Custom_Container_Maps_String_Input_To_Values()
+        {
+            var container = new Mock<ITokenValueContainer>();
+            object value = "second";
+            container.Setup(x => x.TryMap(It.Is<IMatchedToken>(y => y.Token == "two"), out value)).Returns(true);
+            string pattern = "first {two}";
+
+            string actual = new TokenReplacer().FormatFromContainer(pattern, container.Object);
+
+            string expected = "first second";
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Custom_Container_Maps_Segmented_String_Input_To_Values()
+        {
+            var container = new Mock<ITokenValueContainer>();
+            object value = "second";
+            container.Setup(x => x.TryMap(It.Is<IMatchedToken>(y => y.Token == "two"), out value)).Returns(true);
+            SegmentedString segments = new SegmentedString(new IMatchingSegment[]
+            {
+                new TextMatchingSegment("first "),
+                new TokenMatchingSegment("{two}", "two", null, null),
+            });
+
+            string actual = new TokenReplacer().FormatFromContainer(segments, container.Object);
+
+            string expected = "first second";
+            Assert.Equal(expected, actual);
+        }
     }
 }
