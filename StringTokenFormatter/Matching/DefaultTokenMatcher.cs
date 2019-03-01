@@ -10,8 +10,9 @@ namespace StringTokenFormatter
         private static readonly string regexEscapedPaddingSeparator = Regex.Escape(",");
         private static readonly string regexEscapedFormattingSeparator = Regex.Escape(":");
         private static readonly string tokenTriplePattern = $"^([^{regexEscapedPaddingSeparator}{regexEscapedFormattingSeparator}]*){regexEscapedPaddingSeparator}?([^{regexEscapedFormattingSeparator}]*){regexEscapedFormattingSeparator }?(.*)$";
+        private static readonly Regex tokenTripleRegex = new Regex(tokenTriplePattern, RegexOptions.Compiled | RegexOptions.Singleline);
         private readonly ITokenMarkers markers;
-        private readonly string segmentPattern;
+        private readonly Regex segmentRegex;
 
         public DefaultTokenMatcher(ITokenMarkers tokenMarkers)
         {
@@ -19,7 +20,8 @@ namespace StringTokenFormatter
             string regexEscapedStartToken = Regex.Escape(markers.StartToken);
             string regexEscapedEscapedStartToken = Regex.Escape(markers.StartTokenEscaped);
             string regexEscapedEndToken = Regex.Escape(markers.EndToken);
-            segmentPattern = $"({regexEscapedEscapedStartToken})|({regexEscapedStartToken}[^ ]{{1}}.*?{regexEscapedEndToken})";
+            string segmentPattern = $"({regexEscapedEscapedStartToken})|({regexEscapedStartToken}[^ ]{{1}}.*?{regexEscapedEndToken})";
+            segmentRegex = new Regex(segmentPattern, RegexOptions.Singleline | RegexOptions.Compiled);
         }
 
         public DefaultTokenMatcher()
@@ -27,11 +29,16 @@ namespace StringTokenFormatter
         {
         }
 
-        public IEnumerable<IMatchingSegment> SplitSegments(string input)
+        public SegmentedString SplitSegments(string Input)
+        {
+            return new SegmentedString(SplitSegmentsInternal(Input));
+        }
+
+        private IEnumerable<IMatchingSegment> SplitSegmentsInternal(string input)
         {
             if (string.IsNullOrEmpty(input)) yield break;
             int index = 0;
-            foreach(Match match in Regex.Matches(input, segmentPattern, RegexOptions.Singleline))
+            foreach(Match match in segmentRegex.Matches(input))
             {
                 string segment = match.Value;
                 if (index != match.Index)
@@ -51,7 +58,7 @@ namespace StringTokenFormatter
                 {
                     int middleLength = segment.Length - markers.StartToken.Length - markers.EndToken.Length;
                     string tripleWithoutMarkers = segment.Substring(markers.StartToken.Length, middleLength);
-                    string[] split = Regex.Split(tripleWithoutMarkers, tokenTriplePattern, RegexOptions.Singleline);
+                    string[] split = tokenTripleRegex.Split(tripleWithoutMarkers);
                     yield return new TokenMatchingSegment(segment, split[1], split[2], split[3]);
                 }
                 index = match.Index + match.Length;

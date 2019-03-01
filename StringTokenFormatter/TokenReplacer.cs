@@ -61,6 +61,7 @@ namespace StringTokenFormatter
         public string FormatFromDictionary(string input, IDictionary<string, object> tokenValues)
         {
             if (tokenValues == null) throw new ArgumentNullException(nameof(tokenValues));
+
             ITokenValueContainer mapper = new DictionaryTokenValueContainer(tokenValues, matcher);
             return FormatFromContainer(input, mapper);
         }
@@ -80,11 +81,17 @@ namespace StringTokenFormatter
 
         public string FormatFromContainer(string input, ITokenValueContainer container)
         {
-            if (string.IsNullOrEmpty(input)) return input;
+            var segmentedString = matcher.SplitSegments(input);
+            return FormatFromContainer(segmentedString, container);
+        }
+
+        public string FormatFromContainer(SegmentedString segmentedString, ITokenValueContainer container)
+        {
+            if (segmentedString == null) throw new ArgumentNullException(nameof(segmentedString));
             if (container == null) throw new ArgumentNullException(nameof(container));
 
             StringBuilder sb = new StringBuilder();
-            foreach (var segment in matcher.SplitSegments(input))
+            foreach (var segment in segmentedString)
             {
                 if (segment is TextMatchingSegment textSegment)
                 {

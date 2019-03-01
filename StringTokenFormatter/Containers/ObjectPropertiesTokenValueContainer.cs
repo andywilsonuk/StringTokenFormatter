@@ -4,9 +4,10 @@ using System.ComponentModel;
 
 namespace StringTokenFormatter
 {
+
     public class ObjectPropertiesTokenValueContainer : ITokenValueContainer
     {
-        private IDictionary<string, object> dictionary;
+        private IDictionary<string, Lazy<object>> dictionary;
         private readonly ITokenMatcher matcher;
 
         public ObjectPropertiesTokenValueContainer(object tokenValueObject, ITokenMatcher tokenMatcher)
@@ -16,14 +17,13 @@ namespace StringTokenFormatter
             dictionary = ConvertObjectToDictionary(tokenValueObject);
         }
 
-        private IDictionary<string, object> ConvertObjectToDictionary(object values)
+        private IDictionary<string, Lazy<object>> ConvertObjectToDictionary(object values)
         {
-            Dictionary<string, object> mappings = new Dictionary<string, object>(matcher.TokenNameComparer);
+            var mappings = new Dictionary<string, Lazy<object>>(matcher.TokenNameComparer);
 
             foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(values))
             {
-                object obj2 = descriptor.GetValue(values);
-                mappings.Add(descriptor.Name, obj2);
+                mappings[descriptor.Name] = new Lazy<object>(() => descriptor.GetValue(values), false);
             }
 
             return mappings;
@@ -31,13 +31,13 @@ namespace StringTokenFormatter
 
         public bool TryMap(IMatchedToken matchedToken, out object mapped)
         {
-            if (!dictionary.TryGetValue(matchedToken.Token, out object value))
+            if (dictionary.TryGetValue(matchedToken.Token, out var lazy))
             {
-                mapped = null;
-                return false;
+                mapped = lazy.Value;
+                return true;
             }
-            mapped = value;
-            return true;
+            mapped = null;
+            return false;
         }
     }
 }
