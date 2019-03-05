@@ -82,11 +82,21 @@ Uri actual = original.FormatToken(tokenValues);
 Assert.Equal(expected, actual);
 ```
 ## Usage 7: Further customisation
-The extension methods wrap most of the functionality provided by  class ```TokenReplacer``` however as of v2 more customisation can be achieved using the interfaces:
+The extension methods wrap most of the functionality provided by  class ```TokenReplacer``` however further customisation can be achieved using the interfaces:
 * ```ITokenMatcher``` - matches the tokens within the string
 * ```ITokenToValueMapper``` - provides a implementation for converting a single token to a value (multiple can be passed to the constructor)
 * ```IValueFormatter``` - provides the formatting of values to strings
 
 Each of the interfaces has a default which is available as a static property on the TokenReplacer class.
 
-Additionally the workflow of mapping input to output can be called directly using the ```MapTokens``` method which accepts the input string and an implementation of ```ITokenValueContainer``` which maps values to tokens.
+Additionally the workflow of mapping input to output can be called directly using the ```FormatFromContainer``` method which accepts the input string and an implementation of ```ITokenValueContainer``` which maps tokens to values.
+
+Available implementations of ```ITokenValueContainer``` are:
+* ```SingleTokenValueContainer``` - maps one token to one value
+* ```DictionaryTokenValueContainer``` - maps key/value pairs
+* ```ObjectPropertiesTokenValueContainer``` - maps the properties of an object into tokens/values
+* ```CascadingTokenValueContainer``` - allows for chaining of containers
+
+### CascadingTokenValueContainer use case examples
+1. Multiple domain objects created as ```ObjectPropertiesTokenValueContainer``` instances which can be tested until a matching token is found
+2. An inexpensive token mapper and an expensive token mapper whereby the inexpensive is tested first
