@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
+using System.Threading;
+
 namespace StringTokenFormatter
 {
 
@@ -10,20 +12,19 @@ namespace StringTokenFormatter
         private IDictionary<string, Lazy<object>> dictionary;
         private readonly ITokenMatcher matcher;
 
-        public ObjectPropertiesTokenValueContainer(object tokenValueObject, ITokenMatcher tokenMatcher)
+        public ObjectPropertiesTokenValueContainer(object tokenValueObject, ITokenMatcher tokenMatcher, LazyThreadSafetyMode threadSafetyMode = LazyThreadSafetyMode.PublicationOnly)
         {
             if (tokenValueObject == null) throw new ArgumentNullException(nameof(tokenValueObject));
             matcher = tokenMatcher ?? throw new ArgumentNullException(nameof(tokenMatcher));
-            dictionary = ConvertObjectToDictionary(tokenValueObject);
+            dictionary = ConvertObjectToDictionary(tokenValueObject, threadSafetyMode);
         }
 
-        private IDictionary<string, Lazy<object>> ConvertObjectToDictionary(object values)
-        {
+        private IDictionary<string, Lazy<object>> ConvertObjectToDictionary(object values, LazyThreadSafetyMode threadSafetyMode) {
             var mappings = new Dictionary<string, Lazy<object>>(matcher.TokenNameComparer);
 
             foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(values))
             {
-                mappings[descriptor.Name] = new Lazy<object>(() => descriptor.GetValue(values), false);
+                mappings[descriptor.Name] = new Lazy<object>(() => descriptor.GetValue(values), threadSafetyMode);
             }
 
             return mappings;
