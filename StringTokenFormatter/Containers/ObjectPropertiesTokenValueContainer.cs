@@ -12,7 +12,14 @@ namespace StringTokenFormatter
         private IDictionary<string, Lazy<object>> dictionary;
         private readonly ITokenMatcher matcher;
 
-        public ObjectPropertiesTokenValueContainer(object tokenValueObject, ITokenMatcher tokenMatcher, LazyThreadSafetyMode threadSafetyMode = LazyThreadSafetyMode.PublicationOnly)
+
+        public ObjectPropertiesTokenValueContainer(object tokenValueObject, ITokenMatcher tokenMatcher) 
+            : this(tokenValueObject, tokenMatcher, LazyThreadSafetyMode.PublicationOnly) 
+        {
+            //Do nothing
+        }
+
+        public ObjectPropertiesTokenValueContainer(object tokenValueObject, ITokenMatcher tokenMatcher, LazyThreadSafetyMode threadSafetyMode)
         {
             if (tokenValueObject == null) throw new ArgumentNullException(nameof(tokenValueObject));
             matcher = tokenMatcher ?? throw new ArgumentNullException(nameof(tokenMatcher));
