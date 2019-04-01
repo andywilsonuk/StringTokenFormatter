@@ -95,6 +95,7 @@ Available implementations of ```ITokenValueContainer``` are:
 * ```SingleTokenValueContainer``` - maps one token to one value
 * ```DictionaryTokenValueContainer``` - maps key/value pairs
 * ```ObjectPropertiesTokenValueContainer``` - maps the properties of an object into tokens/values
+* ```ObjectPropertiesTokenValueContainerGeneric``` - generic version of ```ObjectPropertiesTokenValueContainer```
 * ```CascadingTokenValueContainer``` - allows for chaining of containers
 
 ### CascadingTokenValueContainer use case examples
