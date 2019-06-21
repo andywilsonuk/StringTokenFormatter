@@ -8,7 +8,7 @@ namespace StringTokenFormatter
     /// <typeparam name="T"></typeparam>
     internal class NonLockingLazy<T>
     {
-        private readonly Func<T> creator;
+        private Func<T> creator;
 
         public NonLockingLazy(Func<T> creator)
         {
@@ -22,10 +22,16 @@ namespace StringTokenFormatter
         {
             get
             {
+                //Defensive copy
+                var cachedcreator = creator;
+
                 if (!IsValueCreated)
                 {
-                    CreatedValue = creator();
+                    CreatedValue = cachedcreator();
                     IsValueCreated = true;
+
+                    //Null this out so we don't keep captured values around.
+                    creator = null;
                 }
                 return CreatedValue;
             }

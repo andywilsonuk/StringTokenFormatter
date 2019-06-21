@@ -43,6 +43,7 @@ namespace StringTokenFormatter
         public static IValueFormatter DefaultFormatter = new FormatProviderValueFormatter();
         public static IEnumerable<ITokenToValueMapper> DefaultMappers = new ITokenToValueMapper[]
         {
+            new TokenToPrimitiveValueMapper(),
             new TokenToNullValueMapper(),
             new TokenToLazyStringValueMapper(),
             new TokenToLazyObjectValueMapper(),
@@ -55,6 +56,11 @@ namespace StringTokenFormatter
         public string FormatFromProperties(string input, object propertyContainer)
         {
             ITokenValueContainer mapper = new ObjectPropertiesTokenValueContainer(propertyContainer, matcher);
+            return FormatFromContainer(input, mapper);
+        }
+
+        public string FormatFromProperties<T>(string input, T propertyContainer) {
+            ITokenValueContainer mapper = new ObjectPropertiesTokenValueContainer<T>(propertyContainer, matcher);
             return FormatFromContainer(input, mapper);
         }
 
@@ -90,23 +96,27 @@ namespace StringTokenFormatter
             if (segmentedString == null) throw new ArgumentNullException(nameof(segmentedString));
             if (container == null) throw new ArgumentNullException(nameof(container));
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             foreach (var segment in segmentedString)
             {
-                if (segment is TextMatchingSegment textSegment)
-                {
+                if (segment is TextMatchingSegment textSegment) {
                     sb.Append(textSegment.Original);
-                    continue;
-                }
+                } else if (segment is TokenMatchingSegment tokenSegment) {
 
-                var tokenSegment = (TokenMatchingSegment)segment;
-                object mappedValue = tokenSegment.Original;
-                if (container.TryMap(tokenSegment, out object value))
-                {
-                    mappedValue = mapper.TryMap(tokenSegment, value, out object value2) ? value2 : value;
-                }
+                    object mappedValue = tokenSegment.Original;
 
-                sb.Append(formatter.Format(tokenSegment, mappedValue));
+                    if (container.TryMap(tokenSegment, out object value1)) {
+
+                        if (mapper.TryMap(tokenSegment, value1, out object value2)) {
+                            mappedValue = value2;
+                        } else {
+                            mappedValue = value1;
+                        }
+
+                    }
+                    
+                    sb.Append(formatter.Format(tokenSegment, mappedValue));
+                }
             }
             return sb.ToString();
         }
