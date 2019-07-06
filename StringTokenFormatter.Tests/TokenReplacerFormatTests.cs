@@ -14,7 +14,7 @@ namespace StringTokenFormatter.Tests
             string pattern = string.Empty;
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = string.Empty;
             Assert.Equal(expected, actual);
@@ -26,7 +26,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first second";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second";
             Assert.Equal(expected, actual);
@@ -38,7 +38,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {Two} third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -50,7 +50,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two} third {two}";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second third second";
             Assert.Equal(expected, actual);
@@ -62,7 +62,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first{two}third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "firstsecondthird";
             Assert.Equal(expected, actual);
@@ -74,7 +74,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two} third {four}";
             var tokenValues = new Dictionary<string, object> { { "two", "second" }, { "four", "fourth" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second third fourth";
             Assert.Equal(expected, actual);
@@ -86,7 +86,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two} third {four}";
             var tokenValues = new Dictionary<string, object> { { "four", "fourth" }, { "two", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second third fourth";
             Assert.Equal(expected, actual);
@@ -98,7 +98,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two} third";
             var tokenValues = new Dictionary<string, object> { { "{two}", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -110,7 +110,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first{two,10:D4} third";
             var tokenValues = new Dictionary<string, object> { { "two", 5 } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first      0005 third";
             Assert.Equal(expected, actual);
@@ -122,7 +122,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two}} third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second} third";
             Assert.Equal(expected, actual);
@@ -131,10 +131,12 @@ namespace StringTokenFormatter.Tests
         [Fact]
         public void Close_Escape_Character_Same_As_End_Character_Yields_Replacement_And_Escape_Marker()
         {
+            var Matcher = new RegexTokenParser(new AlternatveMarkersRound2());
+
             string pattern = "first $(two)) third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer(new AlternatveMarkersRound2()).FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues, Parser: Matcher);
 
             string expected = "first second) third";
             Assert.Equal(expected, actual);
@@ -146,7 +148,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {{{two}} third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first {second} third";
             Assert.Equal(expected, actual);
@@ -158,7 +160,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "{{two}";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "{two}";
             Assert.Equal(expected, actual);
@@ -170,7 +172,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two} third";
             var tokenValues = new { two = "second" };
 
-            string actual = new TokenReplacer().FormatFromProperties(pattern, tokenValues);
+            string actual = pattern.FormatToken(tokenValues);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -182,7 +184,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two} third";
             var tokenValues = new { Two = "second" };
 
-            string actual = new TokenReplacer().FormatFromProperties(pattern, tokenValues);
+            string actual = pattern.FormatToken(tokenValues);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -194,7 +196,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two} third";
             var tokenValues = new { two = "second" };
 
-            string actual = new TokenReplacer(CultureInfo.CurrentCulture).FormatFromProperties(pattern, tokenValues);
+            string actual = pattern.FormatToken(tokenValues, Formatter: TokenValueFormatter.From(CultureInfo.CurrentCulture));
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -206,7 +208,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two} third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer(CultureInfo.CurrentCulture).FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues, Formatter: TokenValueFormatter.From(CultureInfo.CurrentCulture));
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -218,7 +220,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {{";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first {";
             Assert.Equal(expected, actual);
@@ -230,7 +232,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first { {two}";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first { second";
             Assert.Equal(expected, actual);
@@ -242,7 +244,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two} third";
             var tokenValues = new Dictionary<string, string> { { "{two}", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -254,7 +256,7 @@ namespace StringTokenFormatter.Tests
             string pattern = string.Empty;
             var tokenValues = new Dictionary<string, string> { { "two", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = string.Empty;
             Assert.Equal(expected, actual);
@@ -265,7 +267,7 @@ namespace StringTokenFormatter.Tests
         {
             string pattern = "first {two} third";
 
-            Assert.Throws<ArgumentNullException>(() => new TokenReplacer().FormatFromDictionary(pattern, (IDictionary<string, string>)null));
+            Assert.Throws<ArgumentNullException>(() => pattern.FormatDictionary((IDictionary<string, string>)null));
         }
 
         [Fact]
@@ -273,7 +275,7 @@ namespace StringTokenFormatter.Tests
         {
             string pattern = "first {two} third";
 
-            Assert.Throws<ArgumentNullException>(() => new TokenReplacer().FormatFromDictionary(pattern, (IDictionary<string, object>)null));
+            Assert.Throws<ArgumentNullException>(() => pattern.FormatDictionary((IDictionary<string, object>)null));
         }
 
         [Fact]
@@ -281,7 +283,7 @@ namespace StringTokenFormatter.Tests
         {
             string pattern = "first {two} third";
 
-            var actual = new TokenReplacer().FormatFromSingle(pattern, "two", "second");
+            var actual = pattern.FormatToken("two", "second");
 
             Assert.Equal("first second third", actual);
         }
@@ -291,7 +293,7 @@ namespace StringTokenFormatter.Tests
         {
             string pattern = "first {two} third";
 
-            var actual = new TokenReplacer().FormatFromSingle(pattern, "{two}", "second");
+            var actual = pattern.FormatToken("{two}", "second");
 
             Assert.Equal("first second third", actual);
         }
@@ -301,7 +303,7 @@ namespace StringTokenFormatter.Tests
         {
             string pattern = "first {two} third";
 
-            var actual = new TokenReplacer().FormatFromSingle(pattern, "notmine", "second");
+            var actual = pattern.FormatToken("notmine", "second");
 
             Assert.Equal("first {two} third", actual);
         }
@@ -311,12 +313,12 @@ namespace StringTokenFormatter.Tests
         {
             string pattern = "first {two} third";
             object customMapping = "custom";
-            var mockMapper = new Mock<ITokenToValueMapper>();
-            mockMapper.Setup(x => x.TryMap(It.Is<IMatchedToken>(y => y.Token == "two"), "second", out customMapping))
+            var mockMapper = new Mock<ITokenValueConverter>();
+            mockMapper.Setup(x => x.TryConvert(It.Is<IMatchedToken>(y => y.Token == "two"), "second", out customMapping))
                 .Returns(true);
-            var mappers = new List<ITokenToValueMapper> { mockMapper.Object };
+            var mappers = new List<ITokenValueConverter> { mockMapper.Object };
 
-            var actual = new TokenReplacer(TokenReplacer.DefaultMatcher, mappers, TokenReplacer.DefaultFormatter).FormatFromSingle(pattern, "two", "second");
+            var actual = pattern.FormatToken("two", "second", TokenValueFormatter.Default, mockMapper.Object, TokenParser.Default);
 
             Assert.Equal("first custom third", actual);
         }
@@ -325,11 +327,11 @@ namespace StringTokenFormatter.Tests
         public void Formatting_Single_Value_With_Custom_Formatter_Returns_In_Mapped_String()
         {
             string pattern = "first {two} third";
-            var mockFormatter = new Mock<IValueFormatter>();
-            mockFormatter.Setup(x => x.Format(It.Is<TokenMatchingSegment>(y => y.Token == "two"), "second"))
+            var mockFormatter = new Mock<ITokenValueFormatter>();
+            mockFormatter.Setup(x => x.Format(It.Is<TokenSegment>(y => y.Token == "two"), "second"))
                 .Returns("custom");
 
-            var actual = new TokenReplacer(TokenReplacer.DefaultMatcher, TokenReplacer.DefaultMappers, mockFormatter.Object).FormatFromSingle(pattern, "two", "second");
+            var actual = pattern.FormatToken("two", "second", mockFormatter.Object, TokenValueConverter.Default, TokenParser.Default);
 
             Assert.Equal("first custom third", actual);
         }
@@ -340,7 +342,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two}" + Environment.NewLine + "third {two}";
             var tokenValues = new Dictionary<string, object> { { "two", "sec" + Environment.NewLine + "ond" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first sec" + Environment.NewLine + "ond" + Environment.NewLine + "third sec" + Environment.NewLine + "ond";
             Assert.Equal(expected, actual);
@@ -352,7 +354,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {The Token} third";
             var tokenValues = new Dictionary<string, object> { { "The Token", "second" } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -366,7 +368,7 @@ namespace StringTokenFormatter.Tests
             container.Setup(x => x.TryMap(It.Is<IMatchedToken>(y => y.Token == "two"), out value)).Returns(true);
             string pattern = "first {two}";
 
-            string actual = new TokenReplacer().FormatFromContainer(pattern, container.Object);
+            string actual = pattern.FormatContainer(container.Object);
 
             string expected = "first second";
             Assert.Equal(expected, actual);
@@ -378,13 +380,13 @@ namespace StringTokenFormatter.Tests
             var container = new Mock<ITokenValueContainer>();
             object value = "second";
             container.Setup(x => x.TryMap(It.Is<IMatchedToken>(y => y.Token == "two"), out value)).Returns(true);
-            SegmentedString segments = new SegmentedString(new IMatchingSegment[]
+            SegmentedString segments = new SegmentedString(new ISegment[]
             {
-                new TextMatchingSegment("first "),
-                new TokenMatchingSegment("{two}", "two", null, null),
+                new StringSegment("first "),
+                new TokenSegment("{two}", "two", null, null),
             });
 
-            string actual = new TokenReplacer().FormatFromContainer(segments, container.Object);
+            string actual = segments.Format(container.Object);
 
             string expected = "first second";
             Assert.Equal(expected, actual);

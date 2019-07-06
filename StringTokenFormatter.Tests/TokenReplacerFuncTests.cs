@@ -13,7 +13,7 @@ namespace StringTokenFormatter.Tests
             Func<string, object> func = (token) => { return "second"; };
             var tokenValues = new Dictionary<string, object> { { "two", func } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -26,7 +26,7 @@ namespace StringTokenFormatter.Tests
             Func<string, object> func = (token) => { return "second"; };
             var tokenValues = new Dictionary<string, object> { { "two", func } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -40,7 +40,7 @@ namespace StringTokenFormatter.Tests
             Func<string, object> func = (token) => { notCalled = false;  return "second"; };
             var tokenValues = new Dictionary<string, object> { { "notmine", func } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first {two} third";
             Assert.Equal(expected, actual);
@@ -54,7 +54,7 @@ namespace StringTokenFormatter.Tests
             Func<string, string> func = (token) => { return "second"; };
             var tokenValues = new Dictionary<string, object> { { "two", func } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -67,7 +67,7 @@ namespace StringTokenFormatter.Tests
             Lazy<object> lazy = new Lazy<object>(() => { return "second"; });
             var tokenValues = new Dictionary<string, object> { { "two", lazy } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -80,7 +80,7 @@ namespace StringTokenFormatter.Tests
             Lazy<string> lazy = new Lazy<string>(() => { return "second"; });
             var tokenValues = new Dictionary<string, object> { { "two", lazy } };
 
-            string actual = new TokenReplacer().FormatFromDictionary(pattern, tokenValues);
+            string actual = pattern.FormatDictionary(tokenValues);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -92,7 +92,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two} third";
             Func<string> func = () => { return "second"; };
 
-            var actual = new TokenReplacer().FormatFromSingle(pattern, "two", func);
+            var actual = pattern.FormatToken("two", func);
 
             Assert.Equal("first second third", actual);
         }

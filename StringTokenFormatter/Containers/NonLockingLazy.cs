@@ -1,32 +1,26 @@
 ﻿using System;
 
-namespace StringTokenFormatter
-{
+namespace StringTokenFormatter {
     /// <summary>
     /// This class mimics the System.Lazy type except it specifically does not have locking implemented
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal class NonLockingLazy<T>
-    {
+    internal class NonLockingLazy<T> {
         private Func<T> creator;
 
-        public NonLockingLazy(Func<T> creator)
-        {
+        public NonLockingLazy(Func<T> creator) {
             this.creator = creator;
         }
 
         public bool IsValueCreated { get; private set; }
         public T CreatedValue { get; private set; }
 
-        public T Value
-        {
-            get
-            {
+        public T Value {
+            get {
                 //Defensive copy
                 var cachedcreator = creator;
 
-                if (!IsValueCreated)
-                {
+                if (!IsValueCreated) {
                     CreatedValue = cachedcreator();
                     IsValueCreated = true;
 

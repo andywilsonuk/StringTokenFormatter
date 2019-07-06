@@ -1,11 +1,9 @@
 ﻿using System;
 
-namespace StringTokenFormatter
-{
-    public class TokenMatchingSegment : IMatchingSegment, IMatchedToken
-    {
-        public TokenMatchingSegment(string original, string token, string padding, string format)
-        {
+namespace StringTokenFormatter {
+
+    public class TokenSegment : ISegment, IMatchedToken {
+        public TokenSegment(string original, string token, string padding, string format) {
             Original = original ?? throw new ArgumentNullException(nameof(original));
             Token = token ?? throw new ArgumentNullException(nameof(token));
             Padding = padding;
@@ -18,4 +16,5 @@ namespace StringTokenFormatter
         public string Format { get; }
         public override string ToString() => Original;
     }
+
 }

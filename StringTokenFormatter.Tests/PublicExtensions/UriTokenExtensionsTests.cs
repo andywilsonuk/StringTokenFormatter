@@ -23,7 +23,7 @@ namespace StringTokenFormatter.Tests
             Uri input = new Uri("http://temp.org/{path}?id={id}");
             Uri expected = new Uri("http://temp.org/people?id=10");
 
-            Uri actual = input.FormatToken(new Dictionary<string, object>
+            Uri actual = input.FormatDictionary(new Dictionary<string, object>
             {
                 { "id" , 10},
                 { "path", "people" }
@@ -38,7 +38,7 @@ namespace StringTokenFormatter.Tests
             Uri input = new Uri("http://temp.org/{path}?id={id}");
             Uri expected = new Uri("http://temp.org/people?id=10");
 
-            Uri actual = input.FormatToken(new Dictionary<string, string>
+            Uri actual = input.FormatDictionary(new Dictionary<string, string>
             {
                 { "id" , "10"},
                 { "path", "people" }

@@ -14,7 +14,7 @@ namespace StringTokenFormatter.Tests
             var mockObject = new Mock<IMockPropertiesObject>();
             var mockMatchedToken = new Mock<IMatchedToken>();
             mockMatchedToken.SetupGet(x => x.Token).Returns("Prop1");
-            var container = new ObjectPropertiesTokenValueContainer(mockObject.Object, TokenReplacer.DefaultMatcher);
+            var container = TokenValueContainer.FromObject(mockObject.Object, TokenParser.Default);
 
             bool result = container.TryMap(mockMatchedToken.Object, out object mapped);
             result = container.TryMap(mockMatchedToken.Object, out mapped);

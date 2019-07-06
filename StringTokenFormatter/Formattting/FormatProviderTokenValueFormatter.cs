@@ -1,17 +1,14 @@
 ﻿using System;
 
 namespace StringTokenFormatter {
-    public class FormatProviderValueFormatter : IValueFormatter {
+    public class FormatProviderTokenValueFormatter : ITokenValueFormatter {
         private readonly IFormatProvider provider;
 
-        public FormatProviderValueFormatter() {
-        }
-
-        public FormatProviderValueFormatter(IFormatProvider formatProvider) {
+        public FormatProviderTokenValueFormatter(IFormatProvider formatProvider) {
             provider = formatProvider;
         }
 
-        public string Format(TokenMatchingSegment token, object value) {
+        public string Format(TokenSegment token, object value) {
             var ret = default(string);
 
             if (value != null) {

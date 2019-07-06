@@ -14,26 +14,25 @@ namespace StringTokenFormatter.Tests
             var Iterations = 100_000_0;
 
             var Format = "{Name} is {Age}";
-            var ParsedFormat = SegmentedString.Create(Format);
+            var ParsedFormat = SegmentedString.Parse(Format);
 
             var Variables = new PerformanceTokenTest() {
                 Name = "John Smith",
                 Age = 21,
             };
 
-            var Replacer = new TokenReplacer();
 
             var SW1 = System.Diagnostics.Stopwatch.StartNew();
-            var Container1 = new ObjectPropertiesTokenValueContainer<PerformanceTokenTest>(Variables, TokenReplacer.DefaultMatcher);
+            var Container1 = new ObjectPropertiesTokenValueContainer<PerformanceTokenTest>(Variables, TokenParser.Default);
             for (int i = 0; i < Iterations; i++) {
-                var Output1 = Replacer.FormatFromContainer(ParsedFormat, Container1);
+                var Output1 = ParsedFormat.Format(Container1);
             }
             SW1.Stop();
 
             var SW2 = System.Diagnostics.Stopwatch.StartNew();
-            var Container2 = new ObjectPropertiesTokenValueContainer<PerformanceTokenTest>(Variables, TokenReplacer.DefaultMatcher);
+            var Container2 = new ObjectPropertiesTokenValueContainer<PerformanceTokenTest>(Variables, TokenParser.Default);
             for (int i = 0; i < Iterations; i++) {
-                var Output2 = Replacer.FormatFromContainer(ParsedFormat, Container2);
+                var Output2 = ParsedFormat.Format(Container2);
             }
             SW2.Stop();
 
