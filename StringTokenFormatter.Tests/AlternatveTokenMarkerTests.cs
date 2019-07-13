@@ -30,7 +30,7 @@ namespace StringTokenFormatter.Tests {
 
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = original.FormatDictionary(tokenValues, Parser: Matcher);
+            string actual = original.FormatDictionary(tokenValues, parser: Matcher);
 
             Assert.Equal(expected, actual);
         }
@@ -55,7 +55,7 @@ namespace StringTokenFormatter.Tests {
 
             var tokenValues = new Dictionary<string, object> { { "two", 5 } };
 
-            string actual = original.FormatDictionary(tokenValues, Parser: Matcher);
+            string actual = original.FormatDictionary(tokenValues, parser: Matcher);
 
             Assert.Equal(expected, actual);
         }
@@ -80,7 +80,7 @@ namespace StringTokenFormatter.Tests {
 
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = original.FormatDictionary(tokenValues, Parser: Matcher);
+            string actual = original.FormatDictionary(tokenValues, parser: Matcher);
 
             Assert.Equal(expected, actual);
         }
@@ -105,7 +105,7 @@ namespace StringTokenFormatter.Tests {
 
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = original.FormatDictionary(tokenValues, Parser: Matcher);
+            string actual = original.FormatDictionary(tokenValues, parser: Matcher);
 
             Assert.Equal(expected, actual);
         }
@@ -130,7 +130,7 @@ namespace StringTokenFormatter.Tests {
 
             var tokenValues = new Dictionary<string, object> { { "$(two)", "second" } };
 
-            string actual = original.FormatDictionary(tokenValues, Parser: Matcher);
+            string actual = original.FormatDictionary(tokenValues, parser: Matcher);
 
             Assert.Equal(expected, actual);
         }
@@ -149,7 +149,7 @@ namespace StringTokenFormatter.Tests {
             mockTokenMatcher.SetupGet(x => x.TokenNameComparer).Returns(StringComparer.CurrentCultureIgnoreCase);
             mockTokenMatcher.Setup(x => x.RemoveTokenMarkers("$(two)")).Returns("two");
 
-            var actual = input.FormatToken("$(two)", "second", Parser: mockTokenMatcher.Object);
+            var actual = input.FormatToken("$(two)", "second", parser: mockTokenMatcher.Object);
 
             Assert.Equal(expected, actual);
         }

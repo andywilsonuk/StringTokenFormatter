@@ -23,8 +23,8 @@ namespace StringTokenFormatter {
 
 
 
-        public SegmentedString Parse(string Input) {
-            return new SegmentedString(ParseInternal(Input));
+        public SegmentedString Parse(string input) {
+            return new SegmentedString(ParseInternal(input));
         }
 
         private IEnumerable<ISegment> ParseInternal(string input) {

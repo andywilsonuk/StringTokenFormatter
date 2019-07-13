@@ -46,10 +46,10 @@ namespace StringTokenFormatter {
         private IDictionary<string, NonLockingLazy<object>> dictionary;
         private readonly ITokenParser parser;
 
-        public ObjectPropertiesTokenValueContainer(T tokenValueObject, ITokenParser Parser = default) {
+        public ObjectPropertiesTokenValueContainer(T tokenValueObject, ITokenParser parser = default) {
             if (tokenValueObject == null) throw new ArgumentNullException(nameof(tokenValueObject));
 
-            parser = Parser ?? TokenParser.Default;
+            this.parser = parser ?? TokenParser.Default;
             dictionary = ConvertObjectToDictionary(tokenValueObject);
         }
 

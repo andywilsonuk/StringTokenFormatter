@@ -10,16 +10,16 @@ namespace StringTokenFormatter {
     public class DictionaryTokenValueContainer<T> : ITokenValueContainer {
         private IDictionary<string, T> dictionary;
 
-        public DictionaryTokenValueContainer(IEnumerable<KeyValuePair<string, T>> ItemSource, ITokenParser Parser = default) {
-            ItemSource = ItemSource ?? throw new ArgumentNullException(nameof(ItemSource));
+        public DictionaryTokenValueContainer(IEnumerable<KeyValuePair<string, T>> itemSource, ITokenParser parser = default) {
+            itemSource = itemSource ?? throw new ArgumentNullException(nameof(itemSource));
 
-            dictionary = NormalizeDictionary(ItemSource, Parser ?? TokenParser.Default);
+            dictionary = NormalizeDictionary(itemSource, parser ?? TokenParser.Default);
         }
 
-        private IDictionary<string, T> NormalizeDictionary(IEnumerable<KeyValuePair<string, T>> Values, ITokenParser parser) {
+        private IDictionary<string, T> NormalizeDictionary(IEnumerable<KeyValuePair<string, T>> values, ITokenParser parser) {
             var ret = new Dictionary<string, T>(parser.TokenNameComparer);
 
-            foreach (var pair in Values) {
+            foreach (var pair in values) {
                 string key = pair.Key;
                 if (string.IsNullOrEmpty(key)) continue;
 

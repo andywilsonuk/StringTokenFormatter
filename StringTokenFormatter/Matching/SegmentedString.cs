@@ -21,16 +21,16 @@ namespace StringTokenFormatter {
             return segments.GetEnumerator();
         }
 
-        public static SegmentedString Parse(string input, ITokenParser Parser = default) {
-            Parser = Parser ?? TokenParser.Default;
+        public static SegmentedString Parse(string input, ITokenParser parser = default) {
+            parser = parser ?? TokenParser.Default;
 
-            return Parser.Parse(input);
+            return parser.Parse(input);
         }
 
-        public string Format(ITokenValueContainer container, ITokenValueFormatter Formatter = default, ITokenValueConverter Converter = default) {
+        public string Format(ITokenValueContainer container, ITokenValueFormatter formatter = default, ITokenValueConverter converter = default) {
             if (container == null) throw new ArgumentNullException(nameof(container));
-            Converter = Converter ?? TokenValueConverter.Default;
-            Formatter = Formatter ?? TokenValueFormatter.Default;
+            converter = converter ?? TokenValueConverter.Default;
+            formatter = formatter ?? TokenValueFormatter.Default;
 
             var sb = new StringBuilder();
             foreach (var segment in this) {
@@ -42,7 +42,7 @@ namespace StringTokenFormatter {
 
                     if (container.TryMap(tokenSegment, out object value1)) {
 
-                        if (Converter.TryConvert(tokenSegment, value1, out object value2)) {
+                        if (converter.TryConvert(tokenSegment, value1, out object value2)) {
                             mappedValue = value2;
                         } else {
                             mappedValue = value1;
@@ -50,7 +50,7 @@ namespace StringTokenFormatter {
 
                     }
 
-                    sb.Append(Formatter.Format(tokenSegment, mappedValue));
+                    sb.Append(formatter.Format(tokenSegment, mappedValue));
                 }
             }
             return sb.ToString();

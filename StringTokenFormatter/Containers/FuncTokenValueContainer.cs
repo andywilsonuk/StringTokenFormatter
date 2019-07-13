@@ -16,17 +16,17 @@ namespace StringTokenFormatter {
         private readonly Func<string, ITokenParser, T> resolver;
 
         
-        public FuncTokenValueContainer(Func<string, T> ValueResolver, ITokenParser Parser = default) {
-            ValueResolver = ValueResolver ?? throw new ArgumentNullException(nameof(ValueResolver));
+        public FuncTokenValueContainer(Func<string, T> valueResolver, ITokenParser parser = default) {
+            valueResolver = valueResolver ?? throw new ArgumentNullException(nameof(valueResolver));
 
-            this.resolver = (x, y) => ValueResolver(x);
-            this.parser = Parser ?? TokenParser.Default;
+            this.resolver = (x, y) => valueResolver(x);
+            this.parser = parser ?? TokenParser.Default;
         }
 
 
-        public FuncTokenValueContainer(Func<string, ITokenParser, T> ValueResolver, ITokenParser Parser = default) {
-            this.resolver = ValueResolver ?? throw new ArgumentNullException(nameof(ValueResolver));
-            this.parser = Parser ?? TokenParser.Default;
+        public FuncTokenValueContainer(Func<string, ITokenParser, T> valueResolver, ITokenParser parser = default) {
+            this.resolver = valueResolver ?? throw new ArgumentNullException(nameof(valueResolver));
+            this.parser = parser ?? TokenParser.Default;
         }
 
         public bool TryMap(IMatchedToken matchedToken, out object mapped) {

@@ -34,6 +34,33 @@ string result = original.FormatToken("middle", "centre");
 Assert.Equal("start centre end", result);
 ```
 
+### Usage 4: Constraining parameters by Type
+```C#
+
+private interface ITestInterface {
+    int First { get; set; }
+}
+
+public class TestClass : ITestInterface {
+    public int First { get; set; }
+    public string Second { get; set; }
+}
+
+public void Interface_Excludes_Class_Members() {
+    var Test = new TestClass() {
+        First= 1,
+        Second = "Second"
+    };
+
+    var pattern = "{First} {Second}";
+    var actual = pattern.FormatToken<ITestInterface>(Test);
+    var expected = "1 {Second}";
+
+    Assert.Equal(expected, actual);
+
+}
+
+```
 
 
 ## For Dictionaries and Key/Value Pairs: ```FormatDictionary```

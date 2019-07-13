@@ -3,9 +3,6 @@ using System.Collections.Generic;
 
 namespace StringTokenFormatter {
 
-    /// <summary>
-    /// 
-    /// </summary>
     public sealed class CurlyTokenMarkers : ITokenMarkers {
         public string StartToken => "{";
         public string EndToken => "}";

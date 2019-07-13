@@ -9,8 +9,8 @@ namespace StringTokenFormatter {
     public class CompositeTokenValueConverter : ITokenValueConverter {
         private readonly IEnumerable<ITokenValueConverter> converters;
 
-        public CompositeTokenValueConverter(IEnumerable<ITokenValueConverter> Converters) {
-            converters = Converters ?? throw new ArgumentNullException(nameof(Converters));
+        public CompositeTokenValueConverter(IEnumerable<ITokenValueConverter> converters) {
+            this.converters = converters ?? throw new ArgumentNullException(nameof(converters));
         }
 
         public bool TryConvert(IMatchedToken matchedToken, object value, out object mapped) {

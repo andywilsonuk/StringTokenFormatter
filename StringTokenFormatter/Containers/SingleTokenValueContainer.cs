@@ -7,14 +7,14 @@ namespace StringTokenFormatter {
         private readonly T value;
         private readonly ITokenParser matcher;
 
-        public SingleTokenValueContainer(string tokenMarker, T mapValue, ITokenParser Parser = default) {
+        public SingleTokenValueContainer(string tokenMarker, T mapValue, ITokenParser parser = default) {
             if (string.IsNullOrEmpty(tokenMarker)) throw new ArgumentNullException(nameof(tokenMarker));
 
-            Parser = Parser ?? TokenParser.Default;
+            parser = parser ?? TokenParser.Default;
 
-            token = Parser.RemoveTokenMarkers(tokenMarker);
+            token = parser.RemoveTokenMarkers(tokenMarker);
             value = mapValue;
-            matcher = Parser ?? throw new ArgumentNullException(nameof(Parser));
+            matcher = parser ?? throw new ArgumentNullException(nameof(parser));
         }
 
         public bool TryMap(IMatchedToken matchedToken, out object mapped) {

@@ -136,7 +136,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first $(two)) third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = pattern.FormatDictionary(tokenValues, Parser: Matcher);
+            string actual = pattern.FormatDictionary(tokenValues, parser: Matcher);
 
             string expected = "first second) third";
             Assert.Equal(expected, actual);
@@ -196,7 +196,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two} third";
             var tokenValues = new { two = "second" };
 
-            string actual = pattern.FormatToken(tokenValues, Formatter: TokenValueFormatter.From(CultureInfo.CurrentCulture));
+            string actual = pattern.FormatToken(tokenValues, formatter: TokenValueFormatter.From(CultureInfo.CurrentCulture));
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -208,7 +208,7 @@ namespace StringTokenFormatter.Tests
             string pattern = "first {two} third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = pattern.FormatDictionary(tokenValues, Formatter: TokenValueFormatter.From(CultureInfo.CurrentCulture));
+            string actual = pattern.FormatDictionary(tokenValues, formatter: TokenValueFormatter.From(CultureInfo.CurrentCulture));
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
