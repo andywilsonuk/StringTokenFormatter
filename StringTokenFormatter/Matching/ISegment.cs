@@ -1,8 +1,7 @@
 ﻿namespace StringTokenFormatter {
 
-    public interface IMatchedToken {
+    public interface ISegment {
         string Original { get; }
-        string Token { get; }
     }
 
 }

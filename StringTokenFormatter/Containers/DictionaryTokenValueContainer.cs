@@ -1,38 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace StringTokenFormatter
-{
-    public class DictionaryTokenValueContainer : ITokenValueContainer
-    {
-        private IDictionary<string, object> dictionary;
-        private readonly ITokenMatcher matcher;
+namespace StringTokenFormatter {
 
-        public DictionaryTokenValueContainer(IDictionary<string, object> tokenValueDictionary, ITokenMatcher tokenMatcher)
-        {
-            dictionary = tokenValueDictionary ?? throw new ArgumentNullException(nameof(tokenValueDictionary));
-            matcher = tokenMatcher ?? throw new ArgumentNullException(nameof(tokenMatcher));
-            NormalisedTokenValues();
+    /// <summary>
+    /// This Value Container resolves values by looking them up in a dictionary.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class DictionaryTokenValueContainer<T> : ITokenValueContainer {
+        private IDictionary<string, T> dictionary;
+
+        public DictionaryTokenValueContainer(IEnumerable<KeyValuePair<string, T>> itemSource, ITokenParser parser = default) {
+            itemSource = itemSource ?? throw new ArgumentNullException(nameof(itemSource));
+
+            dictionary = NormalizeDictionary(itemSource, parser ?? TokenParser.Default);
         }
 
-        private void NormalisedTokenValues()
-        {
-            var normalisedTokens = new Dictionary<string, object>(dictionary.Count, matcher.TokenNameComparer);
-            foreach (var pair in dictionary)
-            {
+        private IDictionary<string, T> NormalizeDictionary(IEnumerable<KeyValuePair<string, T>> values, ITokenParser parser) {
+            var ret = new Dictionary<string, T>(parser.TokenNameComparer);
+
+            foreach (var pair in values) {
                 string key = pair.Key;
                 if (string.IsNullOrEmpty(key)) continue;
 
-                key = matcher.RemoveTokenMarkers(key);
-                normalisedTokens.Add(key, pair.Value);
+                key = parser.RemoveTokenMarkers(key);
+                ret.Add(key, pair.Value);
             }
-            dictionary = normalisedTokens;
+            return ret;
         }
 
-        public bool TryMap(IMatchedToken matchedToken, out object mapped)
-        {
-            if (!dictionary.TryGetValue(matchedToken.Token, out object value))
-            {
+        public bool TryMap(IMatchedToken matchedToken, out object mapped) {
+            if (!dictionary.TryGetValue(matchedToken.Token, out var value)) {
                 mapped = null;
                 return false;
             }

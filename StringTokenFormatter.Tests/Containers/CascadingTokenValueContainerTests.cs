@@ -9,21 +9,20 @@ namespace StringTokenFormatter.Tests
     {
         private const string expected1 = "replaced1";
         private const string expected2 = "replaced2";
-        private readonly ITokenValueContainer container1 = new SingleTokenValueContainer("token1", expected1, TokenReplacer.DefaultMatcher);
-        private readonly ITokenValueContainer container2 = new SingleTokenValueContainer("token2", expected2, TokenReplacer.DefaultMatcher);
+        private readonly ITokenValueContainer container1 = TokenValueContainer.FromValue("token1", expected1, TokenParser.Default);
+        private readonly ITokenValueContainer container2 = TokenValueContainer.FromValue("token2", expected2, TokenParser.Default);
         private readonly ITokenValueContainer cascadingContainer;
-        private readonly TokenReplacer tokenReplacer = new TokenReplacer();
 
         public CascadingTokenValueContainerTests()
         {
-            cascadingContainer = new CascadingTokenValueContainer(new[] { container1, container2 });
+            cascadingContainer = new CompositeTokenValueContainer(new[] { container1, container2 });
         }
 
         [Fact]
         public void Cascade_To_First_Container_For_Mapping()
         {
             string input = "{token1}";
-            var actual = tokenReplacer.FormatFromContainer(input, cascadingContainer);
+            var actual = input.FormatContainer(cascadingContainer);
 
             Assert.Equal(expected1, actual);
         }
@@ -32,7 +31,7 @@ namespace StringTokenFormatter.Tests
         public void Cascade_To_Second_Container_For_Mapping()
         {
             string input = "{token2}";
-            var actual = tokenReplacer.FormatFromContainer(input, cascadingContainer);
+            var actual = input.FormatContainer(cascadingContainer);
 
             Assert.Equal(expected2, actual);
         }
@@ -41,7 +40,7 @@ namespace StringTokenFormatter.Tests
         public void Cascade_No_Map()
         {
             string input = "{token3}";
-            var actual = tokenReplacer.FormatFromContainer(input, cascadingContainer);
+            var actual = input.FormatContainer(cascadingContainer);
 
             Assert.Equal(input, actual);
         }
