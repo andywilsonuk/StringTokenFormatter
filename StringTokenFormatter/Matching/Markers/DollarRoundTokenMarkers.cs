@@ -12,7 +12,7 @@ namespace StringTokenFormatter {
 
         private DollarRoundTokenMarkers() { }
 
-        public static DollarRoundTokenMarkers Instance { get; private set; } = new DollarRoundTokenMarkers();
+        public static DollarRoundTokenMarkers Instance { get; } = new DollarRoundTokenMarkers();
 
     }
 }

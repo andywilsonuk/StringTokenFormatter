@@ -1,12 +1,12 @@
 ﻿using Moq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Xunit;
 
-namespace StringTokenFormatter.Tests
-{
-    public class ObjectPropertiesTokenValueContainerTests {
+namespace StringTokenFormatter.Tests {
+    public partial class ObjectPropertiesTokenValueContainerTests {
         [Fact]
         public void Property_Values_Are_Only_Got_Once() {
             var mockObject = new Mock<IMockPropertiesObject>();
@@ -26,6 +26,57 @@ namespace StringTokenFormatter.Tests
             int Prop1 { get; set; }
         }
 
+        [Fact]
+        public void Object_Uses_Generic_Formatter() {
+            var Test = (object) new TestClass() {
+                First = 1,
+                Second = "Second"
+            };
+
+            var pattern = "{First} {Second}";
+            var actual = pattern.FormatToken(Test);
+            var expected = "1 Second";
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Performance_Comparison_Between_Generic_and_Non_Generic() {
+            var Test1 = new TestClass() {
+                First = 1,
+                Second = "Second"
+            };
+
+            var Test2 = (object)Test1;
+
+            var pattern = "{First} {Second}";
+            var actual1 = pattern.FormatToken(Test1);
+            var actual2 = pattern.FormatToken(Test2);
+
+            var sw1 = System.Diagnostics.Stopwatch.StartNew();
+            for (int i = 0; i < 100000; i++) {
+                actual1 = pattern.FormatToken(Test1);
+            }
+            sw1.Stop();
+
+            var sw2 = System.Diagnostics.Stopwatch.StartNew();
+            for (int i = 0; i < 100000; i++) {
+                actual2 = pattern.FormatToken(Test2);
+            }
+            sw2.Stop();
+
+
+
+
+            var expected = "1 Second";
+
+            Assert.Equal(expected, actual1);
+            Assert.Equal(expected, actual1);
+        }
+
+
+
+
 
         [Fact]
         public void Interface_Excludes_Class_Members() {
@@ -35,7 +86,7 @@ namespace StringTokenFormatter.Tests
             };
 
             var pattern = "{First} {Second}";
-            var actual = pattern.FormatToken<IInterface1>(Test);
+            var actual = pattern.FormatToken<IFirst>(Test);
             var expected = "1 {Second}";
 
             Assert.Equal(expected, actual);
@@ -50,7 +101,7 @@ namespace StringTokenFormatter.Tests
             };
 
             var pattern = "{First} {Second} {Third}";
-            var actual = pattern.FormatToken<IInterface3>(Test);
+            var actual = pattern.FormatToken<IExtra>(Test);
             var expected = "1 Second Third";
 
             Assert.Equal(expected, actual);
@@ -74,25 +125,38 @@ namespace StringTokenFormatter.Tests
         }
 
 
-        private interface IInterface1 {
-            int First { get; set; }
-        }
-        private interface IInterface2 {
-            string Second { get; set; }
+        [Fact]
+        public void AnonymousObject() {
+            string pattern = "first {two} third";
+            var tokenValues = new { two = "second" };
+
+            string actual = pattern.FormatToken(tokenValues);
+
+            string expected = "first second third";
+            Assert.Equal(expected, actual);
         }
 
-        private interface IInterface3 : IInterface1, IInterface2 {
-            string Third { get; set; }
+        [Fact]
+        public void AnonymousObjectCaseMatch() {
+            string pattern = "first {two} third";
+            var tokenValues = new { Two = "second" };
+
+            string actual = pattern.FormatToken(tokenValues);
+
+            string expected = "first second third";
+            Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void AnonymousObjectWithCulture() {
+            string pattern = "first {two} third";
+            var tokenValues = new { two = "second" };
 
-        public class TestClass : IInterface1 {
-            public int First { get; set; }
-            public string Second { get; set; }
+            string actual = pattern.FormatToken(tokenValues, formatter: TokenValueFormatter.From(CultureInfo.CurrentCulture));
+
+            string expected = "first second third";
+            Assert.Equal(expected, actual);
         }
 
-        public class DerivedClass : TestClass, IInterface3 {
-            public string Third { get; set; }
-        }
     }
 }

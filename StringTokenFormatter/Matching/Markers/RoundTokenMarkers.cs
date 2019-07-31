@@ -12,7 +12,7 @@ namespace StringTokenFormatter {
 
         private RoundTokenMarkers() { }
 
-        public static RoundTokenMarkers Instance { get; private set; } = new RoundTokenMarkers();
+        public static RoundTokenMarkers Instance { get; } = new RoundTokenMarkers();
     }
 
 }

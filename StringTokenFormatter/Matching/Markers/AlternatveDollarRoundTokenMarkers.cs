@@ -1,14 +1,19 @@
 using System;
 using System.Collections.Generic;
 
-namespace StringTokenFormatter.Tests {
+namespace StringTokenFormatter {
 
-    internal class AlternatveMarkersRound2 : ITokenMarkers {
+    public sealed class AlternatveDollarRoundTokenMarkers : ITokenMarkers {
         public string StartToken { get; } = "$(";
         public string EndToken { get; } = ")";
         public string StartTokenEscaped { get; } = "$$(";
 
         public IEqualityComparer<string> TokenNameComparer => StringComparer.InvariantCultureIgnoreCase;
+
+        private AlternatveDollarRoundTokenMarkers() { }
+
+        public static AlternatveDollarRoundTokenMarkers Instance { get; } = new AlternatveDollarRoundTokenMarkers();
+
     }
 
 }

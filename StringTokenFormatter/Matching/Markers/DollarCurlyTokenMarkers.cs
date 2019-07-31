@@ -12,7 +12,7 @@ namespace StringTokenFormatter {
 
         private DollarCurlyTokenMarkers() { }
 
-        public static DollarCurlyTokenMarkers Instance { get; private set; } = new DollarCurlyTokenMarkers();
+        public static DollarCurlyTokenMarkers Instance { get; } = new DollarCurlyTokenMarkers();
 
     }
 }

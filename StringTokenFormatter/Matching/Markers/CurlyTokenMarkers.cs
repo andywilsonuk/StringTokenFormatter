@@ -12,7 +12,7 @@ namespace StringTokenFormatter {
 
         private CurlyTokenMarkers() { }
 
-        public static CurlyTokenMarkers Instance { get; private set; } = new CurlyTokenMarkers();
+        public static CurlyTokenMarkers Instance { get; } = new CurlyTokenMarkers();
     }
 
 }

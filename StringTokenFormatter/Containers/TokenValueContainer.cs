@@ -4,7 +4,11 @@ using System.Collections.Generic;
 namespace StringTokenFormatter {
     public static class TokenValueContainer {
         public static ObjectPropertiesTokenValueContainer<T> FromObject<T>(T values, ITokenParser parser = default) {
-            return new ObjectPropertiesTokenValueContainer<T>(values, parser);
+            return ObjectPropertiesTokenValueContainerFactory.Create(values, parser);
+        }
+
+        public static ITokenValueContainer FromObject(object values, ITokenParser parser = default) {
+            return ObjectPropertiesTokenValueContainerFactory.Create(values, parser);
         }
 
         public static SingleTokenValueContainer<T> FromValue<T>(string name, T value, ITokenParser parser = default) {

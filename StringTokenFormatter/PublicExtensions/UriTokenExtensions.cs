@@ -24,6 +24,23 @@ namespace StringTokenFormatter {
         }
 
         /// <summary>
+        /// Replaces each token in <paramref name="input"/> with <paramref name="values"/>'s properties that are exposed by the type <typeparamref name="T"/>.  The generic method is faster.
+        /// </summary>
+        /// <typeparam name="T">The type or interface that will limit the available properties.</typeparam>
+        /// <param name="input">The string containing the tokens to be replaced.</param>
+        /// <param name="values">The object containing the property values to be used in replacements.</param>
+        /// <param name="formatter">The format provider to use (or <see cref="null"/> for default)</param>
+        /// <param name="converter">The value converter to use (or <see cref="null"/> for default)</param>
+        /// <param name="parser">The token matcher to use (or <see cref="null"/> for default)</param>
+        /// <returns>A copy of <paramref name="input"/> in which the format tokens have been replaced by string representations of <paramref name="values"/> properties.</returns>
+        public static Uri FormatToken(this Uri input, object values, ITokenValueFormatter formatter = default, ITokenValueConverter converter = default, ITokenParser parser = default) {
+            return input.OriginalString
+                .FormatToken(values, formatter, converter, parser)
+                .ToUri()
+                ;
+        }
+
+        /// <summary>
         /// Replaces each instance of <paramref name="token"/> in <paramref name="input"/> with <paramref name="replacementValue"/>
         /// </summary>
         /// <param name="input">The string containing the tokens to be replaced.</param>

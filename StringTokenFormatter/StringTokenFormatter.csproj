@@ -7,9 +7,9 @@
     <AssemblyName>StringTokenFormatter</AssemblyName>
     <RootNamespace>StringTokenFormatter</RootNamespace>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <Version>4.0.0</Version>
-	<AssemblyVersion>4.0.0</AssemblyVersion>
-	<FileVersion>4.0.0</FileVersion>
+    <Version>4.0.1</Version>
+	<AssemblyVersion>4.0.1</AssemblyVersion>
+	<FileVersion>4.0.1</FileVersion>
     <Product>String Token Formatter</Product>
     <Authors>Andy Wilson, Tony Valenti</Authors>
     <Company>Andy Wilson</Company>
