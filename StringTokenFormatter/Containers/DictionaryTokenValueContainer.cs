@@ -24,7 +24,9 @@ namespace StringTokenFormatter {
                 if (string.IsNullOrEmpty(key)) continue;
 
                 key = parser.RemoveTokenMarkers(key);
-                ret.Add(key, pair.Value);
+
+                //We do this instead of the add so that if something funky happens (ie. Two properties with the same name) we don't error.
+                ret[key] = pair.Value;
             }
             return ret;
         }
