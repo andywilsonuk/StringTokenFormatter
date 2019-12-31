@@ -1,31 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net40;netstandard2.0</TargetFrameworks>
-	<TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
-	<Title>StringTokenFormatter</Title>
-    <AssemblyName>StringTokenFormatter</AssemblyName>
-    <RootNamespace>StringTokenFormatter</RootNamespace>
-    <PackageReleaseNotes></PackageReleaseNotes>
-    <Version>4.0.1</Version>
-	<AssemblyVersion>4.0.1</AssemblyVersion>
-	<FileVersion>4.0.1</FileVersion>
+    <Title>StringTokenFormatter</Title>
+    <PackageReleaseNotes />
+    <Version>4.1.0</Version>
+    <AssemblyVersion>4.1.0</AssemblyVersion>
+    <FileVersion>4.1.0</FileVersion>
     <Product>String Token Formatter</Product>
     <Authors>Andy Wilson, Tony Valenti</Authors>
     <Company>Andy Wilson</Company>
     <Description>Provides string extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.</Description>
-	<Summary>Provides string extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.</Summary>
+    <Summary>Provides string extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.</Summary>
     <Copyright>Andy Wilson</Copyright>
     <PackageLicenseUrl>http://opensource.org/licenses/Apache-2.0</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/andywilsonuk/StringTokenFormatter</PackageProjectUrl>
     <RepositoryUrl>https://github.com/andywilsonuk/StringTokenFormatter</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>string token formatter replace extension</PackageTags>
-	<NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
-	<MinClientVersion>2.12</MinClientVersion>
-	<SignAssembly>true</SignAssembly>
-	<AssemblyOriginatorKeyFile>StringTokenFormatter.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>  
+    <NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
+    <MinClientVersion>2.12</MinClientVersion>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>StringTokenFormatter.snk</AssemblyOriginatorKeyFile>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <AssemblyTitle>String Token Formatter .NET Standard 2.0</AssemblyTitle>
   </PropertyGroup>

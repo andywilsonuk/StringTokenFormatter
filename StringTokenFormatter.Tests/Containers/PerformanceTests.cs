@@ -23,14 +23,14 @@ namespace StringTokenFormatter.Tests
 
 
             var SW1 = System.Diagnostics.Stopwatch.StartNew();
-            var Container1 = new ObjectPropertiesTokenValueContainer<PerformanceTokenTest>(Variables, TokenParser.Default);
+            var Container1 = TokenValueContainer.FromObject(Variables);
             for (int i = 0; i < Iterations; i++) {
                 var Output1 = ParsedFormat.Format(Container1);
             }
             SW1.Stop();
 
             var SW2 = System.Diagnostics.Stopwatch.StartNew();
-            var Container2 = new ObjectPropertiesTokenValueContainer<PerformanceTokenTest>(Variables, TokenParser.Default);
+            var Container2 = TokenValueContainer.FromObject(Variables);
             for (int i = 0; i < Iterations; i++) {
                 var Output2 = ParsedFormat.Format(Container2);
             }

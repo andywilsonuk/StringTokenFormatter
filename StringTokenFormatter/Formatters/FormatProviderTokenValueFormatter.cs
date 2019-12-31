@@ -8,15 +8,15 @@ namespace StringTokenFormatter {
             provider = formatProvider;
         }
 
-        public string Format(TokenSegment token, object value) {
+        public string Format(ISegment segment, object value, string Padding, string Format) {
             var ret = default(string);
 
             if (value != null) {
-                if (string.IsNullOrEmpty(token.Padding) && string.IsNullOrEmpty(token.Format)) {
+                if (string.IsNullOrEmpty(Padding) && string.IsNullOrEmpty(Format)) {
                     ret = value.ToString();
                 } else {
-                    var padding = string.IsNullOrEmpty(token.Padding) ? "0" : token.Padding;
-                    var format = $"{{0,{padding}:{token.Format}}}";
+                    var padding = string.IsNullOrEmpty(Padding) ? "0" : Padding;
+                    var format = $"{{0,{padding}:{Format}}}";
                     ret = string.Format(provider, format, value);
                 }
 

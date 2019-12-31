@@ -52,7 +52,7 @@ namespace StringTokenFormatter.Tests.Containers {
         public void Formatting_Single_Value_With_Custom_Formatter_Returns_In_Mapped_String() {
             string pattern = "first {two} third";
             var mockFormatter = new Mock<ITokenValueFormatter>();
-            mockFormatter.Setup(x => x.Format(It.Is<TokenSegment>(y => y.Token == "two"), "second"))
+            mockFormatter.Setup(x => x.Format(It.Is<TokenSegment>(y => y.Token == "two"), "second", "", ""))
                 .Returns("custom");
 
             var actual = pattern.FormatToken("two", "second", mockFormatter.Object, TokenValueConverter.Default, TokenParser.Default);

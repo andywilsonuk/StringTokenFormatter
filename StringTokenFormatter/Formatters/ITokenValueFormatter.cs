@@ -3,7 +3,7 @@
 namespace StringTokenFormatter {
 
     public interface ITokenValueFormatter {
-        string Format(TokenSegment token, object value);
+        string Format(ISegment segment, object value, string Padding, string Format);
     }
 
 }

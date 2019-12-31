@@ -5,7 +5,7 @@ namespace StringTokenFormatter {
     /// This class mimics the System.Lazy type except it specifically does not have locking implemented
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal class NonLockingLazy<T> {
+    public class NonLockingLazy<T> {
         private Func<T> creator;
 
         public NonLockingLazy(Func<T> creator) {

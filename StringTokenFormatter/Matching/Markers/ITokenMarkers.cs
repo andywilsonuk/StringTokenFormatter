@@ -6,7 +6,6 @@ namespace StringTokenFormatter {
         string StartToken { get; }
         string EndToken { get; }
         string StartTokenEscaped { get; }
-        IEqualityComparer<string> TokenNameComparer { get; }
     }
 
 }

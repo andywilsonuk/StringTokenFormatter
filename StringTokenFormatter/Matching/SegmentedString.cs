@@ -6,19 +6,11 @@ using System.Text;
 
 namespace StringTokenFormatter {
 
-    public class SegmentedString : IEnumerable<ISegment> {
-        private List<ISegment> segments;
+    public class SegmentedString {
+        public IReadOnlyCollection<ISegment> Segments { get; private set; }
 
         public SegmentedString(IEnumerable<ISegment> allsegments) {
-            segments = allsegments.ToList();
-        }
-
-        public IEnumerator<ISegment> GetEnumerator() {
-            return segments.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            return segments.GetEnumerator();
+            this.Segments = allsegments.ToList().AsReadOnly();
         }
 
         public static SegmentedString Parse(string input, ITokenParser parser = default) {
@@ -33,26 +25,11 @@ namespace StringTokenFormatter {
             formatter = formatter ?? TokenValueFormatter.Default;
 
             var sb = new StringBuilder();
-            foreach (var segment in this) {
-                if (segment is StringSegment textSegment) {
-                    sb.Append(textSegment.Original);
-                } else if (segment is TokenSegment tokenSegment) {
-
-                    object mappedValue = tokenSegment.Original;
-
-                    if (container.TryMap(tokenSegment, out object value1)) {
-
-                        if (converter.TryConvert(tokenSegment, value1, out object value2)) {
-                            mappedValue = value2;
-                        } else {
-                            mappedValue = value1;
-                        }
-
-                    }
-
-                    sb.Append(formatter.Format(tokenSegment, mappedValue));
-                }
+            
+            foreach (var segment in Segments) {
+                sb.Append(segment.Evaluate(container, formatter, converter));
             }
+
             return sb.ToString();
         }
 

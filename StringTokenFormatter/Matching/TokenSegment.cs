@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace StringTokenFormatter {
 
+    [DebuggerDisplay(Debugger2.DISPLAY)]
     public class TokenSegment : ISegment, IMatchedToken {
         public TokenSegment(string original, string token, string padding, string format) {
             Original = original ?? throw new ArgumentNullException(nameof(original));
@@ -14,7 +16,28 @@ namespace StringTokenFormatter {
         public string Token { get; }
         public string Padding { get; }
         public string Format { get; }
+
+        public string Evaluate(ITokenValueContainer container, ITokenValueFormatter formatter, ITokenValueConverter converter) {
+            object mappedValue = Original;
+
+            if (container.TryMap(this, out object value1)) {
+
+                if (converter.TryConvert(this, value1, out object value2)) {
+                    mappedValue = value2;
+                } else {
+                    mappedValue = value1;
+                }
+
+            }
+
+            var ret = formatter.Format(this, mappedValue, Padding, Format);
+
+            return ret;
+        }
+
         public override string ToString() => Original;
+
+        protected virtual string DebuggerDisplay => Original;
     }
 
 }

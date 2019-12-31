@@ -17,7 +17,7 @@ namespace StringTokenFormatter.Tests {
                 new TokenSegment("$(two)", "two", null, null),
                 new StringSegment(" third"),
             }));
-            mockTokenMatcher.SetupGet(x => x.TokenNameComparer).Returns(StringComparer.CurrentCultureIgnoreCase);
+
             mockTokenMatcher.Setup(x => x.RemoveTokenMarkers("$(two)")).Returns("two");
 
             var actual = input.FormatToken("$(two)", "second", parser: mockTokenMatcher.Object);

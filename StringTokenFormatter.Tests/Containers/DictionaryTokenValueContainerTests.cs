@@ -124,7 +124,7 @@ namespace StringTokenFormatter.Tests {
             string pattern = "first $(two)) third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = pattern.FormatDictionary(tokenValues, parser: Matcher);
+            string actual = pattern.FormatDictionary(tokenValues, parser:Matcher);
 
             string expected = "first second) third";
             Assert.Equal(expected, actual);

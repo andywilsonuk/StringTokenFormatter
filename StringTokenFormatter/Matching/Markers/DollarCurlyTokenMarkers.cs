@@ -8,8 +8,6 @@ namespace StringTokenFormatter {
         public string EndToken => "}";
         public string StartTokenEscaped => "${{";
 
-        public IEqualityComparer<string> TokenNameComparer => StringComparer.CurrentCultureIgnoreCase;
-
         private DollarCurlyTokenMarkers() { }
 
         public static DollarCurlyTokenMarkers Instance { get; } = new DollarCurlyTokenMarkers();

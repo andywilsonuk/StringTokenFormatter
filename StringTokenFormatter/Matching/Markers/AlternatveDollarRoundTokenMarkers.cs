@@ -8,8 +8,6 @@ namespace StringTokenFormatter {
         public string EndToken { get; } = ")";
         public string StartTokenEscaped { get; } = "$$(";
 
-        public IEqualityComparer<string> TokenNameComparer => StringComparer.InvariantCultureIgnoreCase;
-
         private AlternatveDollarRoundTokenMarkers() { }
 
         public static AlternatveDollarRoundTokenMarkers Instance { get; } = new AlternatveDollarRoundTokenMarkers();

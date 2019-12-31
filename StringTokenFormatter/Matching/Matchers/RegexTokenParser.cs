@@ -65,7 +65,5 @@ namespace StringTokenFormatter {
             return token;
         }
 
-        public IEqualityComparer<string> TokenNameComparer => markers.TokenNameComparer;
-
     }
 }

@@ -3,22 +3,25 @@
 namespace StringTokenFormatter {
 
     public class SingleTokenValueContainer<T> : ITokenValueContainer {
-        private readonly string token;
-        private readonly T value;
-        private readonly ITokenParser matcher;
+        protected readonly string token;
+        protected readonly T value;
+        protected readonly ITokenNameComparer nameComparer;
 
-        public SingleTokenValueContainer(string tokenMarker, T mapValue, ITokenParser parser = default) {
-            if (string.IsNullOrEmpty(tokenMarker)) throw new ArgumentNullException(nameof(tokenMarker));
+        public SingleTokenValueContainer(string token, T mapValue, ITokenNameComparer nameComparer = default, ITokenParser parser = default) {
+
+            if (string.IsNullOrEmpty(token)) throw new ArgumentNullException(nameof(token));
 
             parser = parser ?? TokenParser.Default;
+            token = parser.RemoveTokenMarkers(token);
 
-            token = parser.RemoveTokenMarkers(tokenMarker);
+            this.token = token;
+
+            this.nameComparer = nameComparer ?? TokenNameComparer.Default;
             value = mapValue;
-            matcher = parser ?? throw new ArgumentNullException(nameof(parser));
         }
 
-        public bool TryMap(IMatchedToken matchedToken, out object mapped) {
-            if (matcher.TokenNameComparer.Equals(token, matchedToken.Token)) {
+        public virtual bool TryMap(IMatchedToken matchedToken, out object mapped) {
+            if (nameComparer.Comparer.Equals(token, matchedToken.Token)) {
                 mapped = value;
                 return true;
             }

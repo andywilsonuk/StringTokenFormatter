@@ -7,8 +7,8 @@ namespace StringTokenFormatter.Tests {
     public class CompositeTokenValueContainerTests {
         private const string expected1 = "replaced1";
         private const string expected2 = "replaced2";
-        private readonly ITokenValueContainer container1 = TokenValueContainer.FromValue("token1", expected1, TokenParser.Default);
-        private readonly ITokenValueContainer container2 = TokenValueContainer.FromValue("token2", expected2, TokenParser.Default);
+        private readonly ITokenValueContainer container1 = TokenValueContainer.FromValue("token1", expected1, TokenNameComparer.Default);
+        private readonly ITokenValueContainer container2 = TokenValueContainer.FromValue("token2", expected2, TokenNameComparer.Default);
         private readonly ITokenValueContainer compositeContainer;
 
         public CompositeTokenValueContainerTests() {

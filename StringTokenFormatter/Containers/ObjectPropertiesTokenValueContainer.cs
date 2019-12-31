@@ -82,18 +82,18 @@ namespace StringTokenFormatter {
             return ret;
         }
 
-        private IDictionary<string, NonLockingLazy<object>> dictionary;
-        private readonly ITokenParser parser;
+        protected readonly IDictionary<string, NonLockingLazy<object>> dictionary;
+        protected readonly ITokenNameComparer nameComparer;
 
-        public ObjectPropertiesTokenValueContainer(T tokenValueObject, ITokenParser parser = default) {
+        public ObjectPropertiesTokenValueContainer(T tokenValueObject, ITokenNameComparer nameComparer = default) {
             if (tokenValueObject == null) throw new ArgumentNullException(nameof(tokenValueObject));
 
-            this.parser = parser ?? TokenParser.Default;
+            this.nameComparer = nameComparer ?? TokenNameComparer.Default;
             dictionary = ConvertObjectToDictionary(tokenValueObject);
         }
 
         private IDictionary<string, NonLockingLazy<object>> ConvertObjectToDictionary(T values) {
-            var mappings = new Dictionary<string, NonLockingLazy<object>>(parser.TokenNameComparer);
+            var mappings = new Dictionary<string, NonLockingLazy<object>>(nameComparer.Comparer);
 
             foreach (var property in propertyCache) {
                 mappings[property.Key.Name] = new NonLockingLazy<object>(() => property.Value(values));
@@ -102,7 +102,7 @@ namespace StringTokenFormatter {
             return mappings;
         }
 
-        public bool TryMap(IMatchedToken matchedToken, out object mapped) {
+        public virtual bool TryMap(IMatchedToken matchedToken, out object mapped) {
             if (dictionary.TryGetValue(matchedToken.Token, out var lazy)) {
                 mapped = lazy.Value;
                 return true;

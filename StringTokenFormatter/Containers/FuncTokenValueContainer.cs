@@ -12,25 +12,25 @@ namespace StringTokenFormatter {
     /// <typeparam name="T"></typeparam>
     public class FuncTokenValueContainer<T> : ITokenValueContainer {
 
-        private readonly ITokenParser parser;
-        private readonly Func<string, ITokenParser, T> resolver;
+        protected readonly ITokenNameComparer nameComparer;
+        protected readonly Func<string, ITokenNameComparer, T> resolver;
 
         
-        public FuncTokenValueContainer(Func<string, T> valueResolver, ITokenParser parser = default) {
+        public FuncTokenValueContainer(Func<string, T> valueResolver, ITokenNameComparer nameComparer = default) {
             valueResolver = valueResolver ?? throw new ArgumentNullException(nameof(valueResolver));
 
             this.resolver = (x, y) => valueResolver(x);
-            this.parser = parser ?? TokenParser.Default;
+            this.nameComparer = nameComparer ?? TokenNameComparer.Default;
         }
 
 
-        public FuncTokenValueContainer(Func<string, ITokenParser, T> valueResolver, ITokenParser parser = default) {
+        public FuncTokenValueContainer(Func<string, ITokenNameComparer, T> valueResolver, ITokenNameComparer nameComparer = default) {
             this.resolver = valueResolver ?? throw new ArgumentNullException(nameof(valueResolver));
-            this.parser = parser ?? TokenParser.Default;
+            this.nameComparer = nameComparer ?? TokenNameComparer.Default;
         }
 
-        public bool TryMap(IMatchedToken matchedToken, out object mapped) {
-            mapped = resolver(matchedToken.Token, parser);
+        public virtual bool TryMap(IMatchedToken matchedToken, out object mapped) {
+            mapped = resolver(matchedToken.Token, nameComparer);
 
             return mapped != null;
         }
