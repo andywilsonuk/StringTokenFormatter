@@ -16,7 +16,7 @@ namespace StringTokenFormatter {
             var ret = child.TryMap(matchedToken, out mapped);
 
             if (ret) {
-                if (mapped == default || (mapped is string V1 && string.IsNullOrEmpty(V1))) {
+                if (mapped == default || mapped is string V1 && V1.Length == 0) {
                     ret = false;
                     mapped = null;
                 }

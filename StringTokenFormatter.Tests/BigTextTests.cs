@@ -15,7 +15,7 @@ namespace StringTokenFormatter.Tests
 
             var matcher = new RegexTokenParser();
 
-            var actual = matcher.Parse(sample).ToList();
+            var actual = matcher.Parse(sample).Segments.ToList();
 
             Assert.Equal(7, actual.Count);
         }

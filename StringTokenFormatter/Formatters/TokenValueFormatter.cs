@@ -12,22 +12,24 @@ namespace StringTokenFormatter {
         public static FormatProviderTokenValueFormatter CurrentCulture { get; private set; }
         public static FormatProviderTokenValueFormatter CurrentUICulture { get; private set; } 
         public static FormatProviderTokenValueFormatter InstalledUICulture { get; private set; } 
-        public static FormatProviderTokenValueFormatter InvariantCulture { get; private set; } 
+        public static FormatProviderTokenValueFormatter InvariantCulture { get; private set; }
+        public static FormatProviderTokenValueFormatter DefaultThreadCurrentCulture { get; private set; }
+        public static FormatProviderTokenValueFormatter DefaultThreadCurrentUICulture { get; private set; }
 
         static TokenValueFormatter() {
             CurrentCulture =  From(System.Globalization.CultureInfo.CurrentCulture);
             CurrentUICulture = From(System.Globalization.CultureInfo.CurrentUICulture);
             InstalledUICulture = From(System.Globalization.CultureInfo.InstalledUICulture);
             InvariantCulture = From(System.Globalization.CultureInfo.InvariantCulture);
+            DefaultThreadCurrentCulture = From(System.Globalization.CultureInfo.DefaultThreadCurrentCulture);
+            DefaultThreadCurrentUICulture = From(System.Globalization.CultureInfo.DefaultThreadCurrentUICulture);
 
-            Default = CurrentCulture;
+            Default = InvariantCulture;
         }
 
         public static FormatProviderTokenValueFormatter From(IFormatProvider formatProvider) {
             return new FormatProviderTokenValueFormatter(formatProvider);
         }
-
-
 
     }
 
