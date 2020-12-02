@@ -10,7 +10,7 @@ namespace StringTokenFormatter.Tests {
         [Fact]
         public void Custom_Container_Maps_String_Input_To_Values() {
             var container = new Mock<ITokenValueContainer>();
-            object value = "second";
+            object? value = "second";
             container.Setup(x => x.TryMap(It.Is<IMatchedToken>(y => y.Token == "two"), out value)).Returns(true);
             string pattern = "first {two}";
 

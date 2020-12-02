@@ -7,11 +7,11 @@ namespace StringTokenFormatter {
         protected readonly T value;
         protected readonly ITokenNameComparer nameComparer;
 
-        public SingleTokenValueContainer(string token, T mapValue, ITokenNameComparer nameComparer = default, ITokenParser parser = default) {
+        public SingleTokenValueContainer(string token, T mapValue, ITokenNameComparer? nameComparer = default, ITokenParser? parser = default) {
 
             if (string.IsNullOrEmpty(token)) throw new ArgumentNullException(nameof(token));
 
-            parser = parser ?? TokenParser.Default;
+            parser ??= TokenParser.Default;
             token = parser.RemoveTokenMarkers(token);
 
             this.token = token;
@@ -20,7 +20,7 @@ namespace StringTokenFormatter {
             value = mapValue;
         }
 
-        public virtual bool TryMap(IMatchedToken matchedToken, out object mapped) {
+        public virtual bool TryMap(IMatchedToken matchedToken, out object? mapped) {
             if (nameComparer.Comparer.Equals(token, matchedToken.Token)) {
                 mapped = value;
                 return true;

@@ -10,7 +10,7 @@ namespace StringTokenFormatter {
     public class DictionaryTokenValueContainer<T> : ITokenValueContainer {
         protected readonly IDictionary<string, T> dictionary;
 
-        public DictionaryTokenValueContainer(IEnumerable<KeyValuePair<string, T>> itemSource, ITokenNameComparer nameComparer = default, ITokenParser parser = default ) {
+        public DictionaryTokenValueContainer(IEnumerable<KeyValuePair<string, T>> itemSource, ITokenNameComparer? nameComparer = default, ITokenParser? parser = default ) {
             itemSource = itemSource ?? throw new ArgumentNullException(nameof(itemSource));
 
             dictionary = NormalizeDictionary(itemSource, nameComparer ?? TokenNameComparer.Default, parser ?? TokenParser.Default);
@@ -32,7 +32,7 @@ namespace StringTokenFormatter {
             return ret;
         }
 
-        public virtual bool TryMap(IMatchedToken matchedToken, out object mapped) {
+        public virtual bool TryMap(IMatchedToken matchedToken, out object? mapped) {
             if (!dictionary.TryGetValue(matchedToken.Token, out var value)) {
                 mapped = null;
                 return false;

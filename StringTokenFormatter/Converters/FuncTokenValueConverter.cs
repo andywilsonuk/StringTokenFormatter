@@ -6,7 +6,7 @@ namespace StringTokenFormatter {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public sealed class FuncTokenValueConverter<T> : ITokenValueConverter {
-        public bool TryConvert(IMatchedToken token, object value, out object mapped) {
+        public bool TryConvert(IMatchedToken token, object? value, out object? mapped) {
             if (value is Func<T> func) {
                 mapped = func();
                 return true;

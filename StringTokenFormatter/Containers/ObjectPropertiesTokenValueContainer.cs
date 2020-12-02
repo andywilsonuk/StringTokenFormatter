@@ -26,16 +26,15 @@ namespace StringTokenFormatter {
                 let Getter = CreateGetter(GetMethod)
                 select new {
                     Property = x,
-                    Getter = Getter
+                    Getter
                 }).ToDictionary(x => x.Property, x => x.Getter);
 
         }
 
         private static IEnumerable<PropertyInfo> GetPublicProperties(Type type) {
-            var ret = default(IEnumerable<PropertyInfo>);
-
             var BindingFilter = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 
+            IEnumerable<PropertyInfo>? ret;
             if (type.IsInterface) {
                 var propertyInfos = new HashSet<PropertyInfo>();
 
@@ -85,7 +84,7 @@ namespace StringTokenFormatter {
         protected readonly IDictionary<string, NonLockingLazy<object>> dictionary;
         protected readonly ITokenNameComparer nameComparer;
 
-        public ObjectPropertiesTokenValueContainer(T tokenValueObject, ITokenNameComparer nameComparer = default) {
+        public ObjectPropertiesTokenValueContainer(T tokenValueObject, ITokenNameComparer? nameComparer = default) {
             if (tokenValueObject == null) throw new ArgumentNullException(nameof(tokenValueObject));
 
             this.nameComparer = nameComparer ?? TokenNameComparer.Default;
@@ -102,7 +101,7 @@ namespace StringTokenFormatter {
             return mappings;
         }
 
-        public virtual bool TryMap(IMatchedToken matchedToken, out object mapped) {
+        public virtual bool TryMap(IMatchedToken matchedToken, out object? mapped) {
             if (dictionary.TryGetValue(matchedToken.Token, out var lazy)) {
                 mapped = lazy.Value;
                 return true;

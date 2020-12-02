@@ -13,7 +13,7 @@ namespace StringTokenFormatter {
             this.converters = converters ?? throw new ArgumentNullException(nameof(converters));
         }
 
-        public bool TryConvert(IMatchedToken matchedToken, object value, out object mapped) {
+        public bool TryConvert(IMatchedToken matchedToken, object? value, out object? mapped) {
             foreach (var converter in converters) {
                 if (converter.TryConvert(matchedToken, value, out mapped)) return true;
             }

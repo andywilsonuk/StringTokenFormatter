@@ -11,7 +11,7 @@ namespace StringTokenFormatter {
 
         public string Original { get; }
 
-        public string Evaluate(ITokenValueContainer container, ITokenValueFormatter formatter, ITokenValueConverter converter) {
+        public string? Evaluate(ITokenValueContainer container, ITokenValueFormatter formatter, ITokenValueConverter converter) {
             return formatter.Format(this, Original, null, null);
         }
 

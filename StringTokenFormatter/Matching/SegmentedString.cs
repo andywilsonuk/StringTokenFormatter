@@ -13,16 +13,16 @@ namespace StringTokenFormatter {
             this.Segments = allsegments.ToList().AsReadOnly();
         }
 
-        public static SegmentedString Parse(string input, ITokenParser parser = default) {
-            parser = parser ?? TokenParser.Default;
+        public static SegmentedString Parse(string input, ITokenParser? parser = default) {
+            parser ??= TokenParser.Default;
 
             return parser.Parse(input);
         }
 
-        public string Format(ITokenValueContainer container, ITokenValueFormatter formatter = default, ITokenValueConverter converter = default) {
+        public string Format(ITokenValueContainer container, ITokenValueFormatter? formatter = default, ITokenValueConverter? converter = default) {
             if (container == null) throw new ArgumentNullException(nameof(container));
-            converter = converter ?? TokenValueConverter.Default;
-            formatter = formatter ?? TokenValueFormatter.Default;
+            converter ??= TokenValueConverter.Default;
+            formatter ??= TokenValueFormatter.Default;
 
             var sb = new StringBuilder();
             

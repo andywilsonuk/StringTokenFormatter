@@ -16,7 +16,7 @@ namespace StringTokenFormatter {
         protected readonly Func<string, ITokenNameComparer, T> resolver;
 
         
-        public FuncTokenValueContainer(Func<string, T> valueResolver, ITokenNameComparer nameComparer = default) {
+        public FuncTokenValueContainer(Func<string, T> valueResolver, ITokenNameComparer? nameComparer = default) {
             valueResolver = valueResolver ?? throw new ArgumentNullException(nameof(valueResolver));
 
             this.resolver = (x, y) => valueResolver(x);
@@ -24,12 +24,12 @@ namespace StringTokenFormatter {
         }
 
 
-        public FuncTokenValueContainer(Func<string, ITokenNameComparer, T> valueResolver, ITokenNameComparer nameComparer = default) {
+        public FuncTokenValueContainer(Func<string, ITokenNameComparer, T> valueResolver, ITokenNameComparer? nameComparer = default) {
             this.resolver = valueResolver ?? throw new ArgumentNullException(nameof(valueResolver));
             this.nameComparer = nameComparer ?? TokenNameComparer.Default;
         }
 
-        public virtual bool TryMap(IMatchedToken matchedToken, out object mapped) {
+        public virtual bool TryMap(IMatchedToken matchedToken, out object? mapped) {
             mapped = resolver(matchedToken.Token, nameComparer);
 
             return mapped != null;

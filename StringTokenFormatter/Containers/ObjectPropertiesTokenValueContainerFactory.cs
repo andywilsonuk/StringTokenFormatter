@@ -6,12 +6,12 @@ namespace StringTokenFormatter {
     static class ObjectPropertiesTokenValueContainerFactory {
 
         //Default constructor
-        public static ObjectPropertiesTokenValueContainer<T> Create<T>(T tokenValueObject, ITokenNameComparer nameComparer = default) {
+        public static ObjectPropertiesTokenValueContainer<T> Create<T>(T tokenValueObject, ITokenNameComparer? nameComparer = default) {
             return new ObjectPropertiesTokenValueContainer<T>(tokenValueObject, nameComparer);
         }
 
         //Create a generic using reflection super fast!
-        public static ITokenValueContainer Create(Object tokenValueObject, ITokenNameComparer nameComparer = default) {
+        public static ITokenValueContainer Create(Object tokenValueObject, ITokenNameComparer? nameComparer = default) {
             if (tokenValueObject == null) throw new ArgumentNullException(nameof(tokenValueObject));
 
             var Factory = FactoryCache.GetOrAdd(tokenValueObject.GetType(), x => GenerateFactory(x));
@@ -21,8 +21,9 @@ namespace StringTokenFormatter {
             return ret;
         }
 
-        private static ConcurrentDictionary<Type, Func<object, ITokenNameComparer, ITokenValueContainer>> FactoryCache = new ConcurrentDictionary<Type, Func<object, ITokenNameComparer, ITokenValueContainer>>();
-        private static Func<object, ITokenNameComparer, ITokenValueContainer> GenerateFactory(Type T) {
+        private static readonly ConcurrentDictionary<Type, Func<object, ITokenNameComparer?, ITokenValueContainer>> FactoryCache = new();
+
+        private static Func<object, ITokenNameComparer?, ITokenValueContainer> GenerateFactory(Type T) {
 
             var InstanceType = typeof(ObjectPropertiesTokenValueContainer<>).MakeGenericType(T);
             var Constructor = InstanceType.GetConstructor(new[] { T, typeof(ITokenNameComparer) });
@@ -40,7 +41,7 @@ namespace StringTokenFormatter {
                     );
                 ;
 
-            var ret = Expression.Lambda<Func<object, ITokenNameComparer, ITokenValueContainer>>(ex, parameters)
+            var ret = Expression.Lambda<Func<object, ITokenNameComparer?, ITokenValueContainer>>(ex, parameters)
                 .Compile()
                 ;
             

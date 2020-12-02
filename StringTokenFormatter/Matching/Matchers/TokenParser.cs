@@ -3,7 +3,7 @@
 namespace StringTokenFormatter {
     public static class TokenParser {
 
-        public static RegexTokenParser Regex(ITokenMarkers TokenMarkers = default) => new RegexTokenParser(TokenMarkers);
+        public static RegexTokenParser Regex(ITokenMarkers? TokenMarkers = default) => new(TokenMarkers);
 
         private static ITokenParser __Default = Regex();
         public static ITokenParser Default {

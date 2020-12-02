@@ -8,11 +8,11 @@ namespace StringTokenFormatter {
         private static readonly string regexEscapedPaddingSeparator = Regex.Escape(",");
         private static readonly string regexEscapedFormattingSeparator = Regex.Escape(":");
         private static readonly string tokenTriplePattern = $"^([^{regexEscapedPaddingSeparator}{regexEscapedFormattingSeparator}]*){regexEscapedPaddingSeparator}?([^{regexEscapedFormattingSeparator}]*){regexEscapedFormattingSeparator }?(.*)$";
-        private static readonly Regex tokenTripleRegex = new Regex(tokenTriplePattern, RegexOptions.Compiled | RegexOptions.Singleline);
+        private static readonly Regex tokenTripleRegex = new(tokenTriplePattern, RegexOptions.Compiled | RegexOptions.Singleline);
         private readonly ITokenMarkers markers;
         private readonly Regex segmentRegex;
 
-        public RegexTokenParser(ITokenMarkers tokenMarkers = default) {
+        public RegexTokenParser(ITokenMarkers? tokenMarkers = default) {
             markers = tokenMarkers ?? TokenMarkers.Default;
             var regexEscapedStartToken = Regex.Escape(markers.StartToken);
             var regexEscapedEscapedStartToken = Regex.Escape(markers.StartTokenEscaped);

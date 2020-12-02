@@ -7,7 +7,7 @@ namespace StringTokenFormatter {
     /// </summary>
     /// <typeparam name="T">The type of the Lazy.</typeparam>
     public sealed class LazyTokenValueConverter<T> : ITokenValueConverter {
-        public bool TryConvert(IMatchedToken token, object value, out object mapped) {
+        public bool TryConvert(IMatchedToken token, object? value, out object? mapped) {
             if (value is Lazy<T> lazy) {
                 mapped = lazy.Value;
                 return true;

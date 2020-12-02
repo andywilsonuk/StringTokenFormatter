@@ -24,7 +24,7 @@ namespace StringTokenFormatter {
             DefaultThreadCurrentCulture = From(System.Globalization.CultureInfo.DefaultThreadCurrentCulture);
             DefaultThreadCurrentUICulture = From(System.Globalization.CultureInfo.DefaultThreadCurrentUICulture);
 
-            Default = InvariantCulture;
+            __Default = InvariantCulture;
         }
 
         public static FormatProviderTokenValueFormatter From(IFormatProvider formatProvider) {

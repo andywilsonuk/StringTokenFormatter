@@ -18,7 +18,7 @@ namespace StringTokenFormatter {
 
         }
 
-        public virtual bool TryMap(IMatchedToken matchedToken, out object mapped) {
+        public virtual bool TryMap(IMatchedToken matchedToken, out object? mapped) {
             foreach (var container in containers) {
                 if (container.TryMap(matchedToken, out mapped)) return true;
             }

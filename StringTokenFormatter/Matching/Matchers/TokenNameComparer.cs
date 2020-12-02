@@ -27,7 +27,7 @@ namespace StringTokenFormatter {
             Ordinal = new StringComparerTokenNameComparer(StringComparer.Ordinal);
             OrdinalIgnoreCase = new StringComparerTokenNameComparer(StringComparer.OrdinalIgnoreCase);
 
-            Default = InvariantCultureIgnoreCase;
+            __Default = InvariantCultureIgnoreCase;
         }
 
     }

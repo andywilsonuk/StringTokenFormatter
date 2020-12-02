@@ -6,26 +6,26 @@ namespace StringTokenFormatter {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class NonLockingLazy<T> {
-        private Func<T> creator;
+        private Func<T>? creator;
 
-        public NonLockingLazy(Func<T> creator) {
+        public NonLockingLazy(Func<T>? creator) {
             this.creator = creator;
         }
 
         public bool IsValueCreated { get; private set; }
-        public T CreatedValue { get; private set; }
+        public T? CreatedValue { get; private set; }
 
-        public T Value {
+        public T? Value {
             get {
                 //Defensive copy
                 var cachedcreator = creator;
 
-                if (!IsValueCreated) {
+                if (!IsValueCreated && cachedcreator is { }) {
                     CreatedValue = cachedcreator();
                     IsValueCreated = true;
 
                     //Null this out so we don't keep captured values around.
-                    creator = null;
+                    creator = default;
                 }
                 return CreatedValue;
             }

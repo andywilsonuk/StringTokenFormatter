@@ -43,7 +43,7 @@ namespace StringTokenFormatter.Tests
     }
 
     public class PerformanceTokenTest {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public int Age { get; set; }
 
         public static bool IsStatic { get; set; }

@@ -12,7 +12,7 @@ namespace StringTokenFormatter {
             this.child = child;
         }
 
-        public bool TryMap(IMatchedToken matchedToken, out object mapped) {
+        public bool TryMap(IMatchedToken matchedToken, out object? mapped) {
             var ret = child.TryMap(matchedToken, out mapped);
 
             if (ret) {

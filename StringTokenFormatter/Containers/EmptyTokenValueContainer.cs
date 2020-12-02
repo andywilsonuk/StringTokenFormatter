@@ -11,7 +11,7 @@ namespace StringTokenFormatter {
 
         }
 
-        public bool TryMap(IMatchedToken matchedToken, out object mapped) {
+        public bool TryMap(IMatchedToken matchedToken, out object? mapped) {
             mapped = null;
             return false;
         }

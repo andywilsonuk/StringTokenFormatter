@@ -37,25 +37,13 @@ namespace StringTokenFormatter.Tests.Containers {
         [Fact]
         public void Formatting_Single_Value_With_Custom_Mapper_Returns_In_Mapped_String() {
             string pattern = "first {two} third";
-            object customMapping = "custom";
+            object? customMapping = "custom";
             var mockMapper = new Mock<ITokenValueConverter>();
             mockMapper.Setup(x => x.TryConvert(It.Is<IMatchedToken>(y => y.Token == "two"), "second", out customMapping))
                 .Returns(true);
             var mappers = new List<ITokenValueConverter> { mockMapper.Object };
 
             var actual = pattern.FormatToken("two", "second", TokenValueFormatter.Default, mockMapper.Object, TokenParser.Default);
-
-            Assert.Equal("first custom third", actual);
-        }
-
-        [Fact]
-        public void Formatting_Single_Value_With_Custom_Formatter_Returns_In_Mapped_String() {
-            string pattern = "first {two} third";
-            var mockFormatter = new Mock<ITokenValueFormatter>();
-            mockFormatter.Setup(x => x.Format(It.Is<TokenSegment>(y => y.Token == "two"), "second", "", ""))
-                .Returns("custom");
-
-            var actual = pattern.FormatToken("two", "second", mockFormatter.Object, TokenValueConverter.Default, TokenParser.Default);
 
             Assert.Equal("first custom third", actual);
         }

@@ -14,7 +14,7 @@ namespace StringTokenFormatter.Tests {
             mockMatchedToken.SetupGet(x => x.Token).Returns("Prop1");
             var container = TokenValueContainer.FromObject(mockObject.Object, TokenNameComparer.Default);
 
-            bool result = container.TryMap(mockMatchedToken.Object, out object mapped);
+            bool result = container.TryMap(mockMatchedToken.Object, out var mapped);
             result = container.TryMap(mockMatchedToken.Object, out mapped);
 
             Assert.True(result);
@@ -63,6 +63,9 @@ namespace StringTokenFormatter.Tests {
             for (int i = 0; i < 100000; i++) {
                 actual2 = pattern.FormatToken(Test2);
             }
+
+            actual2.Equals(actual2);
+
             sw2.Stop();
 
 

@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Text;
 using Xunit;
 
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+
 namespace StringTokenFormatter.Tests {
     public class DictionaryTokenValueContainerTests {
 

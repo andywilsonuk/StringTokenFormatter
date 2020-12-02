@@ -8,10 +8,10 @@ namespace StringTokenFormatter {
             provider = formatProvider;
         }
 
-        public string Format(ISegment segment, object value, string Padding, string Format) {
-            var ret = default(string);
+        public string? Format(ISegment segment, object? value, string? Padding, string? Format) {
+            var ret = default(string?);
 
-            if (value != null) {
+            if (value is { }) {
                 if (string.IsNullOrEmpty(Padding) && string.IsNullOrEmpty(Format)) {
                     ret = value.ToString();
                 } else {

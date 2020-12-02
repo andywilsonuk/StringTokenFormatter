@@ -9,7 +9,7 @@ namespace StringTokenFormatter.Tests {
     }
 
     public class DerivedClass : TestClass, IExtra {
-        public string Third { get; set; }
+        public string? Third { get; set; }
     }
 
     public interface IFirst {
@@ -17,7 +17,7 @@ namespace StringTokenFormatter.Tests {
     }
 
     public interface ISecond {
-        string Second { get; set; }
+        string? Second { get; set; }
     }
 
     public interface IThird {
@@ -25,12 +25,12 @@ namespace StringTokenFormatter.Tests {
     }
 
     public interface IExtra : IFirst, ISecond {
-        string Third { get; set; }
+        string? Third { get; set; }
     }
 
     public class TestClass : IFirst {
         public int First { get; set; }
-        public string Second { get; set; }
+        public string? Second { get; set; }
     }
 
 }
