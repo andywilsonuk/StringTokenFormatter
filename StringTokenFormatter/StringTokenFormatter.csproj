@@ -11,7 +11,7 @@
     <Description>Provides string extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.</Description>
     <Summary>Provides string extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.</Summary>
     <Copyright>Andy Wilson</Copyright>
-    <PackageLicenseUrl>http://opensource.org/licenses/Apache-2.0</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/andywilsonuk/StringTokenFormatter</PackageProjectUrl>
     <RepositoryUrl>https://github.com/andywilsonuk/StringTokenFormatter</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -23,6 +23,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <AssemblyTitle>String Token Formatter .NET Standard 2.0</AssemblyTitle>
@@ -30,4 +32,10 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
     <AssemblyTitle>String Token Formatter .NET 4.0</AssemblyTitle>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 </Project>

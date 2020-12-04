@@ -8,6 +8,7 @@
 
         public static string FormatToken(this ITokenValueContainer container, SegmentedString input, ITokenValueFormatter? formatter = default, ITokenValueConverter? converter = default, ITokenParser? parser = default, ITokenNameComparer? nameComparer = default) {
             var ret = input.Format(container, formatter, converter);
+
             return ret;
         }
 
