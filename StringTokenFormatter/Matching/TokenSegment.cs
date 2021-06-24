@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace StringTokenFormatter {
 
@@ -22,11 +23,21 @@ namespace StringTokenFormatter {
 
             if (container.TryMap(this, out var value1)) {
 
-                if (converter.TryConvert(this, value1, out var value2)) {
-                    mappedValue = value2;
-                } else {
-                    mappedValue = value1;
-                }
+                mappedValue = converter.TryConvert(this, value1, out var value2) ? value2 : value1;
+
+            }
+
+            var ret = formatter.Format(this, mappedValue, Padding, Format);
+
+            return ret;
+        }
+
+        public async Task<string?> EvaluateAsync(ITokenValueContainerAsync container, ITokenValueFormatter formatter, ITokenValueConverter converter) {
+            object? mappedValue = Original;
+
+            if (await container.TryMapAsync(this, out var value1)) {
+
+                mappedValue = converter.TryConvert(this, value1, out var value2) ? value2 : value1;
 
             }
 

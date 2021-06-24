@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace StringTokenFormatter {
 
@@ -28,6 +29,20 @@ namespace StringTokenFormatter {
             
             foreach (var segment in Segments) {
                 sb.Append(segment.Evaluate(container, formatter, converter));
+            }
+
+            return sb.ToString();
+        }
+
+        public async Task<string> FormatAsync(ITokenValueContainerAsync container, ITokenValueFormatter? formatter = default, ITokenValueConverter? converter = default) {
+            if (container == null) throw new ArgumentNullException(nameof(container));
+            converter ??= TokenValueConverter.Default;
+            formatter ??= TokenValueFormatter.Default;
+
+            var sb = new StringBuilder();
+
+            foreach (var segment in Segments) {
+                sb.Append(await segment.EvaluateAsync(container, formatter, converter));
             }
 
             return sb.ToString();

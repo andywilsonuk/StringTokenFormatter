@@ -185,6 +185,37 @@ The default implementation uses the current culture to provide formatting inform
 
 To create your own, either implement the ```ITokenValueFormatter``` interface or call ```TokenValueFormatter.From(IFormatProvider)```.
 
+## Async support
+Whilst not a core feature, it is possible to use async/await. The ```SegmentedString``` class includes a ```FormatAsync``` method which takes an
+```ITokenValueContainerAsync```. No concrete implementations are provided at this time. Example:
+
+``` C#
+class Container : ITokenValueContainerAsync
+{
+    public async Task<bool> TryMapAsync(IMatchedToken matchedToken, out object? mapped)
+    {
+        var result = await ExternalCallAsync(matchedToken.Token);
+
+        if (result.IsMappedSuccessfully) {
+            mapped = result.MappedValue;
+            return true;
+        }
+
+        mapped = null;
+        return false;
+    }
+}
+
+...
+
+public async Task<string> FormatStringAsync(string original)
+{
+    var container = new Container();
+    var segments = SegmentedString.Parse(original, null);
+    return await segments.FormatAsync(container, default, default);
+}
+```
+
 # Upgrading from v3.x
 Version 4.x of StringTokenFormatter is a major upgrade and has a number of enhancements compared to 3.x.
 

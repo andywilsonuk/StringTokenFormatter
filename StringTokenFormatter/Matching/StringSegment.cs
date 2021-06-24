@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace StringTokenFormatter {
 
@@ -13,6 +14,10 @@ namespace StringTokenFormatter {
 
         public string? Evaluate(ITokenValueContainer container, ITokenValueFormatter formatter, ITokenValueConverter converter) {
             return formatter.Format(this, Original, null, null);
+        }
+
+        public Task<string?> EvaluateAsync(ITokenValueContainerAsync container, ITokenValueFormatter formatter, ITokenValueConverter converter) {
+            return Task.FromResult(formatter.Format(this, Original, null, null));
         }
 
         public override string ToString() => Original;
