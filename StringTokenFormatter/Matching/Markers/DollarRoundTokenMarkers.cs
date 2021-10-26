@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace StringTokenFormatter {
 
     public sealed class DollarRoundTokenMarkers : ITokenMarkers {

@@ -17,7 +17,13 @@ namespace StringTokenFormatter {
                 } else {
                     var padding = string.IsNullOrEmpty(Padding) ? "0" : Padding;
                     var format = $"{{0,{padding}:{Format}}}";
-                    ret = string.Format(provider, format, value);
+
+                    try {
+                        ret = string.Format(provider, format, value);
+                    } catch {
+                        ret = value.ToString();
+                    }
+
                 }
 
             }

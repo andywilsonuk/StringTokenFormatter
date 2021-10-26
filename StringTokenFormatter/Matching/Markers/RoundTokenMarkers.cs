@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter {
 
     public sealed class RoundTokenMarkers : ITokenMarkers {
         public string StartToken => "(";

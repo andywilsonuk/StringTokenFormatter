@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter {
     public class EmptyTokenValueContainer : ITokenValueContainer {
 
         public static EmptyTokenValueContainer Instance { get; private set; } = new EmptyTokenValueContainer();

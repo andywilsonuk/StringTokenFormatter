@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter {
 
     public interface ITokenMarkers {
         string StartToken { get; }

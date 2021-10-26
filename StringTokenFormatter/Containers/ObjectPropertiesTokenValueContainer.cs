@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace StringTokenFormatter {
     /// <summary>
@@ -67,7 +64,7 @@ namespace StringTokenFormatter {
 
 
         private static Func<T, object> CreateGetter(MethodInfo Getter) {
-            var instance = System.Linq.Expressions.Expression.Parameter(typeof(T), "instance");
+            var instance = Expression.Parameter(typeof(T), "instance");
 
             var ex = Expression.Convert(
                 Expression.Call(instance, Getter),

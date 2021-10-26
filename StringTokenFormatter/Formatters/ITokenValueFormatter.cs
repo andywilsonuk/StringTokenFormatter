@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter {
 
     public interface ITokenValueFormatter {
         string? Format(ISegment segment, object? value, string? Padding, string? Format);
