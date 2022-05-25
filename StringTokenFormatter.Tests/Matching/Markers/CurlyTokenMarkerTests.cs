@@ -1,34 +1,38 @@
-﻿using Xunit;
+﻿using StringTokenFormatter.Impl;
+using Xunit;
 
 namespace StringTokenFormatter.Tests {
     public class CurlyTokenMarkerTests : TokenMarkerTestsBase {
 
-
+        static IInterpolationSettings Settings = (InterpolationSettings.DefaultBuilder with
+        {
+            TokenSyntax = TokenSyntaxes.Curly
+        }).Build();
 
         [Fact]
         public void Single() {
-            SingleInternal(CurlyTokenMarkers.Instance, "first {two} third", "first second third");
+            SingleInternal(Settings, "first {two} third", "first second third");
         }
 
 
         [Fact]
         public void SingleInteger() {
-            SingleIntegerInternal(CurlyTokenMarkers.Instance, "first {two:D4} third", "first 0005 third");
+            SingleIntegerInternal(Settings, "first {two:D4} third", "first 0005 third");
         }
 
         [Fact]
         public void OpenEscapedCharacterYieldsNothing() {
-            OpenEscapedCharacterYieldsNothingInternal(CurlyTokenMarkers.Instance, "first {{ third", "first { third");
+            OpenEscapedCharacterYieldsNothingInternal(Settings, "first {{ third", "first { third");
         }
 
         [Fact]
         public void OpenEscapedCharacterYieldsReplacement() {
-            OpenEscapedCharacterYieldsReplacementInternal(CurlyTokenMarkers.Instance, "first {{{two} third", "first {second third");
+            OpenEscapedCharacterYieldsReplacementInternal(Settings, "first {{{two} third", "first {second third");
         }
 
         [Fact]
         public void MissingTokenValue() {
-            MissingTokenValueInternal(CurlyTokenMarkers.Instance, "first {missing} third", "first {missing} third");
+            MissingTokenValueInternal(Settings, "first {missing} third", "first {missing} third");
         }
 
     }

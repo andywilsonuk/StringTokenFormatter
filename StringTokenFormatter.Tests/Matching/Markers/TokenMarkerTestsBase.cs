@@ -1,54 +1,50 @@
 ﻿using Xunit;
 using System.Collections.Generic;
+using StringTokenFormatter.Impl;
 
 namespace StringTokenFormatter.Tests {
     public abstract class TokenMarkerTestsBase {
-        protected static void SingleInternal(ITokenMarkers markers, string original, string expected) {
-            var Matcher = new RegexTokenParser(markers);
+        protected static void SingleInternal(IInterpolationSettings settings, string original, string expected) {
 
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = original.FormatDictionary(tokenValues, parser: Matcher);
+            var actual = original.FormatDictionary(tokenValues, settings);
 
             Assert.Equal(expected, actual);
         }
 
-        protected static void SingleIntegerInternal(ITokenMarkers markers, string original, string expected) {
-            var Matcher = new RegexTokenParser(markers);
+        protected static void SingleIntegerInternal(IInterpolationSettings settings, string original, string expected) {
 
             var tokenValues = new Dictionary<string, object> { { "two", 5 } };
 
-            string actual = original.FormatDictionary(tokenValues, parser: Matcher);
+            var actual = original.FormatDictionary(tokenValues, settings);
 
             Assert.Equal(expected, actual);
         }
 
-        protected static void OpenEscapedCharacterYieldsReplacementInternal(ITokenMarkers markers, string original, string expected) {
-            var Matcher = new RegexTokenParser(markers);
+        protected static void OpenEscapedCharacterYieldsReplacementInternal(IInterpolationSettings settings, string original, string expected) {
 
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = original.FormatDictionary(tokenValues, parser: Matcher);
+            var actual = original.FormatDictionary(tokenValues, settings);
 
             Assert.Equal(expected, actual);
         }
 
-        protected static void MissingTokenValueInternal(ITokenMarkers markers, string original, string expected) {
-            var Matcher = new RegexTokenParser(markers);
+        protected static void MissingTokenValueInternal(IInterpolationSettings settings, string original, string expected) {
 
             var tokenValues = new Dictionary<string, object> { { "$(two)", "second" } };
 
-            string actual = original.FormatDictionary(tokenValues, parser: Matcher);
+            var actual = original.FormatDictionary(tokenValues, settings);
 
             Assert.Equal(expected, actual);
         }
 
-        protected static void OpenEscapedCharacterYieldsNothingInternal(ITokenMarkers markers, string original, string expected) {
-            var Matcher = new RegexTokenParser(markers);
+        protected static void OpenEscapedCharacterYieldsNothingInternal(IInterpolationSettings settings, string original, string expected) {
 
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = original.FormatDictionary(tokenValues, parser: Matcher);
+            var actual = original.FormatDictionary(tokenValues, settings);
 
             Assert.Equal(expected, actual);
         }

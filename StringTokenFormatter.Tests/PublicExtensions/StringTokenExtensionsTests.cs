@@ -32,9 +32,14 @@ namespace StringTokenFormatter.Tests
         [Fact]
         public void SingleValueThroughExtensionWithCulture()
         {
+            var Settings = new InterpolationSettingsBuilder
+            {
+                TokenValueFormatter = TokenValueFormatters.CurrentCulture,
+            }.Build();
+
             string pattern = "first {two} third";
 
-            string actual = pattern.FormatToken("two", "second", formatter: TokenValueFormatter.From(CultureInfo.CurrentCulture));
+            string actual = pattern.FormatToken("two", "second", Settings);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -43,10 +48,15 @@ namespace StringTokenFormatter.Tests
         [Fact]
         public void DictionaryValueThroughExtensionWithCulture()
         {
+            var Settings = new InterpolationSettingsBuilder
+            {
+                TokenValueFormatter = TokenValueFormatters.CurrentCulture,
+            }.Build();
+
             string pattern = "first {two} third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = pattern.FormatDictionary(tokenValues, formatter: TokenValueFormatter.From(CultureInfo.CurrentCulture));
+            string actual = pattern.FormatDictionary(tokenValues, Settings);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);

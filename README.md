@@ -1,5 +1,13 @@
-# StringTokenFormatter v4.x
-Provides high-speed extension methods for replacing tokens within strings (using the format '{name}') with their specified lookup value.
+# StringTokenFormatter v6.x
+High-speed extension methods to create interpolated strings at runtime and replace tokens within.  Ie:
+			```
+			var Client = new {
+				FirstName = "John",
+				LastName = "Smith",
+			};
+			
+			var Message = "Hello {FirstName} {LastName}".FormatToken(Client);
+			```
 
 Available on NuGet at https://www.nuget.org/packages/StringTokenFormatter/
 
@@ -84,7 +92,7 @@ Assert.Equal("start centre end", result);
 ```
 
 
-## For Tight Loops/Advanced Usage: ```FormatContainer```
+## For High-performance: ```ToInterpolatedString``` then ```FormatContainer```
 
 ```C#
 /*
@@ -96,7 +104,9 @@ With a slightly different calling convention you can optimize for reuse.
 
 
 //Create our pattern once so we can reuse it without having to reparse the string each time.
-var Pattern = SegmentedString.Parse("{Person_Name} is {Person_Age} and is related to {Brother_Name} who is {Brother_Age}");
+var Pattern = "{Person_Name} is {Person_Age} and is related to {Brother_Name} who is {Brother_Age}"
+	.ToInterpolatedString()
+	;
 
 //Create our container once so we can reuse it as well.
 var PropertiesContainer = TokenValueContainer.FromObject(new {
@@ -143,28 +153,51 @@ Assert.Equal(expected, actual);
 
 
 # Advanced Details
+## Customizing Syntax and More
+All interpolating methods accept an optional ```IInterpolationSettings``` parameter.
+If it is not provided, ```InterpolationSettings.Default``` is used instead.
+
+To customize how interpolation or parsing works, simply create your own instance of ```IInterpolationSettings```
+and use it instead:
+```
+var Settings = new InterpolationSettingsBuilder() {
+    TokenMarkers = TokenMarkers.DollarRound,
+}.Build();
+
+var Pattern = "This pattern uses new $(tokens)".ToInterpolatedString(Settings);
+```
 
 ## Flow of Control
 When formatting a string, the following is logical order things happen in:
-1.  An ```ITokenParser``` turns a ```string``` into a ```SegmentedString```
+1.  An ```IInterpolatedStringParser``` turns a ```string``` into an ```IInterpolatedString```
 2.  An ```ITokenValueContainer``` provides values, generally by wrapping some other object.
-3.  For each ```IMatchedToken``` in the ```SegmentedString```
-    1. Ask the ```ITokenValueContainer``` for the value with the name of ```IMatchedToken.Token```
+3.  For each ```ITokenMatch``` in the ```IInterpolatedString```
+    1. Ask the ```ITokenValueContainer``` for the value with the name of ```ITokenMatch.Token```
     2. If possible, transform the value into a "simpler" value using the ```ITokenValueConverter```
     3. Pass the value to the ```ITokenValueFormatter``` to format the value
 
-## Further Customisation
-The extension methods wrap the functionality you will need and generally take three optional parameters:
+## Customizing with ```InterpolationSettingsBuilder```
+```InterpolationSettingsBuilder``` contains properties that you can use to further customize the interpolation process.
 
-### ```ITokenParser Parser = default```
-This handles parsing a string into a segmented string.  If no value is provided, ```TokenParser.Default``` is used.
-The default implementation uses a compiled regex to detect tokens in the form of {token}.
+### ```InterpolationSettingsBuilder.TokenSyntax```
+This controls what syntax is used for detecting tokens.
+ie. ```{Token}```, ```$(Token)```, or something else.
 
-### ```ITokenValueConverter Converter = default```
-This handles converting token values from one type to another.  If no value is provided, ````TokenValueConverter.Default``` is used.
-The default implementation will do the following conversions:
-* Null -> Null (short circuit)
-* Primitive (ie. String, int, etc) -> Primitive (short circuit)
+```TokenSyntaxes.Default``` is the default which uses ```{Token}``` syntax
+
+### ```InterpolationSettingsBuilder.TokenNameComparer```
+This controls how token names are compared.
+For example, are ```{Token}``` and ```{token}``` the same?
+
+```TokenNameComparers.Default``` is the default which uses ```CurrentCultureIgnoreCase```.
+
+### ```InterpolationSettingsBuilder.TokenValueConverter```
+This controls any conversions that are done on token values.
+For example, ```When a Func<> is provided, evaluate it```.
+
+```TokenValueConverters.Default``` is the default which converts the following values:
+* Null -> Null (no conversion - short circuit)
+* Primitive (ie. String, int, etc) -> Primitive (no conversion - short circuit)
 * Lazy<string> -> string (via Lazy.Value)
 * Lazy<object> -> object (via Lazy.Value)
 * Func<string> -> string (via Func())
@@ -172,75 +205,59 @@ The default implementation will do the following conversions:
 * Func<string, string> -> string (via Func(TokenName))
 * Func<string, object> -> string (via Func(TokenName))
 
-To create your own implementation, you'll generally use ```TokenValueConverter.Combine``` (which returns a ```CompositeTokenValueConverter```) along with your own implementation of the converters.
+To create your own implementation, you'll generally use ```TokenValueConverters.Combine``` (which returns a ```CompositeTokenValueConverter```) along with your own implementation of the converters.
 Note:  ```CompositeTokenValueConverter``` loops through all child converters until it finds a match, so for best performance, put the most common matches at the top.
 
-### ```ITokenValueFormatter Formatter = default```
-This handles generating the string representation of the token values.  If not value is provided, ```TokenValueFormatter.Default``` is used.
-The default implementation uses the current culture to provide formatting information.  The following formatters are provided for your conveinance:
-* ```TokenValueFormatter.CurrentCulture```
-* ```TokenValueFormatter.CurrentUICulture```
-* ```TokenValueFormatter.InstalledUICulture```
-* ```TokenValueFormatter.InvariantCulture```
 
-To create your own, either implement the ```ITokenValueFormatter``` interface or call ```TokenValueFormatter.From(IFormatProvider)```.
+### ```InterpolationSettingsBuilder.TokenValueFormatter```
+This controls how values are formatted.
+For example, ```1000.00``` or ```1000,00```
 
-# Upgrading from v3.x
-Version 4.x of StringTokenFormatter is a major upgrade and has a number of enhancements compared to 3.x.
+```TokenValueFormatters.Default``` is the default which uses ```CurrentUICulture```.
 
-Compared to Version 3.x, Version 4.x is:
+
+# Upgrading from v4.x
+Version 6.x of StringTokenFormatter is a major upgrade and has a number of enhancements compared to 4.x.
+
+Compared to Version 4.x, Version 6.x is:
 * Faster and optimized for high-performance scenarios
 * Tighter and optimized to reduce memory allocations and garbage collection
 * More Flexible: Generics provide more flexibility and control
 * More Consistent: Method overloads and their parameters have been standardized
 
-If you are upgrading from Version 3.x, there are a few things you should be aware of.
-
-## New Overloads: ```FormatToken``` / ```FormatDictionary``` / ```FormatContainer```
-In Version 3.x, there were multiple overloads of ```FormatToken```.  The problem this caused
-is that when performance-enhancing generics were added, generic extension methods take presidence over
-interface extension methods.  Plainly stated, when you have ```FormatToken<T>(...)``` and
-```FormatToken(IDictionary<string, object>)```, this second overload would never get called without
-an explicit cast.  To resolve, that, the Dictionary-specific methods were moved to a new 
-overload: ```FormatDictionary```.  Additionally, the ```FormatContainer``` method provides a
-similar method for formatting but for containers.
-
-## Extension Method Parameters
-When upgrading to version 4.x, you will notice a consistent naming and ordering among the extension method
-optional parameters.  You will also notice that the new order resembles the liklihood that you will change
-the parameter.  They flow in the following order:
-1. ```Formatter```
-2. ```Converter```
-3. ```Parser```
-
-Whenever null is passed into one of these parameters, it will use the ```Default``` value.
-
-Also, in Version 3, there were some overloads that took an ```IFormatProvider```.  In Version4, if you need
-to specify an ```IFormatProvider``` you can use ```TokenValueFormatter.From(IFormatProvider)``` to convert
-your ```IFormatProvider``` to an ```ITokenValueFormatter```.
+If you are upgrading from Version 4.x, there are a few things you should be aware of.
 
 ## Class and Interface Renames
-A number of classes and interfaces have been renamed to more clearly indicate what they are used for.
-The list below is not exhaustive but it will give you a general view of the new names.
+Nearly every class and interface has been moved or renamed to more clearly indicate what they are used for.
+The biggest change is that ```SegmentedString``` is now ```InterpolatedString```.
 
-
-|Version 3 (old name)	|Version 4 (new name)	|
+|Version 4 (old name)	|Version 6 (new name)	|
 |-----------------------|-----------------------|
-|ValueMapper			|TokenValueConverter	|
-|ValueFormatter			|TokenValueFormatter	|
-|TokenMatcher			|TokenParser			|
+|SegmentedString		|InterpolatedString		|
 
-## Removed Classes
-In Version3, there was a ```TokenReplacer``` class that served a number of different purposes.  The functionality
-of this class still exists but has been refactored into multiple classes.
+## ```ITokenValueContainer```s no longer detokenize
+There were cases when a dictionary-based ```ITokenValueContainer``` would de-tokenize its parameters.
+This meant that ```"token" = "value"``` and ```"{token} = "value"``` were equivalent.
 
-The 'Default' members have moved as follows:
-DefaultMatcher -> ```TokenParser.Default```
-DefaultFormatter -> ```TokenValueFormatter.Default```
-DefaultMappers -> ```TokenValueConverter.Default```
+In v6, all dictionary parameters should be provided as un-tokenized values.
+For example:
+```
+var Values = new Dictionary<string, string>();
+Values["name"] = "value";
 
-The rest of the methods have been relocated to more appropriate locations making this class no longer necessary.
-Additionally, by removing this class, multiple allocations were saved on each invocation.
+var Message = "Hello {name}".FormatDictionary(Values);
+```
 
+## Customizing Token Syntax
+In v4, there were mutable static properties that were used to change the default parsing.
+Because these were global, multiple assemblies in the same application could conflict with each other.
 
+This has been resolved in v6.
+
+To customize token sytax, use ```InterpolationSettingsBuilder``` as described above.
+
+## Overload Consolidation: ```FormatToken``` / ```FormatDictionary``` / ```FormatContainer```
+In Version 4.x, there were multiple overloads of ```FormatToken``` with tons of optional parameters.
+This made it difficult to understand what all the parameters were doing.  This has been simplified 
+with ```IInterpolationSettings```.
 

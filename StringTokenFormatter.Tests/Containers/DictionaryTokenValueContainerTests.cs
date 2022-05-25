@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text;
 using Xunit;
 
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8625 // Converting null literal or possible null value to non-nullable type.
 
 namespace StringTokenFormatter.Tests {
     public class DictionaryTokenValueContainerTests {
@@ -89,7 +89,7 @@ namespace StringTokenFormatter.Tests {
         [Fact]
         public void NormalisedTokenKey() {
             string pattern = "first {two} third";
-            var tokenValues = new Dictionary<string, object> { { "{two}", "second" } };
+            var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
             string actual = pattern.FormatDictionary(tokenValues);
 
@@ -121,12 +121,17 @@ namespace StringTokenFormatter.Tests {
 
         [Fact]
         public void Close_Escape_Character_Same_As_End_Character_Yields_Replacement_And_Escape_Marker() {
-            var Matcher = new RegexTokenParser(AlternatveDollarRoundTokenMarkers.Instance);
+            
+            var Settings = new InterpolationSettingsBuilder
+            {
+                TokenSyntax = TokenSyntaxes.DollarRoundAlternative
+            }.Build();
+
 
             string pattern = "first $(two)) third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = pattern.FormatDictionary(tokenValues, parser:Matcher);
+            string actual = pattern.FormatDictionary(tokenValues, Settings);
 
             string expected = "first second) third";
             Assert.Equal(expected, actual);
@@ -158,10 +163,16 @@ namespace StringTokenFormatter.Tests {
 
         [Fact]
         public void SingleDictionaryWithCulture() {
+
+            var Settings = new InterpolationSettingsBuilder
+            {
+                TokenValueFormatter = TokenValueFormatters.CurrentCulture,
+            }.Build();
+
             string pattern = "first {two} third";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
-            string actual = pattern.FormatDictionary(tokenValues, formatter: TokenValueFormatter.From(CultureInfo.CurrentCulture));
+            string actual = pattern.FormatDictionary(tokenValues, Settings);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);
@@ -179,20 +190,20 @@ namespace StringTokenFormatter.Tests {
         }
 
         [Fact]
-        public void NonTokenisedOpenBracketsAreIgnored() {
+        public void NonTokenisedOpenBracketsAreNotIgnored() {
             string pattern = "first { {two}";
             var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
             string actual = pattern.FormatDictionary(tokenValues);
 
-            string expected = "first { second";
+            string expected = "first { {two}";
             Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void String_Dictionary_With_Matching_Token_Mapped_Successfully() {
             string pattern = "first {two} third";
-            var tokenValues = new Dictionary<string, string> { { "{two}", "second" } };
+            var tokenValues = new Dictionary<string, string> { { "two", "second" } };
 
             string actual = pattern.FormatDictionary(tokenValues);
 
@@ -215,14 +226,14 @@ namespace StringTokenFormatter.Tests {
         public void Null_String_Dictionary_Throws() {
             string pattern = "first {two} third";
 
-            Assert.Throws<ArgumentNullException>(() => pattern.FormatDictionary((IDictionary<string, string>)null));
+            Assert.Throws<ArgumentNullException>(() => pattern.FormatDictionary((IDictionary<string, string>?)null));
         }
 
         [Fact]
         public void Null_Object_Dictionary_Throws() {
             string pattern = "first {two} third";
 
-            Assert.Throws<ArgumentNullException>(() => pattern.FormatDictionary((IDictionary<string, object>)null));
+            Assert.Throws<ArgumentNullException>(() => pattern.FormatDictionary((IDictionary<string, object>?)null));
         }
 
         [Fact]

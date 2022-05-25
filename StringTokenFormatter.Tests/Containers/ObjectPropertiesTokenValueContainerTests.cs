@@ -1,4 +1,5 @@
 ﻿using Moq;
+using StringTokenFormatter.Impl;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,12 +11,12 @@ namespace StringTokenFormatter.Tests {
         [Fact]
         public void Property_Values_Are_Only_Got_Once() {
             var mockObject = new Mock<IMockPropertiesObject>();
-            var mockMatchedToken = new Mock<IMatchedToken>();
+            var mockMatchedToken = new Mock<ITokenMatch>();
             mockMatchedToken.SetupGet(x => x.Token).Returns("Prop1");
-            var container = TokenValueContainer.FromObject(mockObject.Object, TokenNameComparer.Default);
+            var container = TokenValueContainer.FromObject(mockObject.Object);
 
-            bool result = container.TryMap(mockMatchedToken.Object, out var mapped);
-            result = container.TryMap(mockMatchedToken.Object, out mapped);
+            var (result, _) = container.TryMap(mockMatchedToken.Object);
+            (result, _) = container.TryMap(mockMatchedToken.Object);
 
             Assert.True(result);
             mockObject.Verify(x => x.Prop1, Times.Once);
@@ -155,7 +156,12 @@ namespace StringTokenFormatter.Tests {
             string pattern = "first {two} third";
             var tokenValues = new { two = "second" };
 
-            string actual = pattern.FormatToken(tokenValues, formatter: TokenValueFormatter.From(CultureInfo.CurrentCulture));
+            var Settings = new InterpolationSettingsBuilder
+            {
+                TokenValueFormatter = TokenValueFormatters.CurrentCulture,
+            }.Build();
+
+            string actual = pattern.FormatToken(tokenValues, Settings);
 
             string expected = "first second third";
             Assert.Equal(expected, actual);

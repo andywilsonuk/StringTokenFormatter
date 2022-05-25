@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StringTokenFormatter.Impl;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
@@ -7,12 +8,12 @@ namespace StringTokenFormatter.Tests {
     public class CompositeTokenValueContainerTests {
         private const string expected1 = "replaced1";
         private const string expected2 = "replaced2";
-        private readonly ITokenValueContainer container1 = TokenValueContainer.FromValue("token1", expected1, TokenNameComparer.Default);
-        private readonly ITokenValueContainer container2 = TokenValueContainer.FromValue("token2", expected2, TokenNameComparer.Default);
+        private readonly ITokenValueContainer container1 = TokenValueContainer.FromValue("token1", expected1);
+        private readonly ITokenValueContainer container2 = TokenValueContainer.FromValue("token2", expected2);
         private readonly ITokenValueContainer compositeContainer;
 
         public CompositeTokenValueContainerTests() {
-            compositeContainer = new CompositeTokenValueContainer(new[] { container1, container2 });
+            compositeContainer = TokenValueContainer.Combine(container1, container2);
         }
 
         [Fact]
