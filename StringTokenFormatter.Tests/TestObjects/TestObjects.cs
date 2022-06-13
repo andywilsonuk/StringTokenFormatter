@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace StringTokenFormatter.Tests {
+﻿namespace StringTokenFormatter.Tests {
 
     public static class TestFormats {
         public static readonly string FirstSecondThird = "{" + nameof(IFirst.First) + "} {" + nameof(ISecond.Second) + "} {" + nameof(IThird.Third) + "}";

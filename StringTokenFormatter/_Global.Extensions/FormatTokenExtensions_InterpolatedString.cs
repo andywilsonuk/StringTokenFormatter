@@ -1,5 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace StringTokenFormatter {

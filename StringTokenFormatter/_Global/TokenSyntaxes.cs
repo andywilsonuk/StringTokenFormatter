@@ -1,6 +1,4 @@
 ﻿using StringTokenFormatter.Impl;
-using StringTokenFormatter.Impl.TokenSyntaxes;
-using System;
 
 namespace StringTokenFormatter {
     public static class TokenSyntaxes {
@@ -37,31 +35,31 @@ namespace StringTokenFormatter {
         public static ITokenSyntax Default { get; }
 
         static TokenSyntaxes() {
-            Curly = new TokenSyntax() {
+            Curly = new TokenSyntaxImpl() {
                 StartToken = "{",
                 EndToken = "}",
                 StartTokenEscaped = "{{",
             };
 
-            DollarCurly = new TokenSyntax() {
+            DollarCurly = new TokenSyntaxImpl() {
                 StartToken = "${",
                 EndToken = "}",
                 StartTokenEscaped = "${{",
             };
 
-            Round = new TokenSyntax() {
+            Round = new TokenSyntaxImpl() {
                 StartToken = "(",
                 EndToken = ")",
                 StartTokenEscaped = "((",
             };
 
-            DollarRound = new TokenSyntax() {
+            DollarRound = new TokenSyntaxImpl() {
                 StartToken = "$(",
                 EndToken = ")",
                 StartTokenEscaped = "$((",
             };
 
-            DollarRoundAlternative = new TokenSyntax() {
+            DollarRoundAlternative = new TokenSyntaxImpl() {
                 StartToken = "$(",
                 EndToken = ")",
                 StartTokenEscaped = "$$(",

@@ -1,6 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-using StringTokenFormatter.Impl.TokenNameComparers;
-using System;
+﻿using System;
 
 namespace StringTokenFormatter.Impl.TokenValueContainers {
 
@@ -8,13 +6,13 @@ namespace StringTokenFormatter.Impl.TokenValueContainers {
     /// This <see cref="ITokenValueContainer"/> resolve values using the specified delegate
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class FuncTokenValueContainer<T> : ITokenValueContainer {
+    internal class FuncTokenValueContainerImpl<T> : ITokenValueContainer {
 
         protected readonly ITokenNameComparer nameComparer;
         protected readonly Func<string, ITokenNameComparer, TryGetResult> resolver;
 
         
-        public FuncTokenValueContainer(Func<string, T> valueResolver, ITokenNameComparer nameComparer) {
+        public FuncTokenValueContainerImpl(Func<string, T> valueResolver, ITokenNameComparer nameComparer) {
             
             
             this.resolver = (TokenName, TokenNameComparer) => {
@@ -28,7 +26,7 @@ namespace StringTokenFormatter.Impl.TokenValueContainers {
             };
             this.nameComparer = nameComparer;
         }
-        public FuncTokenValueContainer(Func<string, ITokenNameComparer, T> valueResolver, ITokenNameComparer nameComparer) {
+        public FuncTokenValueContainerImpl(Func<string, ITokenNameComparer, T> valueResolver, ITokenNameComparer nameComparer) {
             this.resolver = (TokenName, TokenNameComparer) => {
                 var ret = default(TryGetResult);
 
@@ -42,7 +40,7 @@ namespace StringTokenFormatter.Impl.TokenValueContainers {
         }
 
 
-        public FuncTokenValueContainer(Func<string, ITokenNameComparer, TryGetResult> valueResolver, ITokenNameComparer nameComparer) {
+        public FuncTokenValueContainerImpl(Func<string, ITokenNameComparer, TryGetResult> valueResolver, ITokenNameComparer nameComparer) {
             this.resolver = valueResolver;
             this.nameComparer = nameComparer;
         }

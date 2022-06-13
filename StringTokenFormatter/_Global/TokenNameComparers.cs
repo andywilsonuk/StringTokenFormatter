@@ -1,6 +1,6 @@
 ﻿using StringTokenFormatter.Impl;
-using StringTokenFormatter.Impl.TokenNameComparers;
 using System;
+using System.Collections.Generic;
 
 namespace StringTokenFormatter {
     public static class TokenNameComparers {
@@ -14,13 +14,37 @@ namespace StringTokenFormatter {
 
         public static ITokenNameComparer Default { get; }
 
+        public static ITokenNameComparer From(IEqualityComparer<string> Comparer) {
+            var ret = default(ITokenNameComparer);
+
+            if(Comparer == StringComparer.InvariantCulture) {
+                ret = InvariantCulture;
+            } else if (Comparer == StringComparer.InvariantCultureIgnoreCase) {
+                ret = InvariantCultureIgnoreCase;
+            } else if (Comparer == StringComparer.Ordinal) {
+                ret = Ordinal;
+            } else if (Comparer == StringComparer.OrdinalIgnoreCase) {
+                ret = OrdinalIgnoreCase;
+            } else if (Comparer == StringComparer.CurrentCulture) {
+                ret = CurrentCulture;
+            } else if (Comparer == StringComparer.CurrentCultureIgnoreCase) {
+                ret = CurrentCultureIgnoreCase;
+            }
+
+            if (ret is null) {
+                ret = new StringComparerTokenNameComparerImpl(Comparer);
+            }
+
+            return ret;
+        }
+
         static TokenNameComparers() {
-            InvariantCulture = new StringComparerTokenNameComparer(StringComparer.InvariantCulture);
-            InvariantCultureIgnoreCase = new StringComparerTokenNameComparer(StringComparer.InvariantCultureIgnoreCase);
-            Ordinal = new StringComparerTokenNameComparer(StringComparer.Ordinal);
-            OrdinalIgnoreCase = new StringComparerTokenNameComparer(StringComparer.OrdinalIgnoreCase);
-            CurrentCulture = new StringComparerTokenNameComparer(StringComparer.CurrentCulture);
-            CurrentCultureIgnoreCase = new StringComparerTokenNameComparer(StringComparer.CurrentCultureIgnoreCase);
+            InvariantCulture = From(StringComparer.InvariantCulture);
+            InvariantCultureIgnoreCase = From(StringComparer.InvariantCultureIgnoreCase);
+            Ordinal = From(StringComparer.Ordinal);
+            OrdinalIgnoreCase = From(StringComparer.OrdinalIgnoreCase);
+            CurrentCulture = From(StringComparer.CurrentCulture);
+            CurrentCultureIgnoreCase = From(StringComparer.CurrentCultureIgnoreCase);
 
             Default = CurrentCultureIgnoreCase;
         }

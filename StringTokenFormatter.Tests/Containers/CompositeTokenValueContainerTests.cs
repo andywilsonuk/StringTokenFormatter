@@ -1,8 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
+﻿using Xunit;
 
 namespace StringTokenFormatter.Tests {
     public class CompositeTokenValueContainerTests {

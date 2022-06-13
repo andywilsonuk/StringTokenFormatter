@@ -1,8 +1,6 @@
 ﻿using StringTokenFormatter.Impl.TokenValueContainers;
-using StringTokenFormatter.Impl.TokenNameComparers;
 using System;
 using System.Collections.Generic;
-using StringTokenFormatter.Impl;
 
 namespace StringTokenFormatter {
 
@@ -86,7 +84,7 @@ namespace StringTokenFormatter {
         }
 
         public static ITokenValueContainer Empty(IInterpolationSettings Settings) {
-            return EmptyTokenValueContainer.Instance;
+            return EmptyTokenValueContainerImpl.Instance;
         }
 
         public static ITokenValueContainer IgnoreNullTokenValues(ITokenValueContainer This) {

@@ -1,18 +1,16 @@
-﻿using StringTokenFormatter.Impl;
-using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace StringTokenFormatter.Impl.InterpolatedStrings {
+namespace StringTokenFormatter.Impl {
 
     [DebuggerDisplay(Debugger2.GetDebuggerDisplay)]
-    public class InterpolatedString : IInterpolatedString, IGetDebuggerDisplay {
+    internal class InterpolatedStringImpl : IInterpolatedString, IGetDebuggerDisplay {
         protected IInterpolatedStringSegment[] Segments { get; }
 
-        public InterpolatedString(IEnumerable<IInterpolatedStringSegment> Segments) {
+        public InterpolatedStringImpl(IEnumerable<IInterpolatedStringSegment> Segments) {
             this.Segments = Segments.ToArray();
         }
 

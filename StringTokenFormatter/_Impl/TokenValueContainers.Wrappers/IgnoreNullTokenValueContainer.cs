@@ -1,13 +1,12 @@
-﻿using StringTokenFormatter.Impl;
-using System;
+﻿using System;
 
 namespace StringTokenFormatter.Impl.TokenValueContainers {
     /// <summary>
     /// Prevents replacement of null token values.
     /// </summary>
-    public class IgnoreNullTokenValueContainer : ITokenValueContainer {
-        protected readonly ITokenValueContainer child;
-        public IgnoreNullTokenValueContainer(ITokenValueContainer child) {
+    internal sealed class IgnoreNullTokenValueContainerImpl : ITokenValueContainer {
+        private readonly ITokenValueContainer child;
+        public IgnoreNullTokenValueContainerImpl(ITokenValueContainer child) {
             child = child ?? throw new ArgumentNullException(nameof(child));
             
             this.child = child;

@@ -1,10 +1,9 @@
-﻿using StringTokenFormatter.Impl;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace StringTokenFormatter.Impl.TokenNameComparers {
-    internal class StringComparerTokenNameComparer : ITokenNameComparer {
+namespace StringTokenFormatter.Impl {
+    internal class StringComparerTokenNameComparerImpl : ITokenNameComparer {
 
-        public StringComparerTokenNameComparer(IEqualityComparer<string> Comparer) {
+        public StringComparerTokenNameComparerImpl(IEqualityComparer<string> Comparer) {
             this.Comparer = Comparer;
         }
 

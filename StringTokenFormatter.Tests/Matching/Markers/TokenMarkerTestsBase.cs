@@ -1,6 +1,5 @@
 ﻿using Xunit;
 using System.Collections.Generic;
-using StringTokenFormatter.Impl;
 
 namespace StringTokenFormatter.Tests {
     public abstract class TokenMarkerTestsBase {

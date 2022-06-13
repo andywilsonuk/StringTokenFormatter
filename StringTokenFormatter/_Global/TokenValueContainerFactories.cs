@@ -1,6 +1,4 @@
 ﻿using StringTokenFormatter.Impl;
-using StringTokenFormatter.Impl.TokenValueContainerFactories;
-using StringTokenFormatter.Impl.TokenValueContainers;
 
 namespace StringTokenFormatter {
     public static class TokenValueContainerFactories {
@@ -32,7 +30,7 @@ namespace StringTokenFormatter {
             }
             
             if(ret == null) { 
-                ret = new TokenValueContainerFactory(NameComparer);
+                ret = new TokenValueContainerFactoryImpl(NameComparer);
             }
 
             return ret;

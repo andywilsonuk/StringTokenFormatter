@@ -1,13 +1,10 @@
-﻿using StringTokenFormatter.Impl;
-using System;
-
-namespace StringTokenFormatter.Impl.TokenValueContainers {
+﻿namespace StringTokenFormatter.Impl.TokenValueContainers {
     /// <summary>
     /// Prevents replacement of null or empty token values.
     /// </summary>
-    public class IgnoreNullOrEmptyTokenValueContainer : ITokenValueContainer {
-        protected readonly ITokenValueContainer child;
-        public IgnoreNullOrEmptyTokenValueContainer(ITokenValueContainer child) {
+    internal sealed class IgnoreNullOrEmptyTokenValueContainerImpl : ITokenValueContainer {
+        private readonly ITokenValueContainer child;
+        public IgnoreNullOrEmptyTokenValueContainerImpl(ITokenValueContainer child) {
             this.child = child;
         }
 

@@ -1,5 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-using System;
+﻿using System;
 
 namespace StringTokenFormatter {
     public static class TokenValueFormatters {
@@ -34,7 +33,7 @@ namespace StringTokenFormatter {
             } 
 
             if(ret is null) {
-                ret = new Impl.TokenValueFormatters.FormatProviderTokenValueFormatter(formatProvider);
+                ret = new Impl.FormatProviderTokenValueFormatterImpl(formatProvider);
             }
 
             return ret;

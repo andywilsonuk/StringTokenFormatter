@@ -1,9 +1,4 @@
 ﻿using Moq;
-using StringTokenFormatter.Impl;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
 using Xunit;
 
 namespace StringTokenFormatter.Tests {

@@ -1,4 +1,4 @@
-﻿namespace StringTokenFormatter.Impl {
+﻿namespace StringTokenFormatter {
 
     public interface ITokenSyntax {
         string StartToken { get; }

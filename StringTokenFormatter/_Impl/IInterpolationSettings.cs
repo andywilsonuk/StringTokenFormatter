@@ -1,6 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-
-namespace StringTokenFormatter.Impl {
+﻿namespace StringTokenFormatter {
     public interface IInterpolationSettings {
         ITokenSyntax TokenSyntax { get; }
         IInterpolatedStringParser InterpolatedStringParser { get; }

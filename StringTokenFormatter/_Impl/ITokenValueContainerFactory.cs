@@ -1,8 +1,7 @@
-﻿using StringTokenFormatter.Impl.TokenValueContainers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace StringTokenFormatter.Impl {
+namespace StringTokenFormatter {
     public interface ITokenValueContainerFactory {
         ITokenValueContainer FromObject<T>(T values);
 

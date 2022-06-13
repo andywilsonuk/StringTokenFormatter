@@ -1,11 +1,6 @@
-﻿using Moq;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
+﻿using Xunit;
 
-namespace StringTokenFormatter.Tests
-{
+namespace StringTokenFormatter.Tests {
     public class PerformanceTests
     {
         [Fact]

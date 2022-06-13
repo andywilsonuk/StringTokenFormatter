@@ -1,15 +1,13 @@
-﻿using StringTokenFormatter.Impl;
-using StringTokenFormatter.Impl.TokenNameComparers;
-using System;
+﻿using System;
 
 namespace StringTokenFormatter.Impl.TokenValueContainers {
 
-    public class SingleTokenValueContainer<T> : ITokenValueContainer {
+    internal class SingleTokenValueContainerImpl<T> : ITokenValueContainer {
         protected readonly string token;
         protected readonly T value;
         protected readonly ITokenNameComparer nameComparer;
 
-        public SingleTokenValueContainer(string token, T mapValue, ITokenNameComparer nameComparer) {
+        public SingleTokenValueContainerImpl(string token, T mapValue, ITokenNameComparer nameComparer) {
 
             if (string.IsNullOrEmpty(token)) throw new ArgumentNullException(nameof(token));
 

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace StringTokenFormatter.Impl {
+namespace StringTokenFormatter {
     public readonly record struct TryGetResult {
         public bool IsSuccess { get; init; }
         public object? Value { get; init; }

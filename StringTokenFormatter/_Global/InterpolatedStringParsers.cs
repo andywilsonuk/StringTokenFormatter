@@ -1,5 +1,4 @@
 ﻿using StringTokenFormatter.Impl;
-using StringTokenFormatter.Impl.InterpolatedStringParsers;
 
 namespace StringTokenFormatter {
     public static class InterpolatedStringParsers {
@@ -29,18 +28,18 @@ namespace StringTokenFormatter {
             }
             
             if(ret is null) {
-                ret = new InterpolatedStringParser(Options);
+                ret = new InterpolatedStringParserImpl(Options);
             }
 
             return ret;
         }
 
         static InterpolatedStringParsers() {
-            Curly = new InterpolatedStringParser(TokenSyntaxes.Curly);
-            DollarCurly = new InterpolatedStringParser(TokenSyntaxes.DollarCurly);
-            Round = new InterpolatedStringParser(TokenSyntaxes.Round);
-            DollarRound = new InterpolatedStringParser(TokenSyntaxes.DollarRound);
-            DollarRoundAlternative = new InterpolatedStringParser(TokenSyntaxes.DollarRoundAlternative);
+            Curly = new InterpolatedStringParserImpl(TokenSyntaxes.Curly);
+            DollarCurly = new InterpolatedStringParserImpl(TokenSyntaxes.DollarCurly);
+            Round = new InterpolatedStringParserImpl(TokenSyntaxes.Round);
+            DollarRound = new InterpolatedStringParserImpl(TokenSyntaxes.DollarRound);
+            DollarRoundAlternative = new InterpolatedStringParserImpl(TokenSyntaxes.DollarRoundAlternative);
 
             Default = Curly;
         }

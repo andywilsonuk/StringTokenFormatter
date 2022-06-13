@@ -1,5 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-using Xunit;
+﻿using Xunit;
 
 namespace StringTokenFormatter.Tests {
     public class DollarRoundTokenMarkerTests : TokenMarkerTestsBase {

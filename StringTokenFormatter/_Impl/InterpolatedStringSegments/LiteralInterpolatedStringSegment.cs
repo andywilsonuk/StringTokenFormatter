@@ -1,15 +1,13 @@
-﻿using StringTokenFormatter.Impl;
-using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-namespace StringTokenFormatter.Impl.InterpolatedStringSegments {
+namespace StringTokenFormatter.Impl {
 
     [DebuggerDisplay(Debugger2.GetDebuggerDisplay)]
-    public record LiteralInterpolatedStringSegment : IInterpolatedStringSegment, IGetDebuggerDisplay {
+    internal record InterpolatedStringSegmentLiteralImpl : IInterpolatedStringSegmentLiteral, IGetDebuggerDisplay {
 
         public string Original { get; init; } = string.Empty;
 
-        public LiteralInterpolatedStringSegment(string text) {
+        public InterpolatedStringSegmentLiteralImpl(string text) {
             Original = text;
         }
 

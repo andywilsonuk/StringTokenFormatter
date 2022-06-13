@@ -1,15 +1,13 @@
-﻿using StringTokenFormatter.Impl;
-using StringTokenFormatter.Impl.TokenNameComparers;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 
 namespace StringTokenFormatter.Impl.TokenValueContainers {
-    static class ObjectPropertiesTokenValueContainerFactory {
+    static class ObjectPropertiesTokenValueContainerFactoryImpl {
 
         //Default constructor
-        public static ObjectPropertiesTokenValueContainer<T> Create<T>(T tokenValueObject, ITokenNameComparer nameComparer) {
-            return new ObjectPropertiesTokenValueContainer<T>(tokenValueObject, nameComparer);
+        public static ObjectPropertiesTokenValueContainerImpl<T> Create<T>(T tokenValueObject, ITokenNameComparer nameComparer) {
+            return new ObjectPropertiesTokenValueContainerImpl<T>(tokenValueObject, nameComparer);
         }
 
         //Create a generic using reflection super fast!
@@ -27,7 +25,7 @@ namespace StringTokenFormatter.Impl.TokenValueContainers {
 
         private static Func<object, ITokenNameComparer?, ITokenValueContainer> GenerateFactory(Type T) {
 
-            var InstanceType = typeof(ObjectPropertiesTokenValueContainer<>).MakeGenericType(T);
+            var InstanceType = typeof(ObjectPropertiesTokenValueContainerImpl<>).MakeGenericType(T);
             var Constructor = InstanceType.GetConstructor(new[] { T, typeof(ITokenNameComparer) });
 
             var tokenValueObjectParameter = Expression.Parameter(typeof(object));

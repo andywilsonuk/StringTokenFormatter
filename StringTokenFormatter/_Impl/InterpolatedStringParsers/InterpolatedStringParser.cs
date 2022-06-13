@@ -1,11 +1,8 @@
-﻿using StringTokenFormatter.Impl;
-using StringTokenFormatter.Impl.InterpolatedStrings;
-using StringTokenFormatter.Impl.InterpolatedStringSegments;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace StringTokenFormatter.Impl.InterpolatedStringParsers {
-    internal class InterpolatedStringParser : IInterpolatedStringParser {
+namespace StringTokenFormatter.Impl {
+    internal class InterpolatedStringParserImpl : IInterpolatedStringParser {
         private static readonly string regexEscapedPaddingSeparator = Regex.Escape(",");
         private static readonly string regexEscapedFormattingSeparator = Regex.Escape(":");
         private static readonly string tokenTriplePattern = $"^([^{regexEscapedPaddingSeparator}{regexEscapedFormattingSeparator}]*){regexEscapedPaddingSeparator}?([^{regexEscapedFormattingSeparator}]*){regexEscapedFormattingSeparator }?(.*)$";
@@ -13,7 +10,7 @@ namespace StringTokenFormatter.Impl.InterpolatedStringParsers {
         private readonly ITokenSyntax markers;
         private readonly Regex segmentRegex;
 
-        public InterpolatedStringParser(ITokenSyntax tokenMarkers) {
+        public InterpolatedStringParserImpl(ITokenSyntax tokenMarkers) {
             markers = tokenMarkers;
 
             var regexEscapedStartToken = Regex.Escape(markers.StartToken);
@@ -38,7 +35,7 @@ namespace StringTokenFormatter.Impl.InterpolatedStringParsers {
         public IInterpolatedString Parse(string input) {
             var Segments = ParseInternal(input);
 
-            return new InterpolatedString(Segments);
+            return new InterpolatedStringImpl(Segments);
         }
 
         private IEnumerable<IInterpolatedStringSegment> ParseInternal(string input) {
@@ -48,22 +45,22 @@ namespace StringTokenFormatter.Impl.InterpolatedStringParsers {
                 string segment = match.Value;
                 if (index != match.Index) {
                     string text = input.Substring(index, match.Index - index);
-                    yield return new LiteralInterpolatedStringSegment(text);
+                    yield return new InterpolatedStringSegmentLiteralImpl(text);
                 }
                 if (segment == markers.StartTokenEscaped) {
-                    yield return new LiteralInterpolatedStringSegment(markers.StartToken);
+                    yield return new InterpolatedStringSegmentLiteralImpl(markers.StartToken);
                 } else if (!segment.StartsWith(markers.StartToken)) {
-                    yield return new LiteralInterpolatedStringSegment(segment);
+                    yield return new InterpolatedStringSegmentLiteralImpl(segment);
                 } else {
                     int middleLength = segment.Length - markers.StartToken.Length - markers.EndToken.Length;
                     string tripleWithoutMarkers = segment.Substring(markers.StartToken.Length, middleLength);
                     string[] split = tokenTripleRegex.Split(tripleWithoutMarkers);
-                    yield return new TokenInterpolatedStringSegment(segment, split[1], split[2], split[3]);
+                    yield return new InterpolatedStringSegmentTokenImpl(segment, split[1], split[2], split[3]);
                 }
                 index = match.Index + match.Length;
             }
             if (index < input.Length) {
-                yield return new LiteralInterpolatedStringSegment(input.Substring(index));
+                yield return new InterpolatedStringSegmentLiteralImpl(input.Substring(index));
             }
         }
 

@@ -1,6 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-
-namespace StringTokenFormatter.Impl {
+﻿namespace StringTokenFormatter {
 
     public interface IInterpolatedStringSegment {
         string Original { get; }

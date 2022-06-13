@@ -1,11 +1,9 @@
-﻿using StringTokenFormatter.Impl;
+﻿namespace StringTokenFormatter.Impl.TokenValueContainers {
+    internal class EmptyTokenValueContainerImpl : ITokenValueContainer {
 
-namespace StringTokenFormatter.Impl.TokenValueContainers {
-    public class EmptyTokenValueContainer : ITokenValueContainer {
+        public static EmptyTokenValueContainerImpl Instance { get; } = new EmptyTokenValueContainerImpl();
 
-        public static EmptyTokenValueContainer Instance { get; } = new EmptyTokenValueContainer();
-
-        private EmptyTokenValueContainer() {
+        private EmptyTokenValueContainerImpl() {
 
         }
 

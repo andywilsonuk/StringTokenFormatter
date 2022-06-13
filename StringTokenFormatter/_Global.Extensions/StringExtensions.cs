@@ -1,6 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-
-namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter {
     public static class StringExtensions {
         public static IInterpolatedString ToInterpolatedString(this string This) {
             return ToInterpolatedString(This, InterpolationSettings.Default.InterpolatedStringParser);

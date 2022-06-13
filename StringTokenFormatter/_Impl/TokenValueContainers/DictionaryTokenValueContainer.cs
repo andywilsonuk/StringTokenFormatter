@@ -1,5 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace StringTokenFormatter.Impl.TokenValueContainers {
@@ -8,10 +7,10 @@ namespace StringTokenFormatter.Impl.TokenValueContainers {
     /// This Value Container resolves values by looking them up in a dictionary.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class DictionaryTokenValueContainer<T> : ITokenValueContainer {
+    internal class DictionaryTokenValueContainerImpl<T> : ITokenValueContainer {
         protected readonly IDictionary<string, T> dictionary;
 
-        public DictionaryTokenValueContainer(IEnumerable<KeyValuePair<string, T>> itemSource, ITokenNameComparer nameComparer) {
+        public DictionaryTokenValueContainerImpl(IEnumerable<KeyValuePair<string, T>> itemSource, ITokenNameComparer nameComparer) {
             itemSource = itemSource ?? throw new ArgumentNullException(nameof(itemSource));
 
             dictionary = NormalizeDictionary(itemSource, nameComparer);

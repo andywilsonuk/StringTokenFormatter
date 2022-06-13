@@ -1,6 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-
-namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter {
     public record InterpolationSettingsBuilder {
         public ITokenSyntax TokenSyntax { get; init; } = StringTokenFormatter.TokenSyntaxes.Default;
 
@@ -11,10 +9,10 @@ namespace StringTokenFormatter {
 
         public IInterpolationSettings Build() {
 
-            var InterpolatedStringParser = InterpolatedStringParsers.Create(TokenSyntax);
+            var InterpolatedStringParser = StringTokenFormatter.InterpolatedStringParsers.Create(TokenSyntax);
             var TokenValueContainerFactory = TokenValueContainerFactories.Create(TokenNameComparer);
 
-            var ret = new Impl.InterpolationSettings.InterpolationSettings(
+            var ret = new Impl.InterpolationSettingsImpl(
                 TokenSyntax, 
                 InterpolatedStringParser, 
                 TokenNameComparer, 

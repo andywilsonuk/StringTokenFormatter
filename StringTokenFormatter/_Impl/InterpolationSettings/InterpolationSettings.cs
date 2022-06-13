@@ -1,11 +1,8 @@
-﻿using StringTokenFormatter.Impl;
-using System;
+﻿namespace StringTokenFormatter.Impl {
 
-namespace StringTokenFormatter.Impl.InterpolationSettings {
-
-    public class InterpolationSettings : IInterpolationSettings {
+    internal class InterpolationSettingsImpl : IInterpolationSettings {
         
-        public InterpolationSettings(
+        public InterpolationSettingsImpl(
             ITokenSyntax tokenSyntax, 
             IInterpolatedStringParser interpolatedStringParser, 
             ITokenNameComparer tokenNameComparer, 

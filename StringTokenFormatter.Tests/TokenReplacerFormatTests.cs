@@ -1,11 +1,6 @@
 using Xunit;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 using Moq;
 using StringTokenFormatter.Impl;
-using StringTokenFormatter.Impl.InterpolatedStrings;
-using StringTokenFormatter.Impl.InterpolatedStringSegments;
 using System.Collections.Immutable;
 
 namespace StringTokenFormatter.Tests {
@@ -29,11 +24,10 @@ namespace StringTokenFormatter.Tests {
             var container = new Mock<ITokenValueContainer>();
             object value = "second";
             container.Setup(x => x.TryMap(It.Is<ITokenMatch>(y => y.Token == "two"))).Returns(TryGetResult.Success(value));
-            InterpolatedString segments = new InterpolatedString(new IInterpolatedStringSegment[]
-            {
-                new LiteralInterpolatedStringSegment("first "),
-                new TokenInterpolatedStringSegment("{two}", "two", null, null),
-            }.ToImmutableArray());
+            var segments = InterpolatedStrings.Create(
+                InterpolatedStringSegments.FromLiteral("first "),
+                InterpolatedStringSegments.FromToken("{two}", "two", null, null)
+                );
 
             string actual = segments.FormatContainer(container.Object);
 

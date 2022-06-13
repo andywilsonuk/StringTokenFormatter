@@ -1,5 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -11,10 +10,10 @@ namespace StringTokenFormatter.Impl.TokenValueContainers {
     /// This implementation runs ~15% faster than the non-generic version by caching the TypeDescriptor lookups.
     /// </summary>
     /// <typeparam name="T">A type indicating the exact properties that will be used for formatting.</typeparam>
-    public class ObjectPropertiesTokenValueContainer<T> : ITokenValueContainer {
+    internal class ObjectPropertiesTokenValueContainerImpl<T> : ITokenValueContainer {
 
         private static readonly IDictionary<PropertyInfo, Func<T, Object>> propertyCache;
-        static ObjectPropertiesTokenValueContainer() {
+        static ObjectPropertiesTokenValueContainerImpl() {
 
 
             propertyCache = (
@@ -82,7 +81,7 @@ namespace StringTokenFormatter.Impl.TokenValueContainers {
         protected readonly IDictionary<string, NonLockingLazy<object>> dictionary;
         protected readonly ITokenNameComparer nameComparer;
 
-        public ObjectPropertiesTokenValueContainer(T tokenValueObject, ITokenNameComparer nameComparer) {
+        public ObjectPropertiesTokenValueContainerImpl(T tokenValueObject, ITokenNameComparer nameComparer) {
             if (tokenValueObject == null) throw new ArgumentNullException(nameof(tokenValueObject));
 
             this.nameComparer = nameComparer;

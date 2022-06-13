@@ -1,15 +1,14 @@
-﻿using StringTokenFormatter.Impl;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace StringTokenFormatter.Impl.TokenValueConverters {
     /// <summary>
     ///  Loops through all child converters until it finds one that applies to the current value.
     /// </summary>
-    public class CompositeTokenValueConverter : ITokenValueConverter {
+    internal sealed class CompositeTokenValueConverterImpl : ITokenValueConverter {
         private readonly IEnumerable<ITokenValueConverter> converters;
 
-        public CompositeTokenValueConverter(IEnumerable<ITokenValueConverter> converters) {
+        public CompositeTokenValueConverterImpl(IEnumerable<ITokenValueConverter> converters) {
             this.converters = converters ?? throw new ArgumentNullException(nameof(converters));
         }
 

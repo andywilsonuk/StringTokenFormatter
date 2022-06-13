@@ -1,12 +1,10 @@
-﻿using StringTokenFormatter.Impl;
-using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-namespace StringTokenFormatter.Impl.InterpolatedStringSegments {
+namespace StringTokenFormatter.Impl {
 
     [DebuggerDisplay(Debugger2.GetDebuggerDisplay)]
-    public record TokenInterpolatedStringSegment : IInterpolatedStringSegment, ITokenMatch, IGetDebuggerDisplay {
-        public TokenInterpolatedStringSegment(string original, string token, string? padding, string? format) {
+    internal record InterpolatedStringSegmentTokenImpl : IInterpolatedStringSegmentToken, IGetDebuggerDisplay {
+        public InterpolatedStringSegmentTokenImpl(string original, string token, string? padding, string? format) {
             Original = original;
             Token = token;
             Padding = padding;

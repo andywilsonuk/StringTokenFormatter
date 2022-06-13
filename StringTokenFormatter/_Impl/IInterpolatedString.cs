@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 
-namespace StringTokenFormatter.Impl {
+namespace StringTokenFormatter {
     public interface IInterpolatedString : IEnumerable<IInterpolatedStringSegment> {
         string FormatContainer(
             ITokenValueContainer container, 

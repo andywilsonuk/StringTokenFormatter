@@ -1,11 +1,10 @@
-﻿using StringTokenFormatter.Impl;
-using System;
+﻿using System;
 
-namespace StringTokenFormatter.Impl.TokenValueFormatters {
-    public class FormatProviderTokenValueFormatter : ITokenValueFormatter {
+namespace StringTokenFormatter.Impl {
+    internal class FormatProviderTokenValueFormatterImpl : ITokenValueFormatter {
         private readonly IFormatProvider provider;
 
-        public FormatProviderTokenValueFormatter(IFormatProvider formatProvider) {
+        public FormatProviderTokenValueFormatterImpl(IFormatProvider formatProvider) {
             provider = formatProvider;
         }
 

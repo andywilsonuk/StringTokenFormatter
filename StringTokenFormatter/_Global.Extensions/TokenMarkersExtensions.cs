@@ -1,6 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-
-namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter {
     public static class TokenMarkersExtensions {
         /// <summary>
         /// Converts "Token" to "{Token}"

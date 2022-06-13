@@ -1,9 +1,8 @@
-﻿using StringTokenFormatter.Impl;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-namespace StringTokenFormatter.Impl.TokenSyntaxes {
+namespace StringTokenFormatter.Impl {
     [DebuggerDisplay(Debugger2.GetDebuggerDisplay)]
-    public record TokenSyntax : ITokenSyntax, IGetDebuggerDisplay {
+    internal record TokenSyntaxImpl : ITokenSyntax, IGetDebuggerDisplay {
         public string StartToken { get; init; } = string.Empty;
         public string EndToken { get; init; } = string.Empty;
         public string StartTokenEscaped { get; init; } = string.Empty;

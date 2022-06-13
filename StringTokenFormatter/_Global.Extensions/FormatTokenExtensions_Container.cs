@@ -1,6 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-
-namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter {
     public static class TokenValueContainerExtensions {
         public static string FormatContainer(this ITokenValueContainer container, string input) {
             return input.FormatContainer(container);
