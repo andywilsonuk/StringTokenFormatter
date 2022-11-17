@@ -29,9 +29,7 @@ namespace StringTokenFormatter {
                 ret = CurrentCultureIgnoreCase;
             }
             
-            if(ret == null) { 
-                ret = new TokenValueContainerFactoryImpl(NameComparer);
-            }
+            ret ??= new TokenValueContainerFactoryImpl(NameComparer);
 
             return ret;
         }

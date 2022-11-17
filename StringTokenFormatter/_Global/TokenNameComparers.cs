@@ -31,9 +31,7 @@ namespace StringTokenFormatter {
                 ret = CurrentCultureIgnoreCase;
             }
 
-            if (ret is null) {
-                ret = new StringComparerTokenNameComparerImpl(Comparer);
-            }
+            ret ??= new StringComparerTokenNameComparerImpl(Comparer);
 
             return ret;
         }

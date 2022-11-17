@@ -27,9 +27,7 @@ namespace StringTokenFormatter {
                 ret = DollarRoundAlternative;
             }
             
-            if(ret is null) {
-                ret = new InterpolatedStringParserImpl(Options);
-            }
+            ret ??= new InterpolatedStringParserImpl(Options);
 
             return ret;
         }
