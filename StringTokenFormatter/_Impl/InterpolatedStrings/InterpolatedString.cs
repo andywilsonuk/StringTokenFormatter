@@ -10,6 +10,8 @@ namespace StringTokenFormatter.Impl {
     internal class InterpolatedStringImpl : IInterpolatedString, IGetDebuggerDisplay {
         protected IInterpolatedStringSegment[] Segments { get; }
 
+        IEnumerable<IInterpolatedStringSegment> IInterpolatedString.Segments => Segments;
+
         public InterpolatedStringImpl(IEnumerable<IInterpolatedStringSegment> Segments) {
             this.Segments = Segments.ToArray();
         }
@@ -23,16 +25,6 @@ namespace StringTokenFormatter.Impl {
             }
 
             return sb.ToString();
-        }
-
-        public IEnumerator<IInterpolatedStringSegment> GetEnumerator() {
-            foreach (var item in Segments) {
-                yield return item;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            return this.GetEnumerator();
         }
 
         internal string GetDebuggerDisplay() {
