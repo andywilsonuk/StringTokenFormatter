@@ -1,10 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFrameworks>net6.0;net48</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
-		<ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
 	</PropertyGroup>
+	<ItemGroup>
+		<!--These are essentially implicit usings that are safe for .NET 4.8 (System.Net.Http is omitted)-->
+		<Using Include="System" />
+		<Using Include="System.Collections.Generic" />
+		<Using Include="System.Linq" />
+		<Using Include="System.Threading.Tasks" />
+	</ItemGroup>
 
 	<PropertyGroup>
 		<Title>StringTokenFormatter</Title>
@@ -53,4 +60,5 @@
 			<PackagePath></PackagePath>
 		</None>
 	</ItemGroup>
+
 </Project>
