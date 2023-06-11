@@ -1,8 +1,7 @@
 ﻿using StringTokenFormatter.Impl;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace StringTokenFormatter {
+namespace StringTokenFormatter
+{
     public static class InterpolatedStrings {
 
         public static IInterpolatedString Create(params IInterpolatedStringSegment[] Segments) {

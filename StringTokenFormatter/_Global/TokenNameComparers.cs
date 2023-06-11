@@ -1,8 +1,7 @@
 ﻿using StringTokenFormatter.Impl;
-using System;
-using System.Collections.Generic;
 
-namespace StringTokenFormatter {
+namespace StringTokenFormatter
+{
     public static class TokenNameComparers {
 
         public static ITokenNameComparer InvariantCulture { get; }

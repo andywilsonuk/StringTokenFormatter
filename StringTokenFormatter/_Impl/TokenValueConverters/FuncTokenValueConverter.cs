@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace StringTokenFormatter.Impl.TokenValueConverters {
+﻿namespace StringTokenFormatter.Impl.TokenValueConverters
+{
     /// <summary>
     /// A value converter that will execute a Func<typeparamref name="T"/> and return its value.
     /// </summary>

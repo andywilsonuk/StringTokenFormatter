@@ -1,7 +1,7 @@
 using Xunit;
-using System.Collections.Generic;
 
-namespace StringTokenFormatter.Tests {
+namespace StringTokenFormatter.Tests
+{
     public class StringTokenExtensionsTests
     {
         [Fact]

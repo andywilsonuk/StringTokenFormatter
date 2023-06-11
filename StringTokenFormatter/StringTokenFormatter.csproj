@@ -1,10 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<PropertyGroup>
 		<Title>StringTokenFormatter</Title>
 		<PackageReleaseNotes />
-		<Version>6.0.0</Version>
-		<AssemblyVersion>6.0.0</AssemblyVersion>
-		<FileVersion>6.0.0</FileVersion>
+		<Version>6.1.0</Version>
+		<AssemblyVersion>6.1.0</AssemblyVersion>
+		<FileVersion>6.1.0</FileVersion>
 		<AssemblyTitle>String Token Formatter</AssemblyTitle>
 		<Product>String Token Formatter</Product>
 		<Authors>Andy Wilson, Tony Valenti</Authors>
@@ -37,22 +44,8 @@
 		<RepositoryUrl>https://github.com/andywilsonuk/StringTokenFormatter</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>string token formatter replace extension</PackageTags>
-		<NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
-		<MinClientVersion>2.12</MinClientVersion>
-		<SignAssembly>true</SignAssembly>
-		<AssemblyOriginatorKeyFile>StringTokenFormatter.snk</AssemblyOriginatorKeyFile>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<LangVersion>latest</LangVersion>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-		<Platforms>AnyCPU;x64</Platforms>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-		<AssemblyTitle>String Token Formatter .NET Standard 2.0</AssemblyTitle>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(TargetFramework)'=='net40'">
-		<AssemblyTitle>String Token Formatter .NET 4.0</AssemblyTitle>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="..\LICENSE.md">

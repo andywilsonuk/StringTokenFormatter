@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace StringTokenFormatter.Impl {
+﻿namespace StringTokenFormatter.Impl
+{
     internal class FormatProviderTokenValueFormatterImpl : ITokenValueFormatter {
         private readonly IFormatProvider provider;
 

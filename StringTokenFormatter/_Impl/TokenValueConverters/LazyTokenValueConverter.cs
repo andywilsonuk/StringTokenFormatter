@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace StringTokenFormatter.Impl.TokenValueConverters {
+﻿namespace StringTokenFormatter.Impl.TokenValueConverters
+{
 
     /// <summary>
     /// Converts objects that are a Lazy<typeparamref name="T"/> to simply their <typeparamref name="T"/> value.

@@ -1,7 +1,5 @@
-﻿
-using System.Collections.Generic;
-
-namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter
+{
     public interface IInterpolatedString {
         
         IEnumerable<IInterpolatedStringSegment> Segments { get; }

@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace StringTokenFormatter.Impl.TokenValueContainers {
+﻿namespace StringTokenFormatter.Impl.TokenValueContainers
+{
 
     /// <summary>
     /// This Value Container searches all child containers for the provided token value and returns the first value found. 

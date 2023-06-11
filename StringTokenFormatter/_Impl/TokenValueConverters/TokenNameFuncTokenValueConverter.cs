@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace StringTokenFormatter.Impl.TokenValueConverters {
+﻿namespace StringTokenFormatter.Impl.TokenValueConverters
+{
 
 
     /// <summary>

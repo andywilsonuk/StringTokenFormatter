@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace StringTokenFormatter.Impl.TokenValueConverters {
+﻿namespace StringTokenFormatter.Impl.TokenValueConverters
+{
     /// <summary>
     ///  Loops through all child converters until it finds one that applies to the current value.
     /// </summary>

@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace StringTokenFormatter.Impl.TokenValueContainers {
+﻿namespace StringTokenFormatter.Impl.TokenValueContainers
+{
     /// <summary>
     /// Prevents replacement of null token values.
     /// </summary>

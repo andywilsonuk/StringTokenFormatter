@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Xunit;
+﻿using Xunit;
 
 #pragma warning disable CS8625 // Converting null literal or possible null value to non-nullable type.
 
-namespace StringTokenFormatter.Tests {
+namespace StringTokenFormatter.Tests
+{
     public class DictionaryTokenValueContainerTests {
 
         [Fact]

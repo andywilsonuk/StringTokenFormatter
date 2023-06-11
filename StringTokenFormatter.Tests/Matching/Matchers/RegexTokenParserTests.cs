@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using Xunit;
+﻿using Xunit;
 
-namespace StringTokenFormatter.Tests {
+namespace StringTokenFormatter.Tests
+{
 
     public class RegexTokenParserTests {
 
@@ -11,7 +11,7 @@ namespace StringTokenFormatter.Tests {
             var input = "{a}, {b,10:D}";
             var expected = new[] { "a", "b" };
 
-            var actual = parser.Parse(input).OfType<IInterpolatedStringSegmentToken>().Select(x => x.Token);
+            var actual = parser.Parse(input).Segments.OfType<IInterpolatedStringSegmentToken>().Select(x => x.Token);
 
             Assert.Equal(expected, actual);
         }
@@ -22,7 +22,7 @@ namespace StringTokenFormatter.Tests {
 
             var input = "a, b";
 
-            var actual = parser.Parse(input).OfType<IInterpolatedStringSegmentToken>().Select(x => x.Token);
+            var actual = parser.Parse(input).Segments.OfType<IInterpolatedStringSegmentToken>().Select(x => x.Token);
 
             Assert.Empty(actual);
         }

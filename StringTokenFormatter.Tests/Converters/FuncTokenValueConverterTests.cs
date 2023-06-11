@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Xunit;
+﻿using Xunit;
 
-namespace StringTokenFormatter.Tests.nverters {
+namespace StringTokenFormatter.Tests.nverters
+{
     public class FuncTokenValueConverterTests {
 
         [Fact]
