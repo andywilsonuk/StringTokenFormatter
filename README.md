@@ -1,13 +1,13 @@
 # StringTokenFormatter v6.x
 High-speed extension methods to create interpolated strings at runtime and replace tokens within.  Ie:
-			```
-			var Client = new {
-				FirstName = "John",
-				LastName = "Smith",
-			};
-			
-			var Message = "Hello {FirstName} {LastName}".FormatToken(Client);
-			```
+```
+var client = new {
+	FirstName = "John",
+	LastName = "Smith",
+};
+
+var message = "Hello {FirstName} {LastName}".FormatToken(Client);
+```
 
 Available on NuGet at https://www.nuget.org/packages/StringTokenFormatter/
 
