@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace StringTokenFormatter.Impl.TokenValueContainers {
+﻿namespace StringTokenFormatter.Impl.TokenValueContainers
+{
 
     internal class SingleTokenValueContainerImpl<T> : ITokenValueContainer {
         protected readonly string token;

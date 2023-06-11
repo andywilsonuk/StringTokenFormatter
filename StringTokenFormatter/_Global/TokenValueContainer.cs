@@ -1,8 +1,7 @@
 ﻿using StringTokenFormatter.Impl.TokenValueContainers;
-using System;
-using System.Collections.Generic;
 
-namespace StringTokenFormatter {
+namespace StringTokenFormatter
+{
 
     public static class TokenValueContainer {
 

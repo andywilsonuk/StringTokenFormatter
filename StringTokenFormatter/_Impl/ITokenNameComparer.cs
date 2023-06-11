@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-
-namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter
+{
     public interface ITokenNameComparer : IEqualityComparer<string> {
 
     }

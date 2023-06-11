@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Reflection;
 
-namespace StringTokenFormatter.Impl.TokenValueContainers {
+namespace StringTokenFormatter.Impl.TokenValueContainers
+{
     /// <summary>
     /// Converts only the properties exposed by {T} (but not any members on derived classes) to a token value container.
     /// This implementation runs ~15% faster than the non-generic version by caching the TypeDescriptor lookups.

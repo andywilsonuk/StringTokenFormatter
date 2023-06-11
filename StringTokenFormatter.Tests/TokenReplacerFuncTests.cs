@@ -1,7 +1,7 @@
-using System;
 using Xunit;
 
-namespace StringTokenFormatter.Tests {
+namespace StringTokenFormatter.Tests
+{
     public class TokenReplacerFuncTests
     {
 

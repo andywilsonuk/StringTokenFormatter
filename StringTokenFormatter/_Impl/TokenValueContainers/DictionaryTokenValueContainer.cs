@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace StringTokenFormatter.Impl.TokenValueContainers {
+﻿namespace StringTokenFormatter.Impl.TokenValueContainers
+{
 
     /// <summary>
     /// This Value Container resolves values by looking them up in a dictionary.

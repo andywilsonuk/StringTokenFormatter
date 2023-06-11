@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace StringTokenFormatter.Impl {
+namespace StringTokenFormatter.Impl
+{
     internal class InterpolatedStringParserImpl : IInterpolatedStringParser {
         private static readonly string regexEscapedPaddingSeparator = Regex.Escape(",");
         private static readonly string regexEscapedFormattingSeparator = Regex.Escape(":");

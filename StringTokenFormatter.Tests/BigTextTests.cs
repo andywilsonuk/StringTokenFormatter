@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using Xunit;
+﻿using Xunit;
 
-namespace StringTokenFormatter.Tests {
+namespace StringTokenFormatter.Tests
+{
     public class BigTextTests
     {
         [Fact]

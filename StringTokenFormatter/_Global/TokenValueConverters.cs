@@ -1,7 +1,7 @@
 ﻿using StringTokenFormatter.Impl.TokenValueConverters;
-using System.Collections.Generic;
 
-namespace StringTokenFormatter {
+namespace StringTokenFormatter
+{
     public static class TokenValueConverters {
 
         public static ITokenValueConverter Default { get; }

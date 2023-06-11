@@ -1,8 +1,8 @@
 ﻿using Moq;
-using System.Collections.Generic;
 using Xunit;
 
-namespace StringTokenFormatter.Tests.Containers {
+namespace StringTokenFormatter.Tests.Containers
+{
     public class SingleTokenValueContainerTests {
 
         [Fact]

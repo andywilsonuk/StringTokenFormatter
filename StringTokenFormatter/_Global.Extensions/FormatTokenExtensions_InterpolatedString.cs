@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter
+{
 
     public static partial class FormatTokenExtensions {
 

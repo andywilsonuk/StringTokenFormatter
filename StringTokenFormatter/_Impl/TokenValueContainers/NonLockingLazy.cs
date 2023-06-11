@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace StringTokenFormatter.Impl.TokenValueContainers {
+﻿namespace StringTokenFormatter.Impl.TokenValueContainers
+{
     /// <summary>
     /// This class mimics the System.Lazy type except it specifically does not have locking implemented
     /// </summary>

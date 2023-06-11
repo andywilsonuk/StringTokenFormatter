@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Text;
 
-namespace StringTokenFormatter.Impl {
+namespace StringTokenFormatter.Impl
+{
 
     [DebuggerDisplay(Debugger2.GetDebuggerDisplay)]
     internal class InterpolatedStringImpl : IInterpolatedString, IGetDebuggerDisplay {

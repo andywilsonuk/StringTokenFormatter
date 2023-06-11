@@ -1,9 +1,8 @@
 using Xunit;
 using Moq;
-using StringTokenFormatter.Impl;
-using System.Collections.Immutable;
 
-namespace StringTokenFormatter.Tests {
+namespace StringTokenFormatter.Tests
+{
     public class TokenReplacerFormatTests {
 
         [Fact]

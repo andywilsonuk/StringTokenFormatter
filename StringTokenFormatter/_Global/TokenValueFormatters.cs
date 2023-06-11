@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter
+{
     public static class TokenValueFormatters {
 
         public static ITokenValueFormatter Default { get; }

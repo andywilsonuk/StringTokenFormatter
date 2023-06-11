@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace StringTokenFormatter.Impl.TokenValueContainers {
+﻿namespace StringTokenFormatter.Impl.TokenValueContainers
+{
 
     /// <summary>
     /// This <see cref="ITokenValueContainer"/> resolve values using the specified delegate
