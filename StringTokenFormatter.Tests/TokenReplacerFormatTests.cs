@@ -26,7 +26,7 @@ namespace StringTokenFormatter.Tests {
             container.Setup(x => x.TryMap(It.Is<ITokenMatch>(y => y.Token == "two"))).Returns(TryGetResult.Success(value));
             var segments = InterpolatedStrings.Create(
                 InterpolatedStringSegments.FromLiteral("first "),
-                InterpolatedStringSegments.FromToken("{two}", "two", null, null)
+                InterpolatedStringSegments.FromToken("{two}", "second", null, null)
                 );
 
             string actual = segments.FormatContainer(container.Object);

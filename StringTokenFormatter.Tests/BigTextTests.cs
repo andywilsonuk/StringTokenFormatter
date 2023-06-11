@@ -11,8 +11,8 @@ namespace StringTokenFormatter.Tests {
 
             var parser = InterpolatedStringParsers.Default;
 
-            var actual = parser.Parse(sample).ToList();
-
+            var actual = parser.Parse(sample).Segments.ToList();
+            
             Assert.Equal(7, actual.Count);
         }
     }
