@@ -18,6 +18,12 @@ using StringTokenFormatter;
 
 Tokens with formatting and alignment can be specified in the same way as string.Format for example: ```{token,10:D4}``` see this page on MSDN: http://msdn.microsoft.com/en-us/library/system.string.format(v=vs.110).aspx#FormatItem
 
+# Supported .NET versions
+- v6.1 onwards: .NET 6, .net framework 4.8 
+- v6.0 and earlier: .NET Standard 2.0, .NET Framework 4.0
+
+# Usage
+
 ## For Objects and Structs: ```FormatToken```
 ### Usage 1: Using an object's properties to resolve token values
 ```C#
