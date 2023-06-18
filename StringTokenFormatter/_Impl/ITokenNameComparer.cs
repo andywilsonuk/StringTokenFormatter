@@ -1,7 +1,5 @@
-﻿namespace StringTokenFormatter
-{
-    public interface ITokenNameComparer : IEqualityComparer<string> {
+﻿namespace StringTokenFormatter;
 
-    }
+public interface ITokenNameComparer : IEqualityComparer<string> {
 
 }

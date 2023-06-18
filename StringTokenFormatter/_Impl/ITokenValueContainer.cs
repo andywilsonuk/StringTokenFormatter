@@ -1,6 +1,5 @@
-﻿namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter; 
 
-    public interface ITokenValueContainer {
-        TryGetResult TryMap(ITokenMatch matchedToken);
-    }
+public interface ITokenValueContainer {
+    TryGetResult TryMap(ITokenMatch matchedToken);
 }

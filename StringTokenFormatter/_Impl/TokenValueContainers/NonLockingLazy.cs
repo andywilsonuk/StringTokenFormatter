@@ -1,33 +1,32 @@
-﻿namespace StringTokenFormatter.Impl.TokenValueContainers
-{
-    /// <summary>
-    /// This class mimics the System.Lazy type except it specifically does not have locking implemented
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    internal class NonLockingLazy<T> {
-        private Func<T>? creator;
+﻿namespace StringTokenFormatter.Impl.TokenValueContainers;
 
-        public NonLockingLazy(Func<T>? creator) {
-            this.creator = creator;
-        }
+/// <summary>
+/// This class mimics the System.Lazy type except it specifically does not have locking implemented
+/// </summary>
+/// <typeparam name="T"></typeparam>
+internal class NonLockingLazy<T> {
+    private Func<T>? creator;
 
-        public bool IsValueCreated { get; private set; }
-        public T? CreatedValue { get; private set; }
+    public NonLockingLazy(Func<T>? creator) {
+        this.creator = creator;
+    }
 
-        public T? Value {
-            get {
-                //Defensive copy
-                var cachedcreator = creator;
+    public bool IsValueCreated { get; private set; }
+    public T? CreatedValue { get; private set; }
 
-                if (!IsValueCreated && cachedcreator is { }) {
-                    CreatedValue = cachedcreator();
-                    IsValueCreated = true;
+    public T? Value {
+        get {
+            //Defensive copy
+            var cachedcreator = creator;
 
-                    //Null this out so we don't keep captured values around.
-                    creator = default;
-                }
-                return CreatedValue;
+            if (!IsValueCreated && cachedcreator is { }) {
+                CreatedValue = cachedcreator();
+                IsValueCreated = true;
+
+                //Null this out so we don't keep captured values around.
+                creator = default;
             }
+            return CreatedValue;
         }
     }
 }

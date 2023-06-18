@@ -1,8 +1,6 @@
-﻿namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter; 
 
-    public interface ITokenMatch {
-        string Original { get; }
-        string Token { get; }
-    }
-
+public interface ITokenMatch {
+    string Original { get; }
+    string Token { get; }
 }

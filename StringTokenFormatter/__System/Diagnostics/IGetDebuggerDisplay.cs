@@ -1,6 +1,4 @@
-﻿namespace System.Diagnostics {
-    internal interface IGetDebuggerDisplay {
-        string GetDebuggerDisplay();
-    }
-
+﻿namespace System.Diagnostics; 
+internal interface IGetDebuggerDisplay {
+    string GetDebuggerDisplay();
 }

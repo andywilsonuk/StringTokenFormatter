@@ -1,4 +1,3 @@
-﻿namespace StringTokenFormatter.Tests.Containers {
-    class FuncTokenValueContainerTests {
-    }
+﻿namespace StringTokenFormatter.Tests.Containers; 
+class FuncTokenValueContainerTests {
 }

@@ -1,26 +1,25 @@
-﻿namespace StringTokenFormatter
-{
-    public interface ITokenValueContainerFactory {
-        ITokenValueContainer FromObject<T>(T values);
+﻿namespace StringTokenFormatter;
 
-        ITokenValueContainer FromObject(object values);
+public interface ITokenValueContainerFactory {
+    ITokenValueContainer FromObject<T>(T values);
 
-        ITokenValueContainer FromValue<T>(string name, T value);
+    ITokenValueContainer FromObject(object values);
 
-        ITokenValueContainer FromFunc<T>(Func<string, ITokenNameComparer, T> values);
+    ITokenValueContainer FromValue<T>(string name, T value);
 
-        ITokenValueContainer FromFunc<T>(Func<string, T> values);
+    ITokenValueContainer FromFunc<T>(Func<string, ITokenNameComparer, T> values);
 
-        ITokenValueContainer FromDictionary<T>(IEnumerable<KeyValuePair<string, T>> values);
+    ITokenValueContainer FromFunc<T>(Func<string, T> values);
 
-        ITokenValueContainer Combine(IEnumerable<ITokenValueContainer> containers);
+    ITokenValueContainer FromDictionary<T>(IEnumerable<KeyValuePair<string, T>> values);
 
-        ITokenValueContainer Combine(params ITokenValueContainer[] containers);
+    ITokenValueContainer Combine(IEnumerable<ITokenValueContainer> containers);
 
-        ITokenValueContainer Empty();
+    ITokenValueContainer Combine(params ITokenValueContainer[] containers);
 
-        ITokenValueContainer IgnoreNullTokenValues(ITokenValueContainer This);
+    ITokenValueContainer Empty();
 
-        ITokenValueContainer IgnoreNullOrEmptyTokenValues(ITokenValueContainer This);
-    }
+    ITokenValueContainer IgnoreNullTokenValues(ITokenValueContainer This);
+
+    ITokenValueContainer IgnoreNullOrEmptyTokenValues(ITokenValueContainer This);
 }

@@ -1,7 +1,5 @@
-﻿namespace StringTokenFormatter {
+﻿namespace StringTokenFormatter; 
 
-    public interface ITokenValueFormatter {
-        string? Format(IInterpolatedStringSegment segment, object? value, string? Padding, string? Format);
-    }
-
+public interface ITokenValueFormatter {
+    string? Format(IInterpolatedStringSegment segment, object? value, string? Padding, string? Format);
 }

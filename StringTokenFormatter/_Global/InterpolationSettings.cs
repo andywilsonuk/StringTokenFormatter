@@ -1,15 +1,13 @@
-﻿namespace StringTokenFormatter {
-    public static class InterpolationSettings {
-        public static IInterpolationSettings Default { get; }
-        public static InterpolationSettingsBuilder DefaultBuilder { get; }
+﻿namespace StringTokenFormatter; 
+public static class InterpolationSettings {
+    public static IInterpolationSettings Default { get; }
+    public static InterpolationSettingsBuilder DefaultBuilder { get; }
 
 
-        static InterpolationSettings() {
+    static InterpolationSettings() {
 
-            DefaultBuilder = new();
+        DefaultBuilder = new();
 
-            Default = DefaultBuilder.Build();
-        }
+        Default = DefaultBuilder.Build();
     }
-
 }

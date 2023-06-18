@@ -1,6 +1,5 @@
-﻿namespace StringTokenFormatter
-{
-    public interface ITokenValueContainerAsync {
-        Task<TryGetResult> TryMapAsync(ITokenMatch matchedToken);
-    }
+﻿namespace StringTokenFormatter;
+
+public interface ITokenValueContainerAsync {
+    Task<TryGetResult> TryMapAsync(ITokenMatch matchedToken);
 }

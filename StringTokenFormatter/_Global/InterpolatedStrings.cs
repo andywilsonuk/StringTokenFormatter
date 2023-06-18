@@ -1,17 +1,15 @@
 ﻿using StringTokenFormatter.Impl;
 
-namespace StringTokenFormatter
-{
-    public static class InterpolatedStrings {
+namespace StringTokenFormatter;
 
-        public static IInterpolatedString Create(params IInterpolatedStringSegment[] Segments) {
-            return Create(Segments.AsEnumerable());
-        }
+public static class InterpolatedStrings {
 
-        public static IInterpolatedString Create(IEnumerable<IInterpolatedStringSegment> Segments) {
-            var ret = new InterpolatedStringImpl(Segments);
-            return ret;
-        }
+    public static IInterpolatedString Create(params IInterpolatedStringSegment[] Segments) {
+        return Create(Segments.AsEnumerable());
     }
 
+    public static IInterpolatedString Create(IEnumerable<IInterpolatedStringSegment> Segments) {
+        var ret = new InterpolatedStringImpl(Segments);
+        return ret;
+    }
 }

@@ -1,16 +1,15 @@
-﻿namespace StringTokenFormatter.Impl.TokenValueContainers {
-    internal class EmptyTokenValueContainerImpl : ITokenValueContainer {
+﻿namespace StringTokenFormatter.Impl.TokenValueContainers; 
+internal class EmptyTokenValueContainerImpl : ITokenValueContainer {
 
-        public static EmptyTokenValueContainerImpl Instance { get; } = new EmptyTokenValueContainerImpl();
+    public static EmptyTokenValueContainerImpl Instance { get; } = new EmptyTokenValueContainerImpl();
 
-        private EmptyTokenValueContainerImpl() {
+    private EmptyTokenValueContainerImpl() {
 
-        }
+    }
 
-        public TryGetResult TryMap(ITokenMatch matchedToken) {
-            var ret = default(TryGetResult);
+    public TryGetResult TryMap(ITokenMatch matchedToken) {
+        var ret = default(TryGetResult);
 
-            return ret;
-        }
+        return ret;
     }
 }

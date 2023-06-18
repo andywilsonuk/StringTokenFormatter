@@ -1,30 +1,28 @@
-﻿namespace StringTokenFormatter.Impl.TokenValueContainers
-{
+﻿namespace StringTokenFormatter.Impl.TokenValueContainers;
 
-    internal class SingleTokenValueContainerImpl<T> : ITokenValueContainer {
-        protected readonly string token;
-        protected readonly T value;
-        protected readonly ITokenNameComparer nameComparer;
 
-        public SingleTokenValueContainerImpl(string token, T mapValue, ITokenNameComparer nameComparer) {
+internal class SingleTokenValueContainerImpl<T> : ITokenValueContainer {
+    protected readonly string token;
+    protected readonly T value;
+    protected readonly ITokenNameComparer nameComparer;
 
-            if (string.IsNullOrEmpty(token)) throw new ArgumentNullException(nameof(token));
+    public SingleTokenValueContainerImpl(string token, T mapValue, ITokenNameComparer nameComparer) {
 
-            this.token = token;
+        if (string.IsNullOrEmpty(token)) throw new ArgumentNullException(nameof(token));
 
-            this.nameComparer = nameComparer;
-            value = mapValue;
-        }
+        this.token = token;
 
-        public TryGetResult TryMap(ITokenMatch matchedToken) {
-            var ret = default(TryGetResult);
-
-            if (nameComparer.Equals(token, matchedToken.Token)) {
-                ret = TryGetResult.Success(value);
-            }
-
-            return ret;
-        }
+        this.nameComparer = nameComparer;
+        value = mapValue;
     }
 
+    public TryGetResult TryMap(ITokenMatch matchedToken) {
+        var ret = default(TryGetResult);
+
+        if (nameComparer.Equals(token, matchedToken.Token)) {
+            ret = TryGetResult.Success(value);
+        }
+
+        return ret;
+    }
 }

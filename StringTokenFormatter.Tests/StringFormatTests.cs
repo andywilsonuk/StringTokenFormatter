@@ -1,45 +1,44 @@
 using Xunit;
 
-namespace StringTokenFormatter.Tests
+namespace StringTokenFormatter.Tests;
+
+public class StringFormatTests
 {
-    public class StringFormatTests
+    [Fact]
+    public void InvalidStringFormatThrowsFormatException()
     {
-        [Fact]
-        public void InvalidStringFormatThrowsFormatException()
-        {
-            string pattern = "{{0}";
+        string pattern = "{{0}";
 
-            Assert.Throws<FormatException>(() => string.Format(pattern, "a"));
-        }
+        Assert.Throws<FormatException>(() => string.Format(pattern, "a"));
+    }
 
-        [Fact]
-        public void InvalidStringFormatThrowsFormatException2()
-        {
-            string pattern = "{0";
+    [Fact]
+    public void InvalidStringFormatThrowsFormatException2()
+    {
+        string pattern = "{0";
 
-            Assert.Throws<FormatException>(() => string.Format(pattern, "a"));
-        }
+        Assert.Throws<FormatException>(() => string.Format(pattern, "a"));
+    }
 
-        [Fact]
-        public void PaddedZeroInteger()
-        {
-            string pattern = "{0:D4}";
+    [Fact]
+    public void PaddedZeroInteger()
+    {
+        string pattern = "{0:D4}";
 
-            string actual = string.Format(pattern, 5);
+        string actual = string.Format(pattern, 5);
 
-            string expected = "0005";
-            Assert.Equal(expected, actual);
-        }
+        string expected = "0005";
+        Assert.Equal(expected, actual);
+    }
 
-        [Fact]
-        public void PaddedAlignmentInteger()
-        {
-            string pattern = "{0,10:D}";
+    [Fact]
+    public void PaddedAlignmentInteger()
+    {
+        string pattern = "{0,10:D}";
 
-            string actual = string.Format(pattern, -27);
+        string actual = string.Format(pattern, -27);
 
-            string expected = "       -27";
-            Assert.Equal(expected, actual);
-        }
+        string expected = "       -27";
+        Assert.Equal(expected, actual);
     }
 }

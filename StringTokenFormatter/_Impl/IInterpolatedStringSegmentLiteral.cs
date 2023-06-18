@@ -1,6 +1,4 @@
-﻿namespace StringTokenFormatter {
-    public interface IInterpolatedStringSegmentLiteral : IInterpolatedStringSegment {
-
-    }
+﻿namespace StringTokenFormatter; 
+public interface IInterpolatedStringSegmentLiteral : IInterpolatedStringSegment {
 
 }
