@@ -1,6 +1,7 @@
 ﻿namespace StringTokenFormatter; 
+
 public record InterpolationSettingsBuilder {
-    public ITokenSyntax TokenSyntax { get; init; } = StringTokenFormatter.TokenSyntaxes.Default;
+    public ITokenSyntax TokenSyntax { get; init; } = TokenSyntaxes.Default;
 
     public ITokenNameComparer TokenNameComparer { get; init; } = TokenNameComparers.Default;
 
@@ -9,7 +10,7 @@ public record InterpolationSettingsBuilder {
 
     public IInterpolationSettings Build() {
 
-        var InterpolatedStringParser = StringTokenFormatter.InterpolatedStringParsers.Create(TokenSyntax);
+        var InterpolatedStringParser = InterpolatedStringParsers.Create(TokenSyntax);
         var TokenValueContainerFactory = TokenValueContainerFactories.Create(TokenNameComparer);
 
         var ret = new Impl.InterpolationSettingsImpl(

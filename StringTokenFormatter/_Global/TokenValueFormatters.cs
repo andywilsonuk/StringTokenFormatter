@@ -1,4 +1,6 @@
-﻿namespace StringTokenFormatter;
+﻿using System.Globalization;
+
+namespace StringTokenFormatter;
 
 public static class TokenValueFormatters {
 
@@ -10,10 +12,10 @@ public static class TokenValueFormatters {
     public static ITokenValueFormatter CurrentUICulture { get; } 
 
     static TokenValueFormatters() {
-        InvariantCulture = From(System.Globalization.CultureInfo.InvariantCulture);
-        InstalledUICulture = From(System.Globalization.CultureInfo.InstalledUICulture);
-        CurrentCulture = From(System.Globalization.CultureInfo.CurrentCulture);
-        CurrentUICulture = From(System.Globalization.CultureInfo.CurrentUICulture);
+        InvariantCulture = From(CultureInfo.InvariantCulture);
+        InstalledUICulture = From(CultureInfo.InstalledUICulture);
+        CurrentCulture = From(CultureInfo.CurrentCulture);
+        CurrentUICulture = From(CultureInfo.CurrentUICulture);
 
         Default = CurrentUICulture;
     }
@@ -21,19 +23,17 @@ public static class TokenValueFormatters {
     public static ITokenValueFormatter From(IFormatProvider formatProvider) {
         var ret = default(ITokenValueFormatter);
         
-        if (formatProvider == System.Globalization.CultureInfo.InvariantCulture) {
+        if (formatProvider == CultureInfo.InvariantCulture) {
             ret = InvariantCulture;
-        } else if (formatProvider == System.Globalization.CultureInfo.InstalledUICulture) {
+        } else if (formatProvider == CultureInfo.InstalledUICulture) {
             ret = InstalledUICulture;
-        } else if (formatProvider == System.Globalization.CultureInfo.CurrentCulture) {
+        } else if (formatProvider == CultureInfo.CurrentCulture) {
             ret = CurrentCulture;
-        } else if (formatProvider == System.Globalization.CultureInfo.CurrentUICulture) {
+        } else if (formatProvider == CultureInfo.CurrentUICulture) {
             ret = CurrentUICulture;
         } 
 
-        if(ret is null) {
-            ret = new Impl.FormatProviderTokenValueFormatterImpl(formatProvider);
-        }
+        ret ??= new Impl.FormatProviderTokenValueFormatterImpl(formatProvider);
 
         return ret;
     }

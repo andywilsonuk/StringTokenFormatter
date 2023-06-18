@@ -57,7 +57,7 @@ public class FuncTokenValueConverterTests {
     [Fact]
     public void CallbackLazyFunctionForValue() {
         string pattern = "first {two} third";
-        Lazy<object> lazy = new Lazy<object>(() => { return "second"; });
+        Lazy<object> lazy = new(() => { return "second"; });
         var tokenValues = new Dictionary<string, object> { { "two", lazy } };
 
         string actual = pattern.FormatDictionary(tokenValues);
@@ -69,7 +69,7 @@ public class FuncTokenValueConverterTests {
     [Fact]
     public void CallbackLazyFunctionForStringValue() {
         string pattern = "first {two} third";
-        Lazy<string> lazy = new Lazy<string>(() => { return "second"; });
+        Lazy<string> lazy = new(() => { return "second"; });
         var tokenValues = new Dictionary<string, object> { { "two", lazy } };
 
         string actual = pattern.FormatDictionary(tokenValues);

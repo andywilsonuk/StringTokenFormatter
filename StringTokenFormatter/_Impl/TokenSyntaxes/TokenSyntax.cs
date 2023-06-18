@@ -12,7 +12,5 @@ internal record TokenSyntaxImpl : ITokenSyntax, IGetDebuggerDisplay {
         return ret;
     }
 
-    string IGetDebuggerDisplay.GetDebuggerDisplay() {
-        return GetDebuggerDisplay();
-    }
+    string IGetDebuggerDisplay.GetDebuggerDisplay() => GetDebuggerDisplay();
 }

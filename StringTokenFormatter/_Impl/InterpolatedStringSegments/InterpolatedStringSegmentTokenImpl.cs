@@ -37,11 +37,7 @@ internal record InterpolatedStringSegmentTokenImpl : IInterpolatedStringSegmentT
 
     public override string ToString() => Original;
 
-    internal string GetDebuggerDisplay() {
-        return Original;
-    }
+    internal string GetDebuggerDisplay() => Original;
 
-    string IGetDebuggerDisplay.GetDebuggerDisplay() {
-        return GetDebuggerDisplay();
-    }
+    string IGetDebuggerDisplay.GetDebuggerDisplay() => GetDebuggerDisplay();
 }

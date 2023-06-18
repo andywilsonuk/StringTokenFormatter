@@ -6,9 +6,7 @@ namespace StringTokenFormatter.Impl.TokenValueContainers;
 static class ObjectPropertiesTokenValueContainerFactoryImpl {
 
     //Default constructor
-    public static ObjectPropertiesTokenValueContainerImpl<T> Create<T>(T tokenValueObject, ITokenNameComparer nameComparer) {
-        return new ObjectPropertiesTokenValueContainerImpl<T>(tokenValueObject, nameComparer);
-    }
+    public static ObjectPropertiesTokenValueContainerImpl<T> Create<T>(T tokenValueObject, ITokenNameComparer nameComparer) => new(tokenValueObject, nameComparer);
 
     //Create a generic using reflection super fast!
     public static ITokenValueContainer Create(object tokenValueObject, ITokenNameComparer? nameComparer = default) {

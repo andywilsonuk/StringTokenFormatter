@@ -34,7 +34,5 @@ internal class InterpolatedStringImpl : IInterpolatedString, IGetDebuggerDisplay
         return sb.ToString();
     }
 
-    string IGetDebuggerDisplay.GetDebuggerDisplay() {
-        return GetDebuggerDisplay();
-    }
+    string IGetDebuggerDisplay.GetDebuggerDisplay() => GetDebuggerDisplay();
 }

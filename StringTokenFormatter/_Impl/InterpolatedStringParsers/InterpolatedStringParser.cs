@@ -16,7 +16,6 @@ internal class InterpolatedStringParserImpl : IInterpolatedStringParser {
         var regexEscapedStartToken = Regex.Escape(markers.StartToken);
         var regexEscapedEscapedStartToken = Regex.Escape(markers.StartTokenEscaped);
         var regexEscapedEndToken = Regex.Escape(markers.EndToken);
-        //var segmentPattern = $"({regexEscapedEscapedStartToken})|({regexEscapedStartToken}[^ ]{{1}}.*?{regexEscapedEndToken})";
         var segmentPattern = $"({regexEscapedEscapedStartToken})|({regexEscapedStartToken}.*?{regexEscapedEndToken})";
 
         var options = RegexOptions.None
@@ -30,8 +29,6 @@ internal class InterpolatedStringParserImpl : IInterpolatedStringParser {
         segmentRegex = new Regex(segmentPattern, options);
     }
 
-
-
     public IInterpolatedString Parse(string input) {
         var Segments = ParseInternal(input);
 
@@ -41,7 +38,8 @@ internal class InterpolatedStringParserImpl : IInterpolatedStringParser {
     private IEnumerable<IInterpolatedStringSegment> ParseInternal(string input) {
         if (string.IsNullOrEmpty(input)) yield break;
         int index = 0;
-        foreach (Match match in segmentRegex.Matches(input)) {
+        foreach (Match match in segmentRegex.Matches(input))
+        {
             string segment = match.Value;
             if (index != match.Index) {
                 string text = input.Substring(index, match.Index - index);

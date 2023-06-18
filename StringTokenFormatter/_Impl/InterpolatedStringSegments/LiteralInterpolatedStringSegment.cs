@@ -11,17 +11,11 @@ internal record InterpolatedStringSegmentLiteralImpl : IInterpolatedStringSegmen
         Original = text;
     }
 
-    public string? Evaluate(ITokenValueContainer container, ITokenValueConverter converter, ITokenValueFormatter formatter) {
-        return formatter.Format(this, Original, null, null);
-    }
+    public string? Evaluate(ITokenValueContainer container, ITokenValueConverter converter, ITokenValueFormatter formatter) => formatter.Format(this, Original, null, null);
 
     public override string ToString() => Original;
 
-    internal string GetDebuggerDisplay() {
-        return Original;
-    }
+    internal string GetDebuggerDisplay() => Original;
 
-    string IGetDebuggerDisplay.GetDebuggerDisplay() {
-        return GetDebuggerDisplay();
-    }
+    string IGetDebuggerDisplay.GetDebuggerDisplay() => GetDebuggerDisplay();
 }

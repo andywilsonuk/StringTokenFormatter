@@ -8,11 +8,7 @@ internal class StringComparerTokenNameComparerImpl : ITokenNameComparer {
 
     public IEqualityComparer<string> Comparer { get; }
 
-    bool IEqualityComparer<string>.Equals(string x, string y) {
-        return Comparer.Equals(x, y);
-    }
+    bool IEqualityComparer<string>.Equals(string x, string y) => Comparer.Equals(x, y);
 
-    int IEqualityComparer<string>.GetHashCode(string obj) {
-        return Comparer.GetHashCode(obj);
-    }
+    int IEqualityComparer<string>.GetHashCode(string obj) => Comparer.GetHashCode(obj);
 }
