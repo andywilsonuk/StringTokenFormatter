@@ -72,7 +72,7 @@ public class StringTokenExtensionsTests
         Assert.Equal(expected, actual);
     }
 
-    
+
 
 
 }

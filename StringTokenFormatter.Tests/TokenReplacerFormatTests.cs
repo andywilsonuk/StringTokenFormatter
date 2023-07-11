@@ -3,10 +3,12 @@ using Moq;
 
 namespace StringTokenFormatter.Tests;
 
-public class TokenReplacerFormatTests {
+public class TokenReplacerFormatTests
+{
 
     [Fact]
-    public void Custom_Container_Maps_String_Input_To_Values() {
+    public void Custom_Container_Maps_String_Input_To_Values()
+    {
         var container = new Mock<ITokenValueContainer>();
         object? value = "second";
         container.Setup(x => x.TryMap(It.Is<ITokenMatch>(y => y.Token == "two"))).Returns(TryGetResult.Success(value));
@@ -19,7 +21,8 @@ public class TokenReplacerFormatTests {
     }
 
     [Fact]
-    public void Custom_Container_Maps_Segmented_String_Input_To_Values() {
+    public void Custom_Container_Maps_Segmented_String_Input_To_Values()
+    {
         var container = new Mock<ITokenValueContainer>();
         object value = "second";
         container.Setup(x => x.TryMap(It.Is<ITokenMatch>(y => y.Token == "two"))).Returns(TryGetResult.Success(value));

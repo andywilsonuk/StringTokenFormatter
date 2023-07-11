@@ -1,27 +1,31 @@
 ﻿using Xunit;
 
-namespace StringTokenFormatter.Tests; 
-public class DollarRoundTokenMarkerTests : TokenMarkerTestsBase {
-    
+namespace StringTokenFormatter.Tests;
+public class DollarRoundTokenMarkerTests : TokenMarkerTestsBase
+{
+
     static IInterpolationSettings Settings = (InterpolationSettings.DefaultBuilder with
     {
-        TokenSyntax = TokenSyntaxes.DollarRound
+        TokenSyntax = CommonTokenSyntax.DollarRound
     }).Build();
 
     [Fact]
-    public void SingleRound() {
+    public void SingleRound()
+    {
         SingleInternal(Settings, "first $(two) third", "first second third");
     }
 
     [Fact]
-    public void SingleIntegerRound() {
+    public void SingleIntegerRound()
+    {
         SingleIntegerInternal(Settings, "first $(two:D4) third", "first 0005 third");
     }
 
 
 
     [Fact]
-    public void OpenEscapedCharacterYieldsNothingRound() {
+    public void OpenEscapedCharacterYieldsNothingRound()
+    {
         OpenEscapedCharacterYieldsNothingInternal(Settings, "first $(( third", "first $( third");
     }
 
@@ -29,14 +33,16 @@ public class DollarRoundTokenMarkerTests : TokenMarkerTestsBase {
 
 
     [Fact]
-    public void OpenEscapedCharacterYieldsReplacementRound() {
+    public void OpenEscapedCharacterYieldsReplacementRound()
+    {
         OpenEscapedCharacterYieldsReplacementInternal(Settings, "first $(($(two) third", "first $(second third");
     }
 
 
 
     [Fact]
-    public void MissingTokenValueRound() {
+    public void MissingTokenValueRound()
+    {
         MissingTokenValueInternal(Settings, "first $(missing) third", "first $(missing) third");
     }
 

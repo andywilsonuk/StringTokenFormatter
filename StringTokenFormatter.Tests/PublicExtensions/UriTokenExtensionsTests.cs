@@ -52,7 +52,7 @@ public class UriTokenExtensionsTests
         var expected = new Uri("http://temp.org/10?id=10");
         var propertiesObject = new
         {
-            id =  10,
+            id = 10,
             path = "people",
         };
 

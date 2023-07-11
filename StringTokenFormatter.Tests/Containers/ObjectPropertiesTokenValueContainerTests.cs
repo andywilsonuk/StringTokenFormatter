@@ -1,10 +1,12 @@
 ﻿using Moq;
 using Xunit;
 
-namespace StringTokenFormatter.Tests; 
-public partial class ObjectPropertiesTokenValueContainerTests {
+namespace StringTokenFormatter.Tests;
+public partial class ObjectPropertiesTokenValueContainerTests
+{
     [Fact]
-    public void Property_Values_Are_Only_Got_Once() {
+    public void Property_Values_Are_Only_Got_Once()
+    {
         var mockObject = new Mock<IMockPropertiesObject>();
         var mockMatchedToken = new Mock<ITokenMatch>();
         mockMatchedToken.SetupGet(x => x.Token).Returns("Prop1");
@@ -18,13 +20,16 @@ public partial class ObjectPropertiesTokenValueContainerTests {
     }
 
 
-    public interface IMockPropertiesObject {
+    public interface IMockPropertiesObject
+    {
         int Prop1 { get; set; }
     }
 
     [Fact]
-    public void Object_Uses_Generic_Formatter() {
-        var Test = (object) new TestClass() {
+    public void Object_Uses_Generic_Formatter()
+    {
+        var Test = (object)new TestClass()
+        {
             First = 1,
             Second = "Second"
         };
@@ -37,8 +42,10 @@ public partial class ObjectPropertiesTokenValueContainerTests {
     }
 
     [Fact]
-    public void Performance_Comparison_Between_Generic_and_Non_Generic() {
-        var Test1 = new TestClass() {
+    public void Performance_Comparison_Between_Generic_and_Non_Generic()
+    {
+        var Test1 = new TestClass()
+        {
             First = 1,
             Second = "Second"
         };
@@ -50,13 +57,15 @@ public partial class ObjectPropertiesTokenValueContainerTests {
         var actual2 = pattern.FormatToken(Test2);
 
         var sw1 = System.Diagnostics.Stopwatch.StartNew();
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 100000; i++)
+        {
             actual1 = pattern.FormatToken(Test1);
         }
         sw1.Stop();
 
         var sw2 = System.Diagnostics.Stopwatch.StartNew();
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 100000; i++)
+        {
             actual2 = pattern.FormatToken(Test2);
         }
 
@@ -78,8 +87,10 @@ public partial class ObjectPropertiesTokenValueContainerTests {
 
 
     [Fact]
-    public void Interface_Excludes_Class_Members() {
-        var Test = new TestClass() {
+    public void Interface_Excludes_Class_Members()
+    {
+        var Test = new TestClass()
+        {
             First = 1,
             Second = "Second"
         };
@@ -92,8 +103,10 @@ public partial class ObjectPropertiesTokenValueContainerTests {
     }
 
     [Fact]
-    public void Derived_Interface_Includes_Base_Interfaces() {
-        var Test = new DerivedClass() {
+    public void Derived_Interface_Includes_Base_Interfaces()
+    {
+        var Test = new DerivedClass()
+        {
             First = 1,
             Second = "Second",
             Third = "Third"
@@ -108,8 +121,10 @@ public partial class ObjectPropertiesTokenValueContainerTests {
 
 
     [Fact]
-    public void Derived_Includes_Base_Members() {
-        var Test = new DerivedClass() {
+    public void Derived_Includes_Base_Members()
+    {
+        var Test = new DerivedClass()
+        {
             First = 1,
             Second = "Second",
             Third = "Third"
@@ -125,7 +140,8 @@ public partial class ObjectPropertiesTokenValueContainerTests {
 
 
     [Fact]
-    public void AnonymousObject() {
+    public void AnonymousObject()
+    {
         string pattern = "first {two} third";
         var tokenValues = new { two = "second" };
 
@@ -136,7 +152,8 @@ public partial class ObjectPropertiesTokenValueContainerTests {
     }
 
     [Fact]
-    public void AnonymousObjectCaseMatch() {
+    public void AnonymousObjectCaseMatch()
+    {
         string pattern = "first {two} third";
         var tokenValues = new { Two = "second" };
 
@@ -147,7 +164,8 @@ public partial class ObjectPropertiesTokenValueContainerTests {
     }
 
     [Fact]
-    public void AnonymousObjectWithCulture() {
+    public void AnonymousObjectWithCulture()
+    {
         string pattern = "first {two} third";
         var tokenValues = new { two = "second" };
 

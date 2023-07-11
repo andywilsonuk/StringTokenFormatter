@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace StringTokenFormatter.Tests; 
+namespace StringTokenFormatter.Tests;
 public class PerformanceTests
 {
     [Fact]
@@ -11,7 +11,8 @@ public class PerformanceTests
         var Format = "{Name} is {Age}";
         var ParsedFormat = Format.ToInterpolatedString();
 
-        var Variables = new PerformanceTokenTest() {
+        var Variables = new PerformanceTokenTest()
+        {
             Name = "John Smith",
             Age = 21,
         };
@@ -19,14 +20,16 @@ public class PerformanceTests
 
         var SW1 = System.Diagnostics.Stopwatch.StartNew();
         var Container1 = TokenValueContainer.FromObject(Variables);
-        for (int i = 0; i < Iterations; i++) {
+        for (int i = 0; i < Iterations; i++)
+        {
             var Output1 = ParsedFormat.FormatContainer(Container1);
         }
         SW1.Stop();
 
         var SW2 = System.Diagnostics.Stopwatch.StartNew();
         var Container2 = TokenValueContainer.FromObject(Variables);
-        for (int i = 0; i < Iterations; i++) {
+        for (int i = 0; i < Iterations; i++)
+        {
             var Output2 = ParsedFormat.FormatContainer(Container2);
         }
         SW2.Stop();
@@ -34,21 +37,24 @@ public class PerformanceTests
     }
 
     [Fact]
-    public void CompareParsing() {
+    public void CompareParsing()
+    {
         var Iterations = 1_000_000;
 
         var Format = "{Name} is {Age}";
-        
-        for (int i = 0; i < Iterations; i++) {
+
+        for (int i = 0; i < Iterations; i++)
+        {
             var ParsedFormat = Format.ToInterpolatedString();
         }
-        
+
 
     }
 
 }
 
-public class PerformanceTokenTest {
+public class PerformanceTokenTest
+{
     public string? Name { get; set; }
     public int Age { get; set; }
 

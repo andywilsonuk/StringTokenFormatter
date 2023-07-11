@@ -1,12 +1,15 @@
 ﻿using Moq;
+using StringTokenFormatter.Impl;
 using Xunit;
 
 namespace StringTokenFormatter.Tests.Containers;
 
-public class SingleTokenValueContainerTests {
+public class SingleTokenValueContainerTests
+{
 
     [Fact]
-    public void Formatting_Single_Value_Returns_In_Mapped_String() {
+    public void Formatting_Single_Value_Returns_In_Mapped_String()
+    {
         string pattern = "first {two} third";
 
         var actual = pattern.FormatToken("two", "second");
@@ -15,7 +18,8 @@ public class SingleTokenValueContainerTests {
     }
 
     [Fact]
-    public void Formatting_Single_Value_With_Markers_Returns_In_Mapped_String() {
+    public void Formatting_Single_Value_With_Markers_Returns_In_Mapped_String()
+    {
         string pattern = "first {two} third";
 
         var actual = pattern.FormatToken("two", "second");
@@ -24,7 +28,8 @@ public class SingleTokenValueContainerTests {
     }
 
     [Fact]
-    public void Formatting_Incorrect_Single_Value_Returns_In_Original_String() {
+    public void Formatting_Incorrect_Single_Value_Returns_In_Original_String()
+    {
         string pattern = "first {two} third";
 
         var actual = pattern.FormatToken("notmine", "second");
@@ -33,7 +38,8 @@ public class SingleTokenValueContainerTests {
     }
 
     [Fact]
-    public void Formatting_Single_Value_With_Custom_Mapper_Returns_In_Mapped_String() {
+    public void Formatting_Single_Value_With_Custom_Mapper_Returns_In_Mapped_String()
+    {
 
 
 

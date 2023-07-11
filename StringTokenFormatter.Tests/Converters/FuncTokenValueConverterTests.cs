@@ -2,10 +2,12 @@
 
 namespace StringTokenFormatter.Tests.nverters;
 
-public class FuncTokenValueConverterTests {
+public class FuncTokenValueConverterTests
+{
 
     [Fact]
-    public void CallbackFunctionForValue() {
+    public void CallbackFunctionForValue()
+    {
         string pattern = "first {two} third";
         Func<string, object> func = (token) => { return "second"; };
         var tokenValues = new Dictionary<string, object> { { "two", func } };
@@ -17,7 +19,8 @@ public class FuncTokenValueConverterTests {
     }
 
     [Fact]
-    public void CallbackFunctionForValueMixedCase() {
+    public void CallbackFunctionForValueMixedCase()
+    {
         string pattern = "first {Two} third";
         Func<string, object> func = (token) => { return "second"; };
         var tokenValues = new Dictionary<string, object> { { "two", func } };
@@ -29,7 +32,8 @@ public class FuncTokenValueConverterTests {
     }
 
     [Fact]
-    public void CallbackFunctionForValueUnused() {
+    public void CallbackFunctionForValueUnused()
+    {
         string pattern = "first {two} third";
         bool notCalled = true;
         Func<string, object> func = (token) => { notCalled = false; return "second"; };
@@ -43,7 +47,8 @@ public class FuncTokenValueConverterTests {
     }
 
     [Fact]
-    public void CallbackFunctionForStringValue() {
+    public void CallbackFunctionForStringValue()
+    {
         string pattern = "first {two} third";
         Func<string, string> func = (token) => { return "second"; };
         var tokenValues = new Dictionary<string, object> { { "two", func } };
@@ -55,7 +60,8 @@ public class FuncTokenValueConverterTests {
     }
 
     [Fact]
-    public void CallbackLazyFunctionForValue() {
+    public void CallbackLazyFunctionForValue()
+    {
         string pattern = "first {two} third";
         Lazy<object> lazy = new(() => { return "second"; });
         var tokenValues = new Dictionary<string, object> { { "two", lazy } };
@@ -67,7 +73,8 @@ public class FuncTokenValueConverterTests {
     }
 
     [Fact]
-    public void CallbackLazyFunctionForStringValue() {
+    public void CallbackLazyFunctionForStringValue()
+    {
         string pattern = "first {two} third";
         Lazy<string> lazy = new(() => { return "second"; });
         var tokenValues = new Dictionary<string, object> { { "two", lazy } };

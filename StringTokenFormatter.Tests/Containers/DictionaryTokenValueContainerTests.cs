@@ -4,10 +4,12 @@
 
 namespace StringTokenFormatter.Tests;
 
-public class DictionaryTokenValueContainerTests {
+public class DictionaryTokenValueContainerTests
+{
 
     [Fact]
-    public void EmptyStringValue() {
+    public void EmptyStringValue()
+    {
         string pattern = string.Empty;
         var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -18,7 +20,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void NotUsed() {
+    public void NotUsed()
+    {
         string pattern = "first second";
         var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -29,7 +32,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void MixedCase() {
+    public void MixedCase()
+    {
         string pattern = "first {Two} third";
         var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -40,7 +44,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void Duplicate() {
+    public void Duplicate()
+    {
         string pattern = "first {two} third {two}";
         var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -51,7 +56,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void MixedIn() {
+    public void MixedIn()
+    {
         string pattern = "first{two}third";
         var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -62,7 +68,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void Multiple() {
+    public void Multiple()
+    {
         string pattern = "first {two} third {four}";
         var tokenValues = new Dictionary<string, object> { { "two", "second" }, { "four", "fourth" } };
 
@@ -73,7 +80,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void MultipleReversed() {
+    public void MultipleReversed()
+    {
         string pattern = "first {two} third {four}";
         var tokenValues = new Dictionary<string, object> { { "four", "fourth" }, { "two", "second" } };
 
@@ -84,7 +92,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void NormalisedTokenKey() {
+    public void NormalisedTokenKey()
+    {
         string pattern = "first {two} third";
         var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -95,7 +104,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void SingleIntegerWithPadding() {
+    public void SingleIntegerWithPadding()
+    {
         string pattern = "first{two,10:D4} third";
         var tokenValues = new Dictionary<string, object> { { "two", 5 } };
 
@@ -106,7 +116,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void CloseEscapeCharacterYieldsReplacement() {
+    public void CloseEscapeCharacterYieldsReplacement()
+    {
         string pattern = "first {two}} third";
         var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -117,11 +128,12 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void Close_Escape_Character_Same_As_End_Character_Yields_Replacement_And_Escape_Marker() {
-        
+    public void Close_Escape_Character_Same_As_End_Character_Yields_Replacement_And_Escape_Marker()
+    {
+
         var Settings = new InterpolationSettingsBuilder
         {
-            TokenSyntax = TokenSyntaxes.DollarRoundAlternative
+            TokenSyntax = CommonTokenSyntax.DollarRoundAlternative
         }.Build();
 
 
@@ -135,7 +147,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void BothEscapeCharacterYieldsReplacement() {
+    public void BothEscapeCharacterYieldsReplacement()
+    {
         string pattern = "first {{{two}} third";
         var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -146,7 +159,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void InvalidStringFormatIsHandled() {
+    public void InvalidStringFormatIsHandled()
+    {
         string pattern = "{{two}";
         var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -159,7 +173,8 @@ public class DictionaryTokenValueContainerTests {
 
 
     [Fact]
-    public void SingleDictionaryWithCulture() {
+    public void SingleDictionaryWithCulture()
+    {
 
         var Settings = new InterpolationSettingsBuilder
         {
@@ -176,7 +191,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void EscapeAsLastCharacter() {
+    public void EscapeAsLastCharacter()
+    {
         string pattern = "first {{";
         var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -187,7 +203,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void NonTokenisedOpenBracketsAreNotIgnored() {
+    public void NonTokenisedOpenBracketsAreNotIgnored()
+    {
         string pattern = "first { {two}";
         var tokenValues = new Dictionary<string, object> { { "two", "second" } };
 
@@ -198,7 +215,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void String_Dictionary_With_Matching_Token_Mapped_Successfully() {
+    public void String_Dictionary_With_Matching_Token_Mapped_Successfully()
+    {
         string pattern = "first {two} third";
         var tokenValues = new Dictionary<string, string> { { "two", "second" } };
 
@@ -209,7 +227,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void String_Dictionary_With_Empty_Pattern_Returns_Empty_String() {
+    public void String_Dictionary_With_Empty_Pattern_Returns_Empty_String()
+    {
         string pattern = string.Empty;
         var tokenValues = new Dictionary<string, string> { { "two", "second" } };
 
@@ -220,21 +239,24 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void Null_String_Dictionary_Throws() {
+    public void Null_String_Dictionary_Throws()
+    {
         string pattern = "first {two} third";
 
         Assert.Throws<ArgumentNullException>(() => pattern.FormatDictionary((IDictionary<string, string>?)null));
     }
 
     [Fact]
-    public void Null_Object_Dictionary_Throws() {
+    public void Null_Object_Dictionary_Throws()
+    {
         string pattern = "first {two} third";
 
         Assert.Throws<ArgumentNullException>(() => pattern.FormatDictionary((IDictionary<string, object>?)null));
     }
 
     [Fact]
-    public void Multiple_Line_Text_Replaces_All_Occurrences() {
+    public void Multiple_Line_Text_Replaces_All_Occurrences()
+    {
         string pattern = "first {two}" + Environment.NewLine + "third {two}";
         var tokenValues = new Dictionary<string, object> { { "two", "sec" + Environment.NewLine + "ond" } };
 
@@ -245,7 +267,8 @@ public class DictionaryTokenValueContainerTests {
     }
 
     [Fact]
-    public void Space_Within_Token_Matches() {
+    public void Space_Within_Token_Matches()
+    {
         string pattern = "first {The Token} third";
         var tokenValues = new Dictionary<string, object> { { "The Token", "second" } };
 
