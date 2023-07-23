@@ -1,4 +1,6 @@
-﻿namespace StringTokenFormatter.Impl;
+﻿using StringTokenFormatter.Impl;
+
+namespace StringTokenFormatter;
 
 public static class InterpolatedStringResolver
 {

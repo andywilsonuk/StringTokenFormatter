@@ -26,23 +26,23 @@
 		<Description>
 			Create interpolated strings at runtime and replace tokens within.  Ie:
 			```
-			var Client = new {
+			var client = new {
 				FirstName = "John",
 				LastName = "Smith",
 			};
 			
-			var Message = "Hello {FirstName} {LastName}".FormatToken(Client);
+			var message = "Hello {FirstName} {LastName}".FormatToken(client);
 			```
 		</Description>
 		<Summary>
 			Create interpolated strings at runtime and replace tokens within.  Ie:
 			```
-			var Client = new {
+			var client = new {
 				FirstName = "John",
 				LastName = "Smith",
 			};
 
-			var Message = "Hello {FirstName} {LastName}".FormatToken(Client);
+			var message = "Hello {FirstName} {LastName}".FormatToken(client);
 			```
 		</Summary>
 		<Copyright>Andy Wilson</Copyright>

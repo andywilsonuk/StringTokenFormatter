@@ -1,6 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-
-namespace StringTokenFormatter;
+﻿namespace StringTokenFormatter.Impl;
 
 /// <summary>
 /// This Value Container searches all child containers for the provided token value and returns the first value found. 
