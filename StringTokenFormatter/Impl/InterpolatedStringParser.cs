@@ -74,13 +74,4 @@ public static class InterpolatedStringParser
             yield return new InterpolatedStringSegment(input.Substring(index));
         }
     }
-
-    public static HashSet<string> GetTokens(string input, StringTokenFormatterSettings settings)
-    {
-        if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-
-        var segmentRegex = GetRegexFromCacheOrCreate(settings);
-        var segments = ParseInternal(input, segmentRegex, settings);
-        return segments.OfType<InterpolatedStringTokenSegment>().Select(x => x.Token).ToHashSet();
-    }
 }
