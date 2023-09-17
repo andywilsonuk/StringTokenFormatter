@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net48</TargetFrameworks>
-		<LangVersion>latest</LangVersion>
+		<LangVersion>10</LangVersion>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 	</PropertyGroup>
@@ -26,23 +26,23 @@
 		<Description>
 			Create interpolated strings at runtime and replace tokens within.  Ie:
 			```
-			var Client = new {
+			var client = new {
 				FirstName = "John",
 				LastName = "Smith",
 			};
 			
-			var Message = "Hello {FirstName} {LastName}".FormatToken(Client);
+			var message = "Hello {FirstName} {LastName}".FormatToken(client);
 			```
 		</Description>
 		<Summary>
 			Create interpolated strings at runtime and replace tokens within.  Ie:
 			```
-			var Client = new {
+			var client = new {
 				FirstName = "John",
 				LastName = "Smith",
 			};
 
-			var Message = "Hello {FirstName} {LastName}".FormatToken(Client);
+			var message = "Hello {FirstName} {LastName}".FormatToken(client);
 			```
 		</Summary>
 		<Copyright>Andy Wilson</Copyright>
@@ -50,7 +50,7 @@
 		<PackageProjectUrl>https://github.com/andywilsonuk/StringTokenFormatter</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/andywilsonuk/StringTokenFormatter</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>string token formatter replace extension</PackageTags>
+		<PackageTags>string token formatter replace extension interpolate</PackageTags>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 	</PropertyGroup>
