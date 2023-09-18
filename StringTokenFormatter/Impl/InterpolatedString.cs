@@ -1,6 +1,6 @@
 ﻿namespace StringTokenFormatter.Impl;
 
-public record InterpolatedString(IReadOnlyCollection<InterpolatedStringSegment> Segments, IIInterpolatedStringSettings Settings)
+public record InterpolatedString(IReadOnlyCollection<InterpolatedStringSegment> Segments, IInterpolatedStringSettings Settings)
 {
     public HashSet<string> Tokens => Segments.OfType<InterpolatedStringTokenSegment>().Select(x => x.Token).ToHashSet();
 }

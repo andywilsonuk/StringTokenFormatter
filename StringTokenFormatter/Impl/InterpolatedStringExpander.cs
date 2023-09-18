@@ -17,7 +17,7 @@ public static class InterpolatedStringExpander
         return sb.ToString();
     }
 
-    private static string Evaluate(InterpolatedStringSegment segment, ITokenValueContainer container, IIInterpolatedStringSettings settings)
+    private static string Evaluate(InterpolatedStringSegment segment, ITokenValueContainer container, IInterpolatedStringSettings settings)
     {
         var tokenSegment = segment as InterpolatedStringTokenSegment;
         if (tokenSegment == null) { return FormatValue(segment.Raw, null, null, settings.FormatProvider); }
@@ -37,7 +37,7 @@ public static class InterpolatedStringExpander
         return FormatValue(tokenValue, tokenSegment.Padding, tokenSegment.Format, settings.FormatProvider);
     }
 
-    private static object? ConvertValue(InterpolatedStringTokenSegment segment, object? value, IIInterpolatedStringSettings settings)
+    private static object? ConvertValue(InterpolatedStringTokenSegment segment, object? value, IInterpolatedStringSettings settings)
     {
         var tokenValuePair = new TokenValuePair(segment.Token!, value);
         var converter = settings.ValueConverters.Select(fn => fn(tokenValuePair)).FirstOrDefault(x => x.IsSuccess);

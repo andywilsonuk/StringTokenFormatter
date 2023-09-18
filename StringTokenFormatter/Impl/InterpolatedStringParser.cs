@@ -7,7 +7,7 @@ public static class InterpolatedStringParser
     private static readonly string paddingSeparator = Regex.Escape(",");
     private static readonly string formattingSeparator = Regex.Escape(":");
     private static readonly string tokenTriplePattern = $"^([^{paddingSeparator}{formattingSeparator}]*){paddingSeparator}?([^{formattingSeparator}]*){formattingSeparator}?(.*)$";
-    private static readonly Lazy<Regex> tokenTripleRegex = new(() => new(tokenTriplePattern, RegexOptions.Compiled | RegexOptions.Singleline));
+    private static readonly Regex tokenTripleRegex = new(tokenTriplePattern, RegexOptions.Compiled | RegexOptions.Singleline);
     private static readonly List<(TokenSyntax Syntax, Regex Regex)> syntaxCache = new();
     private static readonly RegexOptions regexOptions = RegexOptions.None
         | RegexOptions.Singleline
@@ -16,7 +16,7 @@ public static class InterpolatedStringParser
         | RegexOptions.IgnorePatternWhitespace
         | RegexOptions.Compiled;
 
-    public static InterpolatedString Parse(string input, IIInterpolatedStringSettings settings)
+    public static InterpolatedString Parse(string input, IInterpolatedStringSettings settings)
     {
         if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
 
@@ -25,7 +25,7 @@ public static class InterpolatedStringParser
         return new InterpolatedString(segments.ToList().AsReadOnly(), settings);
     }
 
-    private static Regex GetRegexFromCacheOrCreate(IIInterpolatedStringSettings settings)
+    private static Regex GetRegexFromCacheOrCreate(IInterpolatedStringSettings settings)
     {
         var existing = syntaxCache.FirstOrDefault(x => x.Syntax == settings.Syntax);
 
@@ -38,7 +38,7 @@ public static class InterpolatedStringParser
         return segmentRegex;
     }
 
-    private static IEnumerable<InterpolatedStringSegment> ParseInternal(string input, Regex segmentRegex, IIInterpolatedStringSettings settings)
+    private static IEnumerable<InterpolatedStringSegment> ParseInternal(string input, Regex segmentRegex, IInterpolatedStringSettings settings)
     {
         if (string.IsNullOrEmpty(input)) yield break;
         var (startToken, endToken, escapedStartToken) = settings.Syntax;
@@ -64,7 +64,7 @@ public static class InterpolatedStringParser
             {
                 int middleLength = segment.Length - startToken.Length - endToken.Length;
                 string tripleWithoutMarkers = segment.Substring(startToken.Length, middleLength);
-                var split = tokenTripleRegex.Value.Split(tripleWithoutMarkers);
+                var split = tokenTripleRegex.Split(tripleWithoutMarkers);
                 yield return new InterpolatedStringTokenSegment(segment, split[1], split[2], split[3]);
             }
             index = captureIndex + match.Length;

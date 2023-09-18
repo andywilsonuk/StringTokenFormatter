@@ -30,9 +30,9 @@ public class PropertyCache<T>
     public record PropertyPairs(PropertyInfo Property, Func<T, object> Getter);
 
     const BindingFlags bindingFilter = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
-    private readonly Lazy<List<PropertyPairs>> propertyCache = new(GetPropertyPairs);
+    private readonly List<PropertyPairs> propertyCache = GetPropertyPairs();
 
-    public IEnumerable<PropertyPairs> GetPairs() => propertyCache.Value;
+    public IEnumerable<PropertyPairs> GetPairs() => propertyCache;
 
     private static List<PropertyPairs> GetPropertyPairs() => (
         from prop in GetPublicProperties(typeof(T))

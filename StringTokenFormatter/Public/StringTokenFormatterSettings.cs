@@ -14,7 +14,7 @@ public enum UnresolvedTokenBehavior
     Throw = 0,
     LeaveUnresolved = 1,
 }
-public interface IIInterpolatedStringSettings
+public interface IInterpolatedStringSettings
 {
     public TokenSyntax Syntax { get; }
     public UnresolvedTokenBehavior UnresolvedTokenBehavior { get; }
@@ -26,7 +26,7 @@ public interface ITokenValueContainerSettings
     public StringComparer NameComparer { get; }
     public TokenResolutionPolicy TokenResolutionPolicy { get; }
 }
-public record StringTokenFormatterSettings : ITokenValueContainerSettings, IIInterpolatedStringSettings
+public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInterpolatedStringSettings
 {
     public static StringTokenFormatterSettings Global { get; set; } = new();
 

@@ -1,6 +1,9 @@
 ﻿namespace StringTokenFormatter.Impl;
 
-public record TokenValue<T>(string Token, T Value);
+public record TokenValue<T>(string Token, T Value)
+{
+    public static TokenValue<T> FromPair(KeyValuePair<string, T> pair) => new(pair.Key, pair.Value);
+}
 
 public class TokenValueContainer<T> : ITokenValueContainer
 {
