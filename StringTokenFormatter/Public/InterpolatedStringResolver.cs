@@ -21,14 +21,10 @@ public class InterpolatedStringResolver
     public string FromSingle<T>(InterpolatedString interpolatedString, string token, T value) =>
         Expand(interpolatedString, TokenValueContainerFactory.FromSingle(Settings, token, value));
 
-    public string FromPairs<T>(string interpolatedString, IEnumerable<TokenValue<T>> pairs) =>
-        Expand(interpolatedString, TokenValueContainerFactory.FromDictionary(Settings, pairs));
-    public string FromPairs<T>(InterpolatedString interpolatedString, IEnumerable<TokenValue<T>> pairs) =>
-        Expand(interpolatedString, TokenValueContainerFactory.FromDictionary(Settings, pairs));
     public string FromPairs<T>(string interpolatedString, IEnumerable<KeyValuePair<string, T>> pairs) =>
-        Expand(interpolatedString, TokenValueContainerFactory.FromDictionary(Settings, pairs.Select(TokenValue<T>.FromPair)));
+        Expand(interpolatedString, TokenValueContainerFactory.FromPairs(Settings, pairs));
     public string FromPairs<T>(InterpolatedString interpolatedString, IEnumerable<KeyValuePair<string, T>> pairs) =>
-        Expand(interpolatedString, TokenValueContainerFactory.FromDictionary(Settings, pairs.Select(TokenValue<T>.FromPair)));
+        Expand(interpolatedString, TokenValueContainerFactory.FromPairs(Settings, pairs));
 
     public string FromObject<T>(string interpolatedString, T containerObject) =>
         Expand(interpolatedString, TokenValueContainerFactory.FromObject(Settings, containerObject));

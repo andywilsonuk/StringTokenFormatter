@@ -39,8 +39,7 @@ public static class InterpolatedStringExpander
 
     private static object? ConvertValue(InterpolatedStringTokenSegment segment, object? value, IInterpolatedStringSettings settings)
     {
-        var tokenValuePair = new TokenValuePair(segment.Token!, value);
-        var converter = settings.ValueConverters.Select(fn => fn(tokenValuePair)).FirstOrDefault(x => x.IsSuccess);
+        var converter = settings.ValueConverters.Select(fn => fn(value, segment.Token)).FirstOrDefault(x => x.IsSuccess);
         return converter == default ? value : converter.Value;
     }
 

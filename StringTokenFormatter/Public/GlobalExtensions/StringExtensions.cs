@@ -25,7 +25,7 @@ public static class StringExtensions
     public static string FormatDictionary<T>(this string input, IEnumerable<KeyValuePair<string, T>> values) =>
         FormatToken(input, values, StringTokenFormatterSettings.Global);
     public static string FormatDictionary<T>(this string input, IEnumerable<KeyValuePair<string, T>> values, StringTokenFormatterSettings settings) =>
-        Expand(input, TokenValueContainerFactory.FromDictionary<T>(settings, values.Select(TokenValue<T>.FromPair)), settings);
+        Expand(input, TokenValueContainerFactory.FromPairs(settings, values), settings);
 
     public static string FormatContainer(this string input, ITokenValueContainer container) =>
         FormatToken(input, container, StringTokenFormatterSettings.Global);

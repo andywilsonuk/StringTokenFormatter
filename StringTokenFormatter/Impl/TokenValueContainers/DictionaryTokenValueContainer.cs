@@ -1,24 +1,19 @@
 ﻿namespace StringTokenFormatter.Impl;
 
-public record TokenValue<T>(string Token, T Value)
-{
-    public static TokenValue<T> FromPair(KeyValuePair<string, T> pair) => new(pair.Key, pair.Value);
-}
-
-public class TokenValueContainer<T> : ITokenValueContainer
+public class DictionaryTokenValueContainer<T> : ITokenValueContainer
 {
     private readonly Dictionary<string, T> pairs;
     private readonly ITokenValueContainerSettings settings;
 
-    public TokenValueContainer(IEnumerable<TokenValue<T>> source, ITokenValueContainerSettings settings)
+    public DictionaryTokenValueContainer(IEnumerable<KeyValuePair<string, T>> source, ITokenValueContainerSettings settings)
     {
         if (source == null) { throw new ArgumentNullException(nameof(source)); }
         this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
         pairs = new Dictionary<string, T>(settings.NameComparer);
-        foreach (var pair in source.Where(p => !string.IsNullOrEmpty(p.Token)))
+        foreach (var pair in source.Where(p => !string.IsNullOrEmpty(p.Key)))
         {
-            pairs[pair.Token] = pair.Value;
+            pairs[pair.Key] = pair.Value;
         }
     }
 

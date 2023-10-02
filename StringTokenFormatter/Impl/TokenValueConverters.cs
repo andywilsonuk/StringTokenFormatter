@@ -1,21 +1,21 @@
 ﻿namespace StringTokenFormatter.Impl;
 
-public record TokenValuePair(string Token, object? Value);
+public delegate TryGetResult TokenValueConverter(object? value, string tokenName);
 
 public static class TokenValueConverters
 {
-    public static Func<TokenValuePair, TryGetResult> FromNull() =>
-        a => a.Value == null ? TryGetResult.Success(null) : default;
+    public static TokenValueConverter FromNull() =>
+        (v, _n) => v == null ? TryGetResult.Success(null) : default;
 
-    public static Func<TokenValuePair, TryGetResult> FromPrimitives() =>
-        a => a.Value != null && (a.Value is string || a.Value.GetType().IsValueType) ? TryGetResult.Success(a.Value) : default;
+    public static TokenValueConverter FromPrimitives() =>
+        (v, _n) => v != null && (v is string || v.GetType().IsValueType) ? TryGetResult.Success(v) : default;
 
-    public static Func<TokenValuePair, TryGetResult> FromLazy<T>() =>
-        a => a.Value is Lazy<T> lazy ? TryGetResult.Success(lazy.Value) : default;
+    public static TokenValueConverter FromLazy<T>() =>
+        (v, _n) => v is Lazy<T> lazy ? TryGetResult.Success(lazy.Value) : default;
 
-    public static Func<TokenValuePair, TryGetResult> FromFunc<T>() =>
-        a => a.Value is Func<T> func ? TryGetResult.Success(func()) : default;
+    public static TokenValueConverter FromFunc<T>() =>
+        (v, _n) => v is Func<T> func ? TryGetResult.Success(func()) : default;
 
-    public static Func<TokenValuePair, TryGetResult> FromTokenFunc<T>() =>
-        a => a.Value is Func<string, T> func ? TryGetResult.Success(func(a.Token)) : default;
+    public static TokenValueConverter FromTokenFunc<T>() =>
+        (v, n) => v is Func<string, T> func ? TryGetResult.Success(func(n)) : default;
 }

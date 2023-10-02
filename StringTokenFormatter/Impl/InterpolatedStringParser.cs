@@ -28,7 +28,6 @@ public static class InterpolatedStringParser
     private static Regex GetRegexFromCacheOrCreate(IInterpolatedStringSettings settings)
     {
         var existing = syntaxCache.FirstOrDefault(x => x.Syntax == settings.Syntax);
-
         if (!(existing == default)) { return existing.Regex; }
 
         var (startToken, endToken, escapedStartToken) = settings.Syntax;

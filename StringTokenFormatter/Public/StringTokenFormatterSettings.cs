@@ -18,7 +18,7 @@ public interface IInterpolatedStringSettings
 {
     public TokenSyntax Syntax { get; }
     public UnresolvedTokenBehavior UnresolvedTokenBehavior { get; }
-    public IReadOnlyCollection<Func<TokenValuePair, TryGetResult>> ValueConverters { get; }
+    public IReadOnlyCollection<TokenValueConverter> ValueConverters { get; }
     public IFormatProvider FormatProvider { get; }
 }
 public interface ITokenValueContainerSettings
@@ -35,7 +35,10 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
 
     public TokenSyntax Syntax { get; init; } = CommonTokenSyntax.Curly;
     public UnresolvedTokenBehavior UnresolvedTokenBehavior { get; init; } = UnresolvedTokenBehavior.Throw;
-    public IReadOnlyCollection<Func<TokenValuePair, TryGetResult>> ValueConverters { get; init; } = new List<Func<TokenValuePair, TryGetResult>>
+    public IReadOnlyCollection<TokenValueConverter> ValueConverters { get; init; } = defaultValueConverters;
+    public IFormatProvider FormatProvider { get; init; } = CultureInfo.CurrentUICulture;
+
+    private static readonly IReadOnlyCollection<TokenValueConverter> defaultValueConverters = new List<TokenValueConverter>
     {
         TokenValueConverters.FromNull(),
         TokenValueConverters.FromPrimitives(),
@@ -46,5 +49,4 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
         TokenValueConverters.FromTokenFunc<string>(),
         TokenValueConverters.FromTokenFunc<object>()
     }.AsReadOnly();
-    public IFormatProvider FormatProvider { get; init; } = CultureInfo.CurrentUICulture;
 }

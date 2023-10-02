@@ -1,6 +1,6 @@
 ﻿namespace StringTokenFormatter;
 
-public record TokenSyntax(string Start, string End, string EscapedStart);
+public readonly record struct TokenSyntax(string Start, string End, string EscapedStart);
 
 public static class CommonTokenSyntax
 {
