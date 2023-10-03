@@ -6,6 +6,7 @@ public static class TokenResolutionPolicyExtensions
     {
         TokenResolutionPolicy.ResolveAll => true,
         TokenResolutionPolicy.IgnoreNull when value is null => false,
+        TokenResolutionPolicy.IgnoreNullOrEmpty when value is null => false,
         TokenResolutionPolicy.IgnoreNullOrEmpty when value is string s && s.Length == 0 => false,
         _ => true,
     };

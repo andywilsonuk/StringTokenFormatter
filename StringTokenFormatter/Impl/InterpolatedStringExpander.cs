@@ -20,7 +20,7 @@ public static class InterpolatedStringExpander
     private static string Evaluate(InterpolatedStringSegment segment, ITokenValueContainer container, IInterpolatedStringSettings settings)
     {
         var tokenSegment = segment as InterpolatedStringTokenSegment;
-        if (tokenSegment == null) { return FormatValue(segment.Raw, null, null, settings.FormatProvider); }
+        if (tokenSegment == null) { return FormatValue(segment.Raw, string.Empty, string.Empty, settings.FormatProvider); }
 
         object? tokenValue = tokenSegment.Raw;
 
@@ -43,14 +43,14 @@ public static class InterpolatedStringExpander
         return converter == default ? value : converter.Value;
     }
 
-    private static string FormatValue(object? value, string? alignment, string? formatString, IFormatProvider formatProvider)
+    private static string FormatValue(object? value, string alignment, string formatString, IFormatProvider formatProvider)
     {
         if (value is null) { return string.Empty; }
 
-        bool isAlignmentEmpty = string.IsNullOrEmpty(alignment);
-        bool isFormatStringEmpty = string.IsNullOrEmpty(formatString);
+        bool isAlignmentEmpty = alignment == string.Empty;
+        bool isFormatStringEmpty = formatString == string.Empty;
 
-        if (isAlignmentEmpty && isFormatStringEmpty) { return value.ToString()!; }
+        if (isAlignmentEmpty && isFormatStringEmpty) { return value.ToString(); }
         if (isAlignmentEmpty) { alignment = "0"; }
         if (isFormatStringEmpty) { formatString = "G"; }
 
