@@ -8,16 +8,11 @@ public readonly record struct TryGetResult
     public object? Value { get; init; }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TryGetResult Success(object? Value)
+    public static TryGetResult Success(object? Value) => new()
     {
-        var ret = new TryGetResult()
-        {
-            IsSuccess = true,
-            Value = Value,
-        };
-
-        return ret;
-    }
+        IsSuccess = true,
+        Value = Value,
+    };
 
     public void Deconstruct(out bool IsSuccess, out object? Value)
     {

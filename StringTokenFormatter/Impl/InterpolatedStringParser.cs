@@ -31,7 +31,11 @@ public static class InterpolatedStringParser
         if (!(existing == default)) { return existing.Regex; }
 
         var (startToken, endToken, escapedStartToken) = settings.Syntax;
-        string segmentPattern = $"({Regex.Escape(startToken)})|({Regex.Escape(escapedStartToken)}.*?{Regex.Escape(endToken)})";
+        var regexEscapedStartToken = Regex.Escape(startToken);
+        var regexEscapedEscapedStartToken = Regex.Escape(escapedStartToken);
+        var regexEscapedEndToken = Regex.Escape(endToken);
+        var segmentPattern = $"({regexEscapedEscapedStartToken})|({regexEscapedStartToken}.*?{regexEscapedEndToken})";
+
         Regex segmentRegex = new(segmentPattern, regexOptions);
         syntaxCache.Add((settings.Syntax, segmentRegex));
         return segmentRegex;
@@ -42,7 +46,8 @@ public static class InterpolatedStringParser
         if (string.IsNullOrEmpty(input)) yield break;
         var (startToken, endToken, escapedStartToken) = settings.Syntax;
         int index = 0;
-        foreach (Match match in segmentRegex.Matches(input).Cast<Match>())
+        var matches = segmentRegex.Matches(input);
+        foreach (var match in matches.Cast<Match>())
         {
             string segment = match.Value;
             int captureIndex = match.Index;

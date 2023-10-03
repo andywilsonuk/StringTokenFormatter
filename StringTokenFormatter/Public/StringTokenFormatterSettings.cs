@@ -35,8 +35,13 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
 
     public TokenSyntax Syntax { get; init; } = CommonTokenSyntax.Curly;
     public UnresolvedTokenBehavior UnresolvedTokenBehavior { get; init; } = UnresolvedTokenBehavior.Throw;
-    public IReadOnlyCollection<TokenValueConverter> ValueConverters { get; init; } = defaultValueConverters;
+    public IReadOnlyCollection<TokenValueConverter> ValueConverters {
+        get { return valueConverters ?? defaultValueConverters; }
+        init { valueConverters = value; }
+    }
     public IFormatProvider FormatProvider { get; init; } = CultureInfo.CurrentUICulture;
+
+    private IReadOnlyCollection<TokenValueConverter> valueConverters = defaultValueConverters;
 
     private static readonly IReadOnlyCollection<TokenValueConverter> defaultValueConverters = new List<TokenValueConverter>
     {

@@ -4,31 +4,28 @@ namespace StringTokenFormatter;
 
 public static class UriExtensions
 {
-    private static Uri Expand(Uri interpolatedString, ITokenValueContainer tokenValueContainer, IInterpolatedStringSettings settings) =>
-        new(InterpolatedStringExpander.Expand(InterpolatedStringParser.Parse(interpolatedString.OriginalString, settings), tokenValueContainer), UriKind.RelativeOrAbsolute);
-
     public static Uri FormatToken<T>(this Uri input, T valuesObject) =>
         FormatToken(input, valuesObject, StringTokenFormatterSettings.Global);
     public static Uri FormatToken<T>(this Uri input, T valuesObject, StringTokenFormatterSettings settings) =>
-        Expand(input, TokenValueContainerFactory.FromObject(settings, valuesObject), settings);
+        FormatContainer(input, TokenValueContainerFactory.FromObject(settings, valuesObject), settings);
 
     public static Uri FormatToken<T>(this Uri input, string token, T replacementValue) =>
         FormatToken(input, token, replacementValue, StringTokenFormatterSettings.Global);
     public static Uri FormatToken<T>(this Uri input, string token, T replacementValue, StringTokenFormatterSettings settings) =>
-        Expand(input, TokenValueContainerFactory.FromSingle(settings, token, replacementValue), settings);
+        FormatContainer(input, TokenValueContainerFactory.FromSingle(settings, token, replacementValue), settings);
 
     public static Uri FormatToken<T>(this Uri input, Func<string, T> func) =>
         FormatToken(input, func, StringTokenFormatterSettings.Global);
     public static Uri FormatToken<T>(this Uri input, Func<string, T> func, StringTokenFormatterSettings settings) =>
-        Expand(input, TokenValueContainerFactory.FromFunc(settings, func), settings);
+        FormatContainer(input, TokenValueContainerFactory.FromFunc(settings, func), settings);
 
-    public static Uri FormatDictionary<T>(this Uri input, IEnumerable<KeyValuePair<string, T>> values) =>
-        FormatToken(input, values, StringTokenFormatterSettings.Global);
-    public static Uri FormatDictionary<T>(this Uri input, IEnumerable<KeyValuePair<string, T>> values, StringTokenFormatterSettings settings) =>
-        Expand(input, TokenValueContainerFactory.FromPairs(settings, values), settings);
+    public static Uri FormatPairs<T>(this Uri input, IEnumerable<KeyValuePair<string, T>> values) =>
+        FormatPairs(input, values, StringTokenFormatterSettings.Global);
+    public static Uri FormatPairs<T>(this Uri input, IEnumerable<KeyValuePair<string, T>> values, StringTokenFormatterSettings settings) =>
+        FormatContainer(input, TokenValueContainerFactory.FromPairs(settings, values), settings);
 
     public static Uri FormatContainer(this Uri input, ITokenValueContainer container) =>
-        FormatToken(input, container, StringTokenFormatterSettings.Global);
+        FormatContainer(input, container, StringTokenFormatterSettings.Global);
     public static Uri FormatContainer(this Uri input, ITokenValueContainer container, StringTokenFormatterSettings settings) =>
-        Expand(input, container, settings);
+        new(InterpolatedStringExpander.Expand(InterpolatedStringParser.Parse(input.OriginalString, settings), container), UriKind.RelativeOrAbsolute);
 }
