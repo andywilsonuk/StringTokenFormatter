@@ -11,6 +11,9 @@ public class FuncTokenValueContainer<T> : ITokenValueContainer
         this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
-    public TryGetResult TryMap(string token) =>
-        func(token) is { } value && settings.TokenResolutionPolicy.Satisfies(value) ? TryGetResult.Success(value) : default;
+    public TryGetResult TryMap(string token)
+    {
+        var value = func(token);
+        return settings.TokenResolutionPolicy.Satisfies(value) ? TryGetResult.Success(value) : default;
+    }
 }

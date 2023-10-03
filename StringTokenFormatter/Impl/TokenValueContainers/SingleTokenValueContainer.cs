@@ -14,5 +14,5 @@ public class SingleTokenValueContainer<T> : ITokenValueContainer
     }
 
     public TryGetResult TryMap(string token) =>
-        token == tokenName && settings.TokenResolutionPolicy.Satisfies(value) ? TryGetResult.Success(value) : default;
+        settings.NameComparer.Equals(token, tokenName) && settings.TokenResolutionPolicy.Satisfies(value) ? TryGetResult.Success(value) : default;
 }

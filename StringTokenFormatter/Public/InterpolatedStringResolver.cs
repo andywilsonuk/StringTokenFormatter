@@ -6,7 +6,7 @@ public class InterpolatedStringResolver
 
     public InterpolatedStringResolver(StringTokenFormatterSettings settings)
     {
-        Settings = settings;
+        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
     public string FromSingle<T>(string interpolatedString, string token, T value) =>
@@ -33,5 +33,4 @@ public class InterpolatedStringResolver
         InterpolatedStringExpander.Expand(InterpolatedStringParser.Parse(interpolatedString, Settings), tokenValueContainer);
     public string FromContainer(InterpolatedString segments, ITokenValueContainer tokenValueContainer) =>
         InterpolatedStringExpander.Expand(segments, tokenValueContainer);
-
 }
