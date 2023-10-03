@@ -16,12 +16,12 @@ public static class InterpolatedStringParser
         | RegexOptions.IgnorePatternWhitespace
         | RegexOptions.Compiled;
 
-    public static InterpolatedString Parse(string input, IInterpolatedStringSettings settings)
+    public static InterpolatedString Parse(string source, IInterpolatedStringSettings settings)
     {
         if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
 
         var segmentRegex = GetRegexFromCacheOrCreate(settings);
-        var segments = ParseInternal(input, segmentRegex, settings);
+        var segments = ParseInternal(source, segmentRegex, settings);
         return new InterpolatedString(segments.ToList().AsReadOnly(), settings);
     }
 
@@ -41,19 +41,19 @@ public static class InterpolatedStringParser
         return segmentRegex;
     }
 
-    private static IEnumerable<InterpolatedStringSegment> ParseInternal(string input, Regex segmentRegex, IInterpolatedStringSettings settings)
+    private static IEnumerable<InterpolatedStringSegment> ParseInternal(string source, Regex segmentRegex, IInterpolatedStringSettings settings)
     {
-        if (string.IsNullOrEmpty(input)) yield break;
+        if (string.IsNullOrEmpty(source)) yield break;
         var (startToken, endToken, escapedStartToken) = settings.Syntax;
         int index = 0;
-        var matches = segmentRegex.Matches(input);
+        var matches = segmentRegex.Matches(source);
         foreach (var match in matches.Cast<Match>())
         {
             string segment = match.Value;
             int captureIndex = match.Index;
             if (index != captureIndex)
             {
-                string text = input.Substring(index, match.Index - index);
+                string text = source.Substring(index, match.Index - index);
                 yield return new InterpolatedStringSegment(text);
             }
             if (segment == escapedStartToken)
@@ -73,9 +73,9 @@ public static class InterpolatedStringParser
             }
             index = captureIndex + match.Length;
         }
-        if (index < input.Length)
+        if (index < source.Length)
         {
-            yield return new InterpolatedStringSegment(input.Substring(index));
+            yield return new InterpolatedStringSegment(source.Substring(index));
         }
     }
 }

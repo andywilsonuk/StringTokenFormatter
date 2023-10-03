@@ -1,7 +1,4 @@
-﻿using StringTokenFormatter.Impl;
-using System.Globalization;
-
-namespace StringTokenFormatter;
+﻿namespace StringTokenFormatter;
 
 public enum TokenResolutionPolicy
 {

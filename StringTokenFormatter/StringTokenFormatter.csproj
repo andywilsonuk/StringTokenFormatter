@@ -9,8 +9,10 @@
 		<!--These are essentially implicit usings that are safe for .NET 4.8 (System.Net.Http is omitted)-->
 		<Using Include="System" />
 		<Using Include="System.Collections.Generic" />
+		<Using Include="System.Globalization" />
 		<Using Include="System.Linq" />
 		<Using Include="System.Threading.Tasks" />
+		<Using Include="StringTokenFormatter.Impl" />
 	</ItemGroup>
 
 	<PropertyGroup>
