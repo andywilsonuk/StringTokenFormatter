@@ -1,4 +1,4 @@
-﻿namespace StringTokenFormatter;
+﻿namespace StringTokenFormatter.Impl;
 
 public class FuncTokenValueContainer<T> : ITokenValueContainer
 {

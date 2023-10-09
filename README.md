@@ -1,148 +1,66 @@
-# StringTokenFormatter v6.x
-High-speed extension methods to create interpolated strings at runtime and replace tokens within.  Ie:
+# StringTokenFormatter v7.x
+A high-speed library to parse interpolated strings at runtime and replace tokens with corresponding values.
+
 ```
 var client = new {
 	FirstName = "John",
 	LastName = "Smith",
 };
 
-var message = "Hello {FirstName} {LastName}".FormatToken(Client);
+var message = "Hello {FirstName} {LastName}".FormatFromObject(client);
 ```
 
 Available on NuGet at https://www.nuget.org/packages/StringTokenFormatter/
 
-To get started include the ```using``` statement so that the extension methods are available:
+To get started, include the `using` statement so that the `string` extension methods are available:
 ```C#
 using StringTokenFormatter;
 ```
 
-Tokens with formatting and alignment can be specified in the same way as string.Format for example: ```{token,10:D4}``` see this page on MSDN: http://msdn.microsoft.com/en-us/library/system.string.format(v=vs.110).aspx#FormatItem
+Tokens with formatting and alignment can be specified in the same way as [string.format](https://learn.microsoft.com/en-us/dotnet/api/system.string.format) for example: `{value,10:D4}`.
 
 # Supported .NET versions
-- v6.1 onwards: .NET 6, .net framework 4.8 
+- v7: .NET 6, .net framework 4.8  
+- v6.1: .NET 6, .net framework 4.8 
 - v6.0 and earlier: .NET Standard 2.0, .NET Framework 4.0
 
-# Usage
+# Migrating from version 6
+There are major breaking changes. See [the v6 migration page](/migration-v6.md) for details on how to upgrade from version 6 to version 7.
 
-## For Objects and Structs: ```FormatToken```
-### Usage 1: Using an object's properties to resolve token values
+# Example usages
+
+Using an object's properties to resolve tokens:
 ```C#
 string original = "start {middle} end";
-var tokenValues = new { Middle = "centre" };
-string result = original.FormatToken(tokenValues);
-Assert.Equal("start centre end", result);
+var tokenValues = new { Middle = "center" };
+string result = original.FormatFromObject(tokenValues);
+Assert.Equal("start center end", result);
 ```
 
-### Usage 2: Using a ````Func<>```` to resolve token values
+Using a dictionary of values to resolve tokens:
 ```C#
 string original = "start {middle} end";
-Func<string, object> func = (token) => { return "centre"; };
-string result = original.FormatToken("middle", func);
-Assert.Equal("start centre end", result);
+var tokenValues = new Dictionary<string, object> { { "middle", "center" } };
+string result = original.FormatFromPairs(tokenValues);
+Assert.Equal("start center end", result);
 ```
 
-### Usage 3: Using a single name/value to resolve token values
+Using a single name and value to resolve tokens:
 ```C#
 string original = "start {middle} end";
-string result = original.FormatToken("middle", "centre");
-Assert.Equal("start centre end", result);
+string result = original.FormatFromSingle("middle", "center");
+Assert.Equal("start center end", result);
 ```
 
-### Usage 4: Constraining parameters by Type
-```C#
-
-private interface ITestInterface {
-    int First { get; set; }
-}
-
-public class TestClass : ITestInterface {
-    public int First { get; set; }
-    public string Second { get; set; }
-}
-
-public void Interface_Excludes_Class_Members() {
-    var Test = new TestClass() {
-        First= 1,
-        Second = "Second"
-    };
-
-    var pattern = "{First} {Second}";
-    var actual = pattern.FormatToken<ITestInterface>(Test);
-    var expected = "1 {Second}";
-
-    Assert.Equal(expected, actual);
-
-}
-
-```
-
-
-## For Dictionaries and Key/Value Pairs: ```FormatDictionary```
-
-### Usage 1: Using a dictionary's values to resolve token values
+Using a function to resolve tokens:
 ```C#
 string original = "start {middle} end";
-var tokenValues = new Dictionary<string, object> { { "middle", "centre" } };
-string result = original.FormatDictionary(tokenValues);
-Assert.Equal("start centre end", result);
+Func<string, object> func = (token) => { return "center"; };
+string result = original.FormatFromFunc("middle", func);
+Assert.Equal("start center end", result);
 ```
 
-### Usage 2: Using an IEnumerable<KeyValuePair<String, Object>> to resolve token values
-```C#
-string original = "start {middle} end";
-var tokenValues = new[]{ 
-	new KeyValuePair<string, Object>("middle", "centre")
-};
-string result = original.FormatDictionary(tokenValues);
-Assert.Equal("start centre end", result);
-```
-
-
-## For High-performance: ```ToInterpolatedString``` then ```FormatContainer```
-
-```C#
-/*
-When working in a tight loop, you will typically have either a specific format that you
-want to use with multiple objects or a single object you want to use with multiple formats.
-
-With a slightly different calling convention you can optimize for reuse.
-*/
-
-
-//Create our pattern once so we can reuse it without having to reparse the string each time.
-var Pattern = "{Person_Name} is {Person_Age} and is related to {Brother_Name} who is {Brother_Age}"
-	.ToInterpolatedString()
-	;
-
-//Create our container once so we can reuse it as well.
-var PropertiesContainer = TokenValueContainer.FromObject(new {
-	Person_Name = "John",
-	Person_Age=21
-});
-
-var DictionaryContainer = TokenValueContainer.FromDictionary(new Dictionary<string, object>(){
-	["Brother_Name"] = "Joe",
-	["Brother_Age"] = 25,
-});
-
-//For the sake of this example, we'll use a composite container to merge two together
-var Composite = TokenValueContainer.Combine(PropertiesContainer, DictionaryContainer);
-
-//Do this in a tight loop
-for(int i = 0; i < 100_000; ++i) {
-	//Either of these work
-	string result1 = Composite.Format(Pattern);
-	string result2 = Pattern.Format(Composite);
-	
-	Assert.Equal("John is 21 and is related to Joe who is 25", result1);
-	Assert.Equal("John is 21 and is related to Joe who is 25", result2);
-}
-
-```
-
-## For URIs
-All of the string overloads also exist for URIs so you can use them as follows:
-
+Replacing tokens within a URI:
 ``` C#
 Uri original = new Uri("http://temp.org/{endpoint}?id={id}");
 var tokenValues = new Dictionary<string, object> 
@@ -150,120 +68,138 @@ var tokenValues = new Dictionary<string, object>
   { "endpoint", "people" },
   { "id", 10 }
 };
-Uri expected = new Uri("http://temp.org/people?id=10");
 
-Uri actual = original.FormatToken(tokenValues);
+Uri actual = original.FormatFromPairs(tokenValues);
 
-Assert.Equal(expected, actual);
+Assert.Equal(new Uri("http://temp.org/people?id=10"), actual);
 ```
 
+# Settings
+All interpolating methods accept an optional `StringTokenFormatterSettings` parameter which is used in preference to the `StringTokenFormatterSettings.Global` settings.
 
-# Advanced Details
-## Customizing Syntax and More
-All interpolating methods accept an optional ```IInterpolationSettings``` parameter.
-If it is not provided, ```InterpolationSettings.Default``` is used instead.
+The settings record is immutable so the `with` keyword is used to mutate the settings, so for example to replace the global settings, something like the following can be used:
 
-To customize how interpolation or parsing works, simply create your own instance of ```IInterpolationSettings```
-and use it instead:
-```
-var Settings = new InterpolationSettingsBuilder() {
-    TokenMarkers = TokenMarkers.DollarRound,
-}.Build();
-
-var Pattern = "This pattern uses new $(tokens)".ToInterpolatedString(Settings);
+```C#
+StringTokenFormatterSettings.Global = StringTokenFormatterSettings.Global with { Syntax = CommonTokenSyntax.Round };
 ```
 
-## Flow of Control
-When formatting a string, the following is logical order things happen in:
-1.  An ```IInterpolatedStringParser``` turns a ```string``` into an ```IInterpolatedString```
-2.  An ```ITokenValueContainer``` provides values, generally by wrapping some other object.
-3.  For each ```ITokenMatch``` in the ```IInterpolatedString```
-    1. Ask the ```ITokenValueContainer``` for the value with the name of ```ITokenMatch.Token```
-    2. If possible, transform the value into a "simpler" value using the ```ITokenValueConverter```
-    3. Pass the value to the ```ITokenValueFormatter``` to format the value
+It should be noted that whilst overriding the global is a convenient action, it can cause side effects by other code using this library. Library implementations should not update `Global`. Alternately, consider creating an instance of `InterpolatedStringResolver` which takes the settings object in its constructor and provides the common methods for expanding from different `ITokenValueContainer` implementations.
 
-## Customizing with ```InterpolationSettingsBuilder```
-```InterpolationSettingsBuilder``` contains properties that you can use to further customize the interpolation process.
+## Creating instances of the settings
 
-### ```InterpolationSettingsBuilder.TokenSyntax```
-This controls what syntax is used for detecting tokens.
-ie. ```{Token}```, ```$(Token)```, or something else.
+Using the `Global` settings as the base:
 
-```TokenSyntaxes.Default``` is the default which uses ```{Token}``` syntax
-
-### ```InterpolationSettingsBuilder.TokenNameComparer```
-This controls how token names are compared.
-For example, are ```{Token}``` and ```{token}``` the same?
-
-```TokenNameComparers.Default``` is the default which uses ```CurrentCultureIgnoreCase```.
-
-### ```InterpolationSettingsBuilder.TokenValueConverter```
-This controls any conversions that are done on token values.
-For example, ```When a Func<> is provided, evaluate it```.
-
-```TokenValueConverters.Default``` is the default which converts the following values:
-* Null -> Null (no conversion - short circuit)
-* Primitive (ie. String, int, etc) -> Primitive (no conversion - short circuit)
-* Lazy<string> -> string (via Lazy.Value)
-* Lazy<object> -> object (via Lazy.Value)
-* Func<string> -> string (via Func())
-* Func<object> -> object (via Func())
-* Func<string, string> -> string (via Func(TokenName))
-* Func<string, object> -> string (via Func(TokenName))
-
-To create your own implementation, you'll generally use ```TokenValueConverters.Combine``` (which returns a ```CompositeTokenValueConverter```) along with your own implementation of the converters.
-Note:  ```CompositeTokenValueConverter``` loops through all child converters until it finds a match, so for best performance, put the most common matches at the top.
-
-
-### ```InterpolationSettingsBuilder.TokenValueFormatter```
-This controls how values are formatted.
-For example, ```1000.00``` or ```1000,00```
-
-```TokenValueFormatters.Default``` is the default which uses ```CurrentUICulture```.
-
-
-# Upgrading from v4.x
-Version 6.x of StringTokenFormatter is a major upgrade and has a number of enhancements compared to 4.x.
-
-Compared to Version 4.x, Version 6.x is:
-* Faster and optimized for high-performance scenarios
-* Tighter and optimized to reduce memory allocations and garbage collection
-* More Flexible: Generics provide more flexibility and control
-* More Consistent: Method overloads and their parameters have been standardized
-
-If you are upgrading from Version 4.x, there are a few things you should be aware of.
-
-## Class and Interface Renames
-Nearly every class and interface has been moved or renamed to more clearly indicate what they are used for.
-The biggest change is that ```SegmentedString``` is now ```InterpolatedString```.
-
-|Version 4 (old name)	|Version 6 (new name)	|
-|-----------------------|-----------------------|
-|SegmentedString		|InterpolatedString		|
-
-## ```ITokenValueContainer```s no longer detokenize
-There were cases when a dictionary-based ```ITokenValueContainer``` would de-tokenize its parameters.
-This meant that ```"token" = "value"``` and ```"{token} = "value"``` were equivalent.
-
-In v6, all dictionary parameters should be provided as un-tokenized values.
-For example:
-```
-var Values = new Dictionary<string, string>();
-Values["name"] = "value";
-
-var Message = "Hello {name}".FormatDictionary(Values);
+```C#
+var settings1 = StringTokenFormatterSettings.Global with { Syntax = CommonTokenSyntax.Round };
+var expanded = "This interpolated string uses (token) as its syntax".FormatFromSingle("token", "expanded value", settings1);
 ```
 
-## Customizing Token Syntax
-In v4, there were mutable static properties that were used to change the default parsing.
-Because these were global, multiple assemblies in the same application could conflict with each other.
+Using the default settings as the base:
 
-This has been resolved in v6.
+```C#
+var settings2 = new StringTokenFormatterSettings { Syntax = CommonTokenSyntax.Round };
+var expanded = "This interpolated string uses (token) as its syntax".FormatFromSingle("token", "expanded value", settings2);
+```
 
-To customize token sytax, use ```InterpolationSettingsBuilder``` as described above.
+Initially, the `Global` settings are the default settings.
 
-## Overload Consolidation: ```FormatToken``` / ```FormatDictionary``` / ```FormatContainer```
-In Version 4.x, there were multiple overloads of ```FormatToken``` with tons of optional parameters.
-This made it difficult to understand what all the parameters were doing.  This has been simplified 
-with ```IInterpolationSettings```.
+## Settings properties
 
+### Syntax
+
+Takes a `TokenSyntax` instance and defines the syntax is used for detecting tokens. Default `CommonTokenSyntax.Curly`.
+
+Build-in syntax within the CommonTokenSyntax class:
+
+| Name                   | Marker       | Escape |
+| :--------------------: | :----------: | :----: |
+| Curly                  | `{Token}`    | `{{`   |
+| DollarCurly            | `${Token}`   | `${{`  |
+| Round                  | `(Token)`    | `((`   |
+| DollarRound            | `$(Token)`   | `$((`  |
+| DollarRoundAlternative | `$(Token)`   | `$$(`  |
+
+### FormatProvider
+
+Is used to specify the `IFormatProvider` applied to token values and uses [string.format](https://learn.microsoft.com/en-us/dotnet/api/system.string.format) to apply formatting and alignment for example: `{value,10:D4}`. Default `CultureInfo.CurrentUICulture`.
+
+### NameComparer
+
+The comparer used by `ITokenValueContainer` when performing token to value look-ups. Takes a standard `StringComparer`. Default `StringComparer.OrdinalIgnoreCase`.
+
+### TokenResolutionPolicy
+
+Controls how token values are handled by `ITokenValueContainer` implementations. Default `TokenResolutionPolicy.ResolveAll`.
+
+The policies are:
+
+| Policy            | Result                                                   |
+| :---------------: | :------------------------------------------------------: |
+| ResolveAll        | Always uses the value returned                           |
+| IgnoreNull        | Uses the value if it is not null                         |
+| IgnoreNullOrEmpty | Uses the value if it is not null and not an empty string |
+
+What happens next will depend upon what else is configured:
+
+1. if this is a [`CompositeTokenValueContainer`](#additional-features-and-notes) then the matching will cascade to the next container
+2. if `UnresolvedTokenBehavior` setting is set to `Throw` then an exception will be raised
+
+### UnresolvedTokenBehavior
+
+Defines what should happen if the token specified in the interpolated string cannot be matched within the `ITokenValueContainer`. Default `UnresolvedTokenBehavior.Throw`.
+
+| Behavior          | Result                                                   |
+| :---------------: | :------------------------------------------------------: |
+| Throw             | An `UnresolvedTokenException` exception is raised        |
+| LeaveUnresolved   | The text will contain the original token unmodified      |
+
+### ValueConverters
+
+Applies to token values after matched and before formatting. Converters are attempted in order so that once one has successfully converted the value then no further conversions take place. Default collection (from `TokenValueConverters`):
+
+| Value                        | Result                                                   |
+| :--------------------------: | :------------------------------------------------------: |
+| Null                         | no conversion                                            |
+| Primitive (string, int, etc) | no conversion                                            | 
+| Lazy\<object>                | Lazy.Value                                               |
+| Func\<object>                | function result                                          |
+| Func\<string, object>        | function result                                          |
+
+They can be useful to provide post-match functionality; a great example is a when using an object which contains a property that uses a `Lazy`. The token matcher resolves the token marker to property and then through the `ValueConverters` calls the `Lazy.Value` and returns the value of the `Lazy` for formatting. 
+
+## Additional features and notes
+
+### Flow of Control
+When resolving the token values within an interpolated string, the following sequence is followed:
+
+1. The `InterpolatedStringParser` turns a `string` into an `InterpolatedString`
+2. The `InterpolatedStringExpander` take the `InterpolatedString` and processes it. For a given token
+    1. The passed `ITokenValueContainer` provides the value based on the token name
+    2. A value conversion is then attempted based on the collection of `ValueConverters` in the settings
+    3. If the token contains alignment or formatting details, `string.Format` is called with the `FormatProvider` from the settings
+
+### Reusing InterpolatedString instances
+
+The `InterpolatedStringParser.Parse` method is responsible for identifying tokens within the source string and returning the `InterpolatedString` of segments. Generating the `InterpolatedString` takes time but can be stored and pass multiple times to the `InterpolatedStringExpander.Expand` method. 
+
+An example would be a mail merge whereby the same message text is used but with client-specific details within the `ITokenValueContainer`.
+
+See also [The Resolver](#the-resolver).
+
+### The Resolver
+
+A helper class called `InterpolatedStringResolver` exists to allow the easy reuse of custom settings without overriding the global default. An IoC container could be used to store the resolver for use throughout the application. The resolver contains the standard expansion methods and is in some ways a preferred option to using the `string` extension methods.
+
+The resolver provides methods for both expansion of tokens from `string` and parsed `InterpolatedString`.
+
+### Creating a custom `ITokenValueContainer`
+
+Whilst there are a number of built-in containers, it many be necessary to create a complete custom container. The container should take in the settings interface `ITokenValueContainerSettings` and obey `NameComparer` and `TokenResolutionPolicy` properties. 
+
+It is also possible to combine multiple containers using `TokenValueContainerFactory.FromCombination` so that containers of the same type or differing types can be used to match tokens to values. Note that matching attempts are made in the order that the containers are passed to the `CompositeTokenValueContainer` instance.
+
+### Async loading of token values
+
+There is no plan to support async/await within the library, the reason is that the library is designed to the CPU-bound and adding in an IO-bound layer massively changes the design and considered use-cases.
+
+The `InterpolatedString` returned by the `InterpolatedStringParser` contains an extension method `Tokens` which provides a unique list of tokens found within the interpolated string. These token names can be used by an async method to, for example, request the token values from a data store. The token values can be loaded into an object or `IEnumerable<KeyValuePair<string, T>>` and provided as a parameter to the matching `TokenValueContainerFactory` method. The `InterpolatedString` and `ITokenValueContainer` can then be passed to the `InterpolatedStringExpander.Expand` method which in turns returns the resultant string.
