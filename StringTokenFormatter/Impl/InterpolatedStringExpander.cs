@@ -34,7 +34,7 @@ public static class InterpolatedStringExpander
             throw new UnresolvedTokenException($"Token '{tokenSegment.Token}' was not found within the container");
         }
 
-        return FormatValue(tokenValue, tokenSegment.Padding, tokenSegment.Format, settings.FormatProvider);
+        return FormatValue(tokenValue, tokenSegment.Alignment, tokenSegment.Format, settings.FormatProvider);
     }
 
     private static object? ConvertValue(InterpolatedStringTokenSegment segment, object? value, IInterpolatedStringSettings settings)
@@ -50,7 +50,7 @@ public static class InterpolatedStringExpander
         bool isAlignmentEmpty = alignment == string.Empty;
         bool isFormatStringEmpty = formatString == string.Empty;
 
-        if (isAlignmentEmpty && isFormatStringEmpty) { return value.ToString(); }
+        if (isAlignmentEmpty && isFormatStringEmpty) { return string.Format(formatProvider, "{0}", value); }
         if (isAlignmentEmpty) { alignment = "0"; }
         if (isFormatStringEmpty) { formatString = "G"; }
 

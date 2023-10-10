@@ -12,4 +12,4 @@ public static class InterpolatedStringExtensions {
 
 public record InterpolatedStringSegment(string Raw);
 
-public record InterpolatedStringTokenSegment(string Raw, string Token, string Padding, string Format) : InterpolatedStringSegment(Raw);
+public record InterpolatedStringTokenSegment(string Raw, string Token, string Alignment, string Format) : InterpolatedStringSegment(Raw);
