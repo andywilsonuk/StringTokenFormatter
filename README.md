@@ -1,10 +1,10 @@
-# StringTokenFormatter v7.x
+# StringTokenFormatter v7.0
 A high-speed library to parse interpolated strings at runtime and replace tokens with corresponding values.
 
 ```
 var client = new {
-	FirstName = "John",
-	LastName = "Smith",
+    FirstName = "John",
+    LastName = "Smith",
 };
 
 var message = "Hello {FirstName} {LastName}".FormatFromObject(client);
@@ -17,10 +17,10 @@ To get started, include the `using` statement so that the `string` extension met
 using StringTokenFormatter;
 ```
 
-Tokens with formatting and alignment can be specified in the same way as [string.format](https://learn.microsoft.com/en-us/dotnet/api/system.string.format) for example: `{value,10:D4}`.
+Tokens with formatting and alignment can be specified in the same way as [string.format](https://learn.microsoft.com/en-us/dotnet/api/system.string.format), for example: `{value,10:D4}`.
 
 # Supported .NET versions
-- v7: .NET 6, .net framework 4.8  
+- v7.0: .NET 6, .net framework 4.8  
 - v6.1: .NET 6, .net framework 4.8 
 - v6.0 and earlier: .NET Standard 2.0, .NET Framework 4.0
 
