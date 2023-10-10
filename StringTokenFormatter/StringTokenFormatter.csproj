@@ -53,6 +53,8 @@
 		<RepositoryUrl>https://github.com/andywilsonuk/StringTokenFormatter</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>string token formatter replace extension interpolate</PackageTags>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>StringTokenFormatter.snk</AssemblyOriginatorKeyFile>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 	</PropertyGroup>
