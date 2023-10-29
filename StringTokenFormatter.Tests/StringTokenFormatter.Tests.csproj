@@ -3,10 +3,21 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
-	<ImplicitUsings>enable</ImplicitUsings>
+	  <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <ItemGroup>
+		<!--These are essentially implicit usings that are safe for .NET 4.8 (System.Net.Http is omitted)-->
+		<Using Include="System" />
+		<Using Include="System.Collections.Generic" />
+    <Using Include="System.Globalization" />
+		<Using Include="System.Linq" />
+		<Using Include="System.Threading.Tasks" />
+    <Using Include="Moq" />
+    <Using Include="Xunit" />
+    <Using Include="StringTokenFormatter.Impl" />
+	</ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Properties\**" />

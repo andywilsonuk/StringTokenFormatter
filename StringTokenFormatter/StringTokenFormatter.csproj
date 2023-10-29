@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net48</TargetFrameworks>
-		<LangVersion>latest</LangVersion>
+		<LangVersion>10</LangVersion>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 	</PropertyGroup>
@@ -9,58 +9,39 @@
 		<!--These are essentially implicit usings that are safe for .NET 4.8 (System.Net.Http is omitted)-->
 		<Using Include="System" />
 		<Using Include="System.Collections.Generic" />
+		<Using Include="System.Globalization" />
 		<Using Include="System.Linq" />
 		<Using Include="System.Threading.Tasks" />
+		<Using Include="StringTokenFormatter.Impl" />
 	</ItemGroup>
 
 	<PropertyGroup>
-		<Title>StringTokenFormatter</Title>
-		<PackageReleaseNotes />
-		<Version>6.1.0</Version>
-		<AssemblyVersion>6.1.0</AssemblyVersion>
-		<FileVersion>6.1.0</FileVersion>
+		<PackageId>StringTokenFormatter</PackageId>
+		<PackageVersion>7.0.0</PackageVersion>
+		<AssemblyVersion>7.0.0</AssemblyVersion>
+		<FileVersion>7.0.0</FileVersion>
 		<AssemblyTitle>String Token Formatter</AssemblyTitle>
-		<Product>String Token Formatter</Product>
 		<Authors>Andy Wilson, Tony Valenti</Authors>
-		<Company>Andy Wilson</Company>
-		<Description>
-			Create interpolated strings at runtime and replace tokens within.  Ie:
-			```
-			var Client = new {
-				FirstName = "John",
-				LastName = "Smith",
-			};
-			
-			var Message = "Hello {FirstName} {LastName}".FormatToken(Client);
-			```
-		</Description>
-		<Summary>
-			Create interpolated strings at runtime and replace tokens within.  Ie:
-			```
-			var Client = new {
-				FirstName = "John",
-				LastName = "Smith",
-			};
-
-			var Message = "Hello {FirstName} {LastName}".FormatToken(Client);
-			```
-		</Summary>
+		<Description>A high-speed library to parse interpolated strings at runtime and replace tokens with corresponding values.</Description>
 		<Copyright>Andy Wilson</Copyright>
-		<PackageLicenseUrl></PackageLicenseUrl>
 		<PackageProjectUrl>https://github.com/andywilsonuk/StringTokenFormatter</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/andywilsonuk/StringTokenFormatter</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>string token formatter replace extension interpolate</PackageTags>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>StringTokenFormatter.snk</AssemblyOriginatorKeyFile>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="..\LICENSE.md">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
 	</ItemGroup>
-
 </Project>
