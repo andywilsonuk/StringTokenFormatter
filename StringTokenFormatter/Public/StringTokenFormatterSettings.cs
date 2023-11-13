@@ -64,11 +64,11 @@ public interface IInterpolatedStringSettings
     /// </summary>
     public InvalidFormatBehavior InvalidFormatBehavior { get; }
     /// <summary>
-    /// Token prefix for starting conditional block. Default: `if:`
+    /// Token prefix for starting a conditional block. Default: `if:`
     /// </summary>
     public string ConditionStartToken { get; }
     /// <summary>
-    /// Token prefix for ending conditional block. Default: `ifend:`
+    /// Token prefix for ending a conditional block. Default: `ifend:`
     /// </summary>
     public string ConditionEndToken { get; }
 }

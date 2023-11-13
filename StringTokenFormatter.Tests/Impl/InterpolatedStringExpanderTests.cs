@@ -328,7 +328,7 @@ public class InterpolatedStringExpanderTests
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
         var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("IsValid")).Returns(TryGetResult.Success("true"));
+        valuesStub.Setup(x => x.TryMap("IsValid")).Returns(TryGetResult.Success(1));
 
         Assert.Throws<ConditionTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object));
     }

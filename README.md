@@ -1,4 +1,4 @@
-# StringTokenFormatter v7.0
+# StringTokenFormatter v7.1
 A high-speed library to parse interpolated strings at runtime and replace tokens with corresponding values.
 
 ```
@@ -20,7 +20,7 @@ using StringTokenFormatter;
 Tokens with formatting and alignment can be specified in the same way as [string.format](https://learn.microsoft.com/en-us/dotnet/api/system.string.format), for example: `{value,10:D4}`.
 
 # Supported .NET versions
-- v7.0: .NET 6, .net framework 4.8  
+- v7.x: .NET 6, .net framework 4.8  
 - v6.1: .NET 6, .net framework 4.8 
 - v6.0 and earlier: .NET Standard 2.0, .NET Framework 4.0
 
@@ -127,6 +127,12 @@ Is used to specify the `IFormatProvider` applied to token values and uses [strin
 
 The comparer used by `ITokenValueContainer` when performing token to value look-ups. Takes a standard `StringComparer`. Default `StringComparer.OrdinalIgnoreCase`.
 
+### Conditions
+
+Simple boolean conditions can be used to exclude blocks of text. `ConditionStartToken` with default `if:` signifies the start of the block whilst `ConditionEndToken` with default `ifend:` signifies the end. It is expected that after the condition prefix will be the name of the token whose boolean value dictates whether to include the block or not.
+
+Nested conditions are supported.
+
 ### TokenResolutionPolicy
 
 Controls how token values are handled by `ITokenValueContainer` implementations. Default `TokenResolutionPolicy.ResolveAll`.
@@ -152,6 +158,16 @@ Defines what should happen if the token specified in the interpolated string can
 | :---------------: | :------------------------------------------------------: |
 | Throw             | An `UnresolvedTokenException` exception is raised        |
 | LeaveUnresolved   | The text will contain the original token unmodified      |
+
+### InvalidFormatBehavior
+
+Defines how string.Format exceptions are handled. Default `InvalidFormatBehavior.Throw`.
+
+| Behavior          | Result                                                   |
+| :---------------: | :------------------------------------------------------: |
+| Throw             | An `TokenValueFormatException` exception is raised       |
+| LeaveUnformatted  | The text will contain the token value unformatted        |
+| LeaveToken        | The text will contain the original token unmodified      |
 
 ### ValueConverters
 
@@ -191,6 +207,23 @@ See also [The Resolver](#the-resolver).
 A helper class called `InterpolatedStringResolver` exists to allow the easy reuse of custom settings without overriding the global default. An IoC container could be used to store the resolver for use throughout the application. The resolver contains the standard expansion methods and is in some ways a preferred option to using the `string` extension methods.
 
 The resolver provides methods for both expansion of tokens from `string` and parsed `InterpolatedString`.
+
+### Conditions
+
+Simple boolean conditions can be used to exclude blocks of text. The `ITokenValueContainerSettings` contains the special token prefixes `ConditionStartToken` (default `if:`) and `ConditionEndToken` (default `ifend:`).
+
+It is expected that after the condition prefix will be the name of the token whose boolean value dictates whether to include the block or not.
+
+```C#
+string original = "start {if:IsValid}{middle}{ifend:IsValid} end";
+var tokenValues = new { Middle = "center", IsValid = true };
+string result = original.FormatFromObject(tokenValues);
+Assert.Equal("start center end", result);
+```
+
+Nested conditions are supported. For `ConditionEndToken`, the token name suffix is purely for clarity and is optional.
+
+The condition prefixes are case sensitive whilst the token providing the boolean value abides by the `TokenResolutionPolicy` (as well as `ValueConverters`).
 
 ### Creating a custom `ITokenValueContainer`
 
