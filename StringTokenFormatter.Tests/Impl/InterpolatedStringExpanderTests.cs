@@ -216,4 +216,89 @@ public class InterpolatedStringExpanderTests
 
         Assert.Equal("2", actual);
     }
+
+    [Fact]
+    public void Expand_ConditionLiteralValue_StringWithLiteralValue()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringSegment("one "),
+            new InterpolatedStringTokenSegment("{if:IsValid}", "if:IsValid", string.Empty, string.Empty),
+            new InterpolatedStringSegment("two"),
+            new InterpolatedStringTokenSegment("{endif}", "endif", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var valuesStub = new Mock<ITokenValueContainer>();
+        valuesStub.Setup(x => x.TryMap("IsValid")).Returns(TryGetResult.Success(true));
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+
+        Assert.Equal("one two", actual);
+    }
+
+    [Fact]
+    public void Expand_ConditionTokenValue_StringWithTokenValue()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringSegment("one "),
+            new InterpolatedStringTokenSegment("{if:IsValid}", "if:IsValid", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{endif}", "endif", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var valuesStub = new Mock<ITokenValueContainer>();
+        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        valuesStub.Setup(x => x.TryMap("IsValid")).Returns(TryGetResult.Success(true));
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+
+        Assert.Equal("one 2", actual);
+    }
+
+    [Fact]
+    public void Expand_FalseCondition_StringWithoutValue()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringSegment("one "),
+            new InterpolatedStringTokenSegment("{if:IsValid}", "if:IsValid", string.Empty, string.Empty),
+            new InterpolatedStringSegment("two"),
+            new InterpolatedStringTokenSegment("{endif}", "endif", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var valuesStub = new Mock<ITokenValueContainer>();
+        valuesStub.Setup(x => x.TryMap("IsValid")).Returns(TryGetResult.Success(false));
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+
+        Assert.Equal("one ", actual);
+    }
+
+    [Fact]
+    public void Expand_NestedConditions_StringWithNestedValue()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringSegment("one "),
+            new InterpolatedStringTokenSegment("{if:IsValid}", "if:IsValid", string.Empty, string.Empty),
+            new InterpolatedStringSegment("two"),
+            new InterpolatedStringTokenSegment("{if:IsNotValid}", "if:IsNotValid", string.Empty, string.Empty),
+            new InterpolatedStringSegment("suppressed"),
+            new InterpolatedStringTokenSegment("{endif}", "endif", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{if:IsAlsoValid}", "if:IsAlsoValid", string.Empty, string.Empty),
+            new InterpolatedStringSegment(" three"),
+            new InterpolatedStringTokenSegment("{endif}", "endif", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{endif}", "endif", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var valuesStub = new Mock<ITokenValueContainer>();
+        valuesStub.Setup(x => x.TryMap("IsValid")).Returns(TryGetResult.Success(true));
+        valuesStub.Setup(x => x.TryMap("IsAlsoValid")).Returns(TryGetResult.Success(true));
+        valuesStub.Setup(x => x.TryMap("IsNotValid")).Returns(TryGetResult.Success(false));
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+
+        Assert.Equal("one two three", actual);
+    }
 }
