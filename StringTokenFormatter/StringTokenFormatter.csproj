@@ -17,9 +17,9 @@
 
 	<PropertyGroup>
 		<PackageId>StringTokenFormatter</PackageId>
-		<PackageVersion>7.0.0</PackageVersion>
-		<AssemblyVersion>7.0.0</AssemblyVersion>
-		<FileVersion>7.0.0</FileVersion>
+		<PackageVersion>7.1.0</PackageVersion>
+		<AssemblyVersion>7.1.0</AssemblyVersion>
+		<FileVersion>7.1.0</FileVersion>
 		<AssemblyTitle>String Token Formatter</AssemblyTitle>
 		<Authors>Andy Wilson, Tony Valenti</Authors>
 		<Description>A high-speed library to parse interpolated strings at runtime and replace tokens with corresponding values.</Description>
