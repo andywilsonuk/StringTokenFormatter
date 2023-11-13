@@ -13,3 +13,10 @@ public class UnresolvedTokenException : StringTokenFormatterException
     {
     }
 }
+
+public class ConditionTokenException : StringTokenFormatterException
+{
+    public ConditionTokenException(string? message) : base(message)
+    {
+    }
+}

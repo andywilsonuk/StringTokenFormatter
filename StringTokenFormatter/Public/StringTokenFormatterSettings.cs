@@ -44,6 +44,14 @@ public interface IInterpolatedStringSettings
     /// Gets the culture format. Default: CultureInfo.CurrentUICulture
     /// </summary>
     public IFormatProvider FormatProvider { get; }
+    /// <summary>
+    /// Token prefix for starting conditional block. Default: if:
+    /// </summary>
+    public string ConditionStartToken { get; }
+    /// <summary>
+    /// Token prefix for ending conditional block. Default: ifend:
+    /// </summary>
+    public string ConditionEndToken { get; }
 }
 public interface ITokenValueContainerSettings
 {
@@ -70,6 +78,8 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
         init { valueConverters = value; }
     }
     public IFormatProvider FormatProvider { get; init; } = CultureInfo.CurrentUICulture;
+    public string ConditionStartToken { get; init; } = "if:";
+    public string ConditionEndToken { get; init; } = "ifend:";
 
     private IReadOnlyCollection<TokenValueConverter> valueConverters = defaultValueConverters;
 

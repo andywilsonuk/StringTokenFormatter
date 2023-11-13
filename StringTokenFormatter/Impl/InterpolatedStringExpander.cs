@@ -4,9 +4,6 @@ namespace StringTokenFormatter.Impl;
 
 public static class InterpolatedStringExpander
 {
-    private const string startCondition = "if:";
-    private const string endCondition = "endif";
-
     public static string Expand(InterpolatedString interpolatedString, ITokenValueContainer container)
     {
         if (interpolatedString == null) { throw new ArgumentNullException(nameof(interpolatedString)); }
@@ -18,7 +15,7 @@ public static class InterpolatedStringExpander
         while (enumerator.MoveNext())
         {
             var segment = enumerator.Current;
-            if (segment is InterpolatedStringTokenSegment s && s.Token.StartsWith(startCondition))
+            if (segment is InterpolatedStringTokenSegment s && s.Token.StartsWith(settings.ConditionStartToken))
             {
                 ConditionHandler(enumerator, container, settings, sb);
             }
@@ -33,32 +30,33 @@ public static class InterpolatedStringExpander
     private static void ConditionHandler(IEnumerator<InterpolatedStringSegment> enumerator, ITokenValueContainer container, IInterpolatedStringSettings settings, StringBuilder sb)
     {
         var conditionSegment = (InterpolatedStringTokenSegment)enumerator.Current;
-        var sb2 = new StringBuilder();
-        object? tokenValue = GetTokenValue(container, settings, conditionSegment.Token.Substring(startCondition.Length), string.Empty);
+        var sbNested = new StringBuilder();
+        string actualToken = conditionSegment.Token.Substring(settings.ConditionStartToken.Length);
+        object? tokenValue = GetTokenValue(container, settings, actualToken, string.Empty);
         if (tokenValue == null || tokenValue is not bool)
         {
-            throw new InvalidOperationException("Condition is not a boolean"); // TODO: custom exception
+            throw new ConditionTokenException($"Condition for token {actualToken} is not a boolean");
         }
         bool isMet = (bool)tokenValue;
 
         while (enumerator.MoveNext())
         {
             var segment = enumerator.Current;
-            if (segment is InterpolatedStringTokenSegment s && s.Token.StartsWith(startCondition))
+            if (segment is InterpolatedStringTokenSegment s && s.Token.StartsWith(settings.ConditionStartToken))
             {
-                ConditionHandler(enumerator, container, settings, sb2);
+                ConditionHandler(enumerator, container, settings, sbNested);
             }
-            else if (segment is InterpolatedStringTokenSegment s2 && s2.Token == endCondition)
+            else if (segment is InterpolatedStringTokenSegment s2 && s2.Token.StartsWith(settings.ConditionEndToken))
             {
-                if (isMet) { sb.Append(sb2); }
+                if (isMet) { sb.Append(sbNested); }
                 return;
             }
             else
             {
-                sb2.Append(Evaluate(segment, container, settings));
+                sbNested.Append(Evaluate(segment, container, settings));
             }
         }
-        throw new InvalidOperationException($"Missing {endCondition}"); // TODO: custom exception
+        throw new ConditionTokenException($"Missing {settings.ConditionEndToken} for condition {actualToken}");
     }
 
     private static string Evaluate(InterpolatedStringSegment segment, ITokenValueContainer container, IInterpolatedStringSettings settings)
