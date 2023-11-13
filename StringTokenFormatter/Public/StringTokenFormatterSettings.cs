@@ -26,6 +26,21 @@ public enum UnresolvedTokenBehavior
     /// </summary>
     LeaveUnresolved = 1,
 }
+public enum InvalidFormatBehavior
+{
+    /// <summary>
+    /// `FormatException` errors are rethrown.
+    /// </summary>
+    Throw = 0,
+    /// <summary>
+    /// Formatting issues result in the token value being used.
+    /// </summary>
+    LeaveUnformatted = 1,
+    /// <summary>
+    /// Formatting issues result in the token marker being used.
+    /// </summary>
+    LeaveToken = 2,
+}
 public interface IInterpolatedStringSettings
 {
     /// <summary>
@@ -33,7 +48,7 @@ public interface IInterpolatedStringSettings
     /// </summary>
     public TokenSyntax Syntax { get; }
     /// <summary>
-    /// Gets the behavior to use when a token cannot be found in the container. Default: UnresolvedTokenBehavior.Throw
+    /// Gets the behavior to use when a token cannot be found in the container. Default: `UnresolvedTokenBehavior.Throw`
     /// </summary>
     public UnresolvedTokenBehavior UnresolvedTokenBehavior { get; }
     /// <summary>
@@ -41,26 +56,30 @@ public interface IInterpolatedStringSettings
     /// </summary>
     public IReadOnlyCollection<TokenValueConverter> ValueConverters { get; }
     /// <summary>
-    /// Gets the culture format. Default: CultureInfo.CurrentUICulture
+    /// Gets the culture format. Default: `CultureInfo.CurrentUICulture`
     /// </summary>
     public IFormatProvider FormatProvider { get; }
     /// <summary>
-    /// Token prefix for starting conditional block. Default: if:
+    /// Gets the behavior to use when `FormatException` errors are thrown. Default: `InvalidFormatBehavior.Throw`
+    /// </summary>
+    public InvalidFormatBehavior InvalidFormatBehavior { get; }
+    /// <summary>
+    /// Token prefix for starting conditional block. Default: `if:`
     /// </summary>
     public string ConditionStartToken { get; }
     /// <summary>
-    /// Token prefix for ending conditional block. Default: ifend:
+    /// Token prefix for ending conditional block. Default: `ifend:`
     /// </summary>
     public string ConditionEndToken { get; }
 }
 public interface ITokenValueContainerSettings
 {
     /// <summary>
-    /// Gets the comparer for matching token names. Default: StringComparer.OrdinalIgnoreCase
+    /// Gets the comparer for matching token names. Default: `StringComparer.OrdinalIgnoreCase`
     /// </summary>
     public StringComparer NameComparer { get; }
     /// <summary>
-    /// Gets the policy to use when container values are null or empty string. Default: TokenResolutionPolicy.ResolveAll
+    /// Gets the policy to use when container values are null or empty string. Default: `TokenResolutionPolicy.ResolveAll`
     /// </summary>
     public TokenResolutionPolicy TokenResolutionPolicy { get; }
 }
@@ -78,6 +97,7 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
         init { valueConverters = value; }
     }
     public IFormatProvider FormatProvider { get; init; } = CultureInfo.CurrentUICulture;
+    public InvalidFormatBehavior InvalidFormatBehavior { get; init; } = InvalidFormatBehavior.Throw;
     public string ConditionStartToken { get; init; } = "if:";
     public string ConditionEndToken { get; init; } = "ifend:";
 

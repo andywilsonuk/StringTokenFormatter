@@ -62,10 +62,23 @@ public static class InterpolatedStringExpander
     private static string Evaluate(InterpolatedStringSegment segment, ITokenValueContainer container, IInterpolatedStringSettings settings)
     {
         var tokenSegment = segment as InterpolatedStringTokenSegment;
-        if (tokenSegment == null) { return FormatValue(segment.Raw, string.Empty, string.Empty, settings.FormatProvider); }
+        object? tokenValue = null;
+        try
+        {
+            if (tokenSegment == null) { return FormatValue(segment.Raw, string.Empty, string.Empty, settings.FormatProvider); }
 
-        object? tokenValue = GetTokenValue(container, settings, tokenSegment.Token, segment.Raw);
-        return FormatValue(tokenValue, tokenSegment.Alignment, tokenSegment.Format, settings.FormatProvider);
+            tokenValue = GetTokenValue(container, settings, tokenSegment.Token, segment.Raw);
+            return FormatValue(tokenValue, tokenSegment.Alignment, tokenSegment.Format, settings.FormatProvider);
+        }
+        catch(FormatException ex)
+        {
+            return settings.InvalidFormatBehavior switch
+            {
+                InvalidFormatBehavior.LeaveUnformatted => tokenValue?.ToString() ?? string.Empty,
+                InvalidFormatBehavior.LeaveToken => segment.Raw,
+                _ => throw new TokenValueFormatException($"Unable to format token {segment.Raw}", ex),
+            };
+        }
     }
 
     private static object? GetTokenValue(ITokenValueContainer container, IInterpolatedStringSettings settings, string token, string raw)
@@ -98,14 +111,6 @@ public static class InterpolatedStringExpander
         if (isAlignmentEmpty && isFormatStringEmpty) { return string.Format(formatProvider, "{0}", value); }
         if (isAlignmentEmpty) { alignment = "0"; }
         if (isFormatStringEmpty) { formatString = "G"; }
-
-        try
-        {
-            return string.Format(formatProvider, $"{{0,{alignment}:{formatString}}}", value);
-        }
-        catch (FormatException)
-        {
-            return value.ToString()!;
-        }
+        return string.Format(formatProvider, $"{{0,{alignment}:{formatString}}}", value);
     }
 }
