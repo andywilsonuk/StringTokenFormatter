@@ -8,4 +8,5 @@ public static class TokenValueContainerFactory
     public static FuncTokenValueContainer<T> FromFunc<T>(ITokenValueContainerSettings settings, Func<string, T> func) => new(func, settings);
     public static CompositeTokenValueContainer FromCombination(ITokenValueContainerSettings settings, IEnumerable<ITokenValueContainer> containers) => new(containers, settings);
     public static CompositeTokenValueContainer FromCombination(ITokenValueContainerSettings settings, params ITokenValueContainer[] containers) => new(containers, settings);
+    public static HierarchicalTokenValueContainer FromHierarchical(IHierarchicalTokenValueContainerSettings settings, string prefix, ITokenValueContainer container) => new(prefix, container, settings);
 }
