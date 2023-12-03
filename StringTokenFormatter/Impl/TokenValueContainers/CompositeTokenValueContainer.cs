@@ -1,7 +1,7 @@
 ﻿namespace StringTokenFormatter.Impl;
 
 /// <summary>
-/// This Value Container searches all child containers for the provided token value and returns the first value found. 
+/// This Value Container searches child containers in order added for the provided token value and returns the first value found. 
 /// </summary>
 public class CompositeTokenValueContainer : ITokenValueContainer
 {

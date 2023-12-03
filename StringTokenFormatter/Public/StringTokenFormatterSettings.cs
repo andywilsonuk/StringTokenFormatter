@@ -92,7 +92,8 @@ public interface IHierarchicalTokenValueContainerSettings : ITokenValueContainer
 }
 public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInterpolatedStringSettings, IHierarchicalTokenValueContainerSettings
 {
-    public static StringTokenFormatterSettings Global { get; set; } = new();
+    public static StringTokenFormatterSettings Default { get; } = new();
+    public static StringTokenFormatterSettings Global { get; set; } = Default;
 
     public StringComparer NameComparer { get; init; } = StringComparer.OrdinalIgnoreCase;
     public TokenResolutionPolicy TokenResolutionPolicy { get; init; } = TokenResolutionPolicy.ResolveAll;

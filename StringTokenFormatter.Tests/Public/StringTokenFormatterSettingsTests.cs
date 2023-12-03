@@ -1,11 +1,11 @@
 namespace StringTokenFormatter.Tests;
 
-public class StringTokenFormatterSettingsTests
+public class StringTokenFormatterSettingsTests : IDisposable
 {
     [Fact]
-    public void Global_DefinedDefault_ReturnsDefaultValues()
+    public void Default_DefinedDefault_ReturnsDefaultValues()
     {
-        var actual = StringTokenFormatterSettings.Global;
+        var actual = StringTokenFormatterSettings.Default;
 
         Assert.Equal(StringComparer.OrdinalIgnoreCase, actual.NameComparer);
         Assert.Equal(TokenResolutionPolicy.ResolveAll, actual.TokenResolutionPolicy);
@@ -30,7 +30,7 @@ public class StringTokenFormatterSettingsTests
     }
 
     [Fact]
-    public void Global_OverideGlobal_ReturnsDefaultValues()
+    public void Global_OverrideGlobal_ReturnsDefaultValues()
     {
         var actual = StringTokenFormatterSettings.Global with {
             NameComparer = StringComparer.CurrentCulture,
@@ -51,5 +51,32 @@ public class StringTokenFormatterSettingsTests
         Assert.Equal(UnresolvedTokenBehavior.LeaveUnresolved, actual.UnresolvedTokenBehavior);
         Assert.Equal(2, actual.ValueConverters.Count);
         Assert.Equal(CultureInfo.InvariantCulture, actual.FormatProvider);
+    }
+
+    [Fact]
+    public void Global_ComparedWithDefault_Same()
+    {
+        var actual = StringTokenFormatterSettings.Global;
+        var expected = StringTokenFormatterSettings.Default;
+
+        Assert.Equal(expected, actual);
+    }
+
+     [Fact]
+    public void Global_ModifiedGlobal_NotSameAsDefault()
+    {
+        var defaultSyntax = StringTokenFormatterSettings.Default.Syntax;
+
+        StringTokenFormatterSettings.Global = StringTokenFormatterSettings.Default with {
+            Syntax = CommonTokenSyntax.DollarRound,
+        };
+
+        Assert.Equal(defaultSyntax, StringTokenFormatterSettings.Default.Syntax);
+        Assert.Equal(CommonTokenSyntax.DollarRound, StringTokenFormatterSettings.Global.Syntax);
+    }
+
+    public void Dispose()
+    {
+        StringTokenFormatterSettings.Global = StringTokenFormatterSettings.Default;
     }
 }

@@ -1,5 +1,8 @@
 ﻿namespace StringTokenFormatter.Impl;
 
+/// <summary>
+/// This Value Container delegates token matching to the func.
+/// </summary>
 public class FuncTokenValueContainer<T> : ITokenValueContainer
 {
     private readonly Func<string, T> func;

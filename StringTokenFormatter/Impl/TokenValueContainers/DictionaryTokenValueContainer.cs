@@ -1,5 +1,8 @@
 ﻿namespace StringTokenFormatter.Impl;
 
+/// <summary>
+/// This Value Container uses key/value pairs for token matching.
+/// </summary>
 public class DictionaryTokenValueContainer<T> : ITokenValueContainer
 {
     private readonly Dictionary<string, T> pairs;

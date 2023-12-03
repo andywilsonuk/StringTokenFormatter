@@ -1,6 +1,6 @@
 namespace StringTokenFormatter.Tests;
 
-public class ContainerCombinationTest
+public class TokenValueContainerBuilderTests
 {
     [Fact]
     public void MultipleContainerCombinations()
