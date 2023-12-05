@@ -5,7 +5,7 @@ public class TokenValueContainerBuilderTests
     [Fact]
     public void MultipleContainerCombinations()
     {
-        var settings = StringTokenFormatterSettings.Global;
+        var settings = StringTokenFormatterSettings.Default;
         var resolver = new InterpolatedStringResolver(settings);
         var builder = new TokenValueContainerBuilder(settings);
 

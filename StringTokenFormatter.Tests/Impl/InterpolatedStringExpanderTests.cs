@@ -11,7 +11,7 @@ public class InterpolatedStringExpanderTests
         {
             new InterpolatedStringSegment("text only"),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -26,7 +26,7 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringSegment("one "),
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("two", 2);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -44,7 +44,7 @@ public class InterpolatedStringExpanderTests
         {
             new InterpolatedStringTokenSegment(raw, token, alignment, format),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("two", 2);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -142,7 +142,7 @@ public class InterpolatedStringExpanderTests
         {
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("two", tokenValue);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -157,7 +157,7 @@ public class InterpolatedStringExpanderTests
         {
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         Func<object> func = () => 2;
         valuesContainer.Add("two", func);
 
@@ -177,13 +177,13 @@ public class InterpolatedStringExpanderTests
 
         var settings = new StringTokenFormatterSettings
         {
-            ValueConverters = StringTokenFormatterSettings.Global.ValueConverters.Concat(new TokenValueConverter[] { converter }).ToList().AsReadOnly()
+            ValueConverters = StringTokenFormatterSettings.Default.ValueConverters.Concat(new TokenValueConverter[] { converter }).ToList().AsReadOnly()
         };
         var segments = new List<InterpolatedStringSegment>
         {
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("two", 2);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -198,7 +198,7 @@ public class InterpolatedStringExpanderTests
         {
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         Func<string, object?> func = token => token == "two" ? 2 : null;
         valuesContainer.Add("two", func);
 
@@ -217,7 +217,7 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringSegment("two"),
             new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("IsValid", true);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -235,7 +235,7 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
             new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("two", 2);
         valuesContainer.Add("IsValid", true);
 
@@ -254,7 +254,7 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringSegment("two"),
             new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("IsValid", false);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -278,7 +278,7 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
             new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("IsValid", true);
         valuesContainer.Add("IsAlsoValid", true);
         valuesContainer.Add("IsNotValid", false);
@@ -296,7 +296,7 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringSegment("one "),
             new InterpolatedStringTokenSegment("{if:IsValid}", "if:IsValid", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("IsValid", true);
 
         Assert.Throws<ConditionTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
@@ -311,7 +311,7 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{if:IsValid}", "if:IsValid", string.Empty, string.Empty),
             new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("IsValid", 1);
 
         Assert.Throws<ConditionTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
