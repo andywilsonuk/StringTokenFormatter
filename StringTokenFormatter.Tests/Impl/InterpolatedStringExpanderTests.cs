@@ -136,7 +136,7 @@ public class InterpolatedStringExpanderTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void Expand_BlankValue_ReturnsEmptyString(string tokenValue)
+    public void Expand_BlankValue_ReturnsEmptyString(string? tokenValue)
     {
         var segments = new List<InterpolatedStringSegment>
         {
