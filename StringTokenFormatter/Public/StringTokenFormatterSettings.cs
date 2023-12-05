@@ -83,9 +83,17 @@ public interface ITokenValueContainerSettings
     /// </summary>
     public TokenResolutionPolicy TokenResolutionPolicy { get; }
 }
-public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInterpolatedStringSettings
+public interface IHierarchicalTokenValueContainerSettings : ITokenValueContainerSettings
 {
-    public static StringTokenFormatterSettings Global { get; set; } = new();
+    /// <summary>
+    /// Gets the delimiter when splitting hierarchical token names. Default: `.`
+    /// </summary>
+    public string HierarchicalDelimiter { get; }
+}
+public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInterpolatedStringSettings, IHierarchicalTokenValueContainerSettings
+{
+    public static StringTokenFormatterSettings Default { get; } = new();
+    public static StringTokenFormatterSettings Global { get; set; } = Default;
 
     public StringComparer NameComparer { get; init; } = StringComparer.OrdinalIgnoreCase;
     public TokenResolutionPolicy TokenResolutionPolicy { get; init; } = TokenResolutionPolicy.ResolveAll;
@@ -100,6 +108,8 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
     public InvalidFormatBehavior InvalidFormatBehavior { get; init; } = InvalidFormatBehavior.Throw;
     public string ConditionStartToken { get; init; } = "if:";
     public string ConditionEndToken { get; init; } = "ifend:";
+
+    public string HierarchicalDelimiter { get; init; } = ".";
 
     private IReadOnlyCollection<TokenValueConverter> valueConverters = defaultValueConverters;
 

@@ -101,4 +101,24 @@ public class DictionaryTokenValueContainerTests
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = 2 }, actual);
     }
+
+    [Fact]
+    public void TryMap_TupleConstructorMatchingTokenCaseInsensitive_ReturnsSuccess()
+    {
+        var pairs = new (string, int?)[]
+        {
+            ("a", 1),
+            ("b", 2),
+        };
+        var settings = new StringTokenFormatterSettings
+        {
+            NameComparer = StringComparer.OrdinalIgnoreCase,
+            TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
+        };
+        var container = new DictionaryTokenValueContainer<int?>(pairs, settings);
+
+        var actual = container.TryMap("A");
+
+        Assert.Equal(new TryGetResult { IsSuccess = true, Value = 1 }, actual);
+    }
 }

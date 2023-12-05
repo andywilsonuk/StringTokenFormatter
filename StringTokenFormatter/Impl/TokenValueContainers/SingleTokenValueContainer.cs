@@ -1,5 +1,8 @@
 ﻿namespace StringTokenFormatter.Impl;
 
+/// <summary>
+/// This Value Container matches a single token name.
+/// </summary>
 public class SingleTokenValueContainer<T> : ITokenValueContainer
 {
     private readonly string tokenName;

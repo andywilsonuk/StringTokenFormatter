@@ -1,5 +1,8 @@
 ﻿namespace StringTokenFormatter.Impl;
 
+/// <summary>
+/// This Value Container uses key/value pairs for token matching.
+/// </summary>
 public class DictionaryTokenValueContainer<T> : ITokenValueContainer
 {
     private readonly Dictionary<string, T> pairs;
@@ -14,6 +17,18 @@ public class DictionaryTokenValueContainer<T> : ITokenValueContainer
         foreach (var pair in source.Where(p => !string.IsNullOrEmpty(p.Key)))
         {
             pairs[pair.Key] = pair.Value;
+        }
+    }
+    
+    public DictionaryTokenValueContainer(IEnumerable<(string, T)> source, ITokenValueContainerSettings settings)
+    {
+        if (source == null) { throw new ArgumentNullException(nameof(source)); }
+        this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+
+        pairs = new Dictionary<string, T>(settings.NameComparer);
+        foreach (var pair in source.Where(p => !string.IsNullOrEmpty(p.Item1)))
+        {
+            pairs[pair.Item1] = pair.Item2;
         }
     }
 

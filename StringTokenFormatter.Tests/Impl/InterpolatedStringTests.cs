@@ -12,7 +12,7 @@ public class InterpolatedStringTests
             new InterpolatedStringTokenSegment("{b}", "b", string.Empty, string.Empty),
             new InterpolatedStringSegment("c"),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         
         var actual = interpolatedString.Tokens();
 

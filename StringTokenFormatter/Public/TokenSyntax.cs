@@ -29,3 +29,11 @@ public static class CommonTokenSyntax
     /// </summary>
     public static TokenSyntax DollarRoundAlternative { get; } = new("$(", ")", "$$(");
 }
+
+public static class TokenSyntaxExtensions
+{
+    /// <summary>
+    /// Returns the token name wrapped within the start and end syntax.
+    /// </summary>
+    public static string Tokenize(this TokenSyntax syntax, string tokenName) => $"{syntax.Start}{tokenName}{syntax.End}";
+}

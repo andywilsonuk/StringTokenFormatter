@@ -1,4 +1,4 @@
-# StringTokenFormatter v7.1
+# StringTokenFormatter v7.2
 A high-speed library to parse interpolated strings at runtime and replace tokens with corresponding values.
 
 ```
@@ -20,14 +20,14 @@ using StringTokenFormatter;
 Tokens with formatting and alignment can be specified in the same way as [string.format](https://learn.microsoft.com/en-us/dotnet/api/system.string.format), for example: `{value,10:D4}`.
 
 # Supported .NET versions
-- v7.x: .NET 6, .net framework 4.8  
-- v6.1: .NET 6, .net framework 4.8 
+- v7.x: .NET 6, .net framework 4.8 (C# version 10)
+- v6.1: .NET 6, .net framework 4.8 (C# version 10)
 - v6.0 and earlier: .NET Standard 2.0, .NET Framework 4.0
 
 # Migrating from version 6
 There are major breaking changes. See [the v6 migration page](/migration-v6.md) for details on how to upgrade from version 6 to version 7.
 
-# Example usages
+# Example usage
 
 Using an object's properties to resolve tokens:
 ```C#
@@ -42,6 +42,14 @@ Using a dictionary of values to resolve tokens:
 string original = "start {middle} end";
 var tokenValues = new Dictionary<string, object> { { "middle", "center" } };
 string result = original.FormatFromPairs(tokenValues);
+Assert.Equal("start center end", result);
+```
+
+Using an enumerable of `ValueTuples` to resolve tokens:
+```C#
+string original = "start {middle} end";
+var tokenValues = new [] { ("middle", "center") };
+string result = original.FormatFromTuples(source, tokenValues);
 Assert.Equal("start center end", result);
 ```
 
@@ -74,6 +82,8 @@ Uri actual = original.FormatFromPairs(tokenValues);
 Assert.Equal(new Uri("http://temp.org/people?id=10"), actual);
 ```
 
+See also [additional features](#additional-features-and-notes) like nesting, conditions, performance optimizations, complex token resolving, IoC friendly working.
+
 # Settings
 All interpolating methods accept an optional `StringTokenFormatterSettings` parameter which is used in preference to the `StringTokenFormatterSettings.Global` settings.
 
@@ -90,18 +100,19 @@ It should be noted that whilst overriding the global is a convenient action, it 
 Using the `Global` settings as the base:
 
 ```C#
-var settings1 = StringTokenFormatterSettings.Global with { Syntax = CommonTokenSyntax.Round };
-var expanded = "This interpolated string uses (token) as its syntax".FormatFromSingle("token", "expanded value", settings1);
+var customSettings = StringTokenFormatterSettings.Global with { Syntax = CommonTokenSyntax.Round };
+var expanded = "This interpolated string uses (token) as its syntax".FormatFromSingle("token", "expanded value", customSettings);
 ```
 
 Using the default settings as the base:
 
 ```C#
-var settings2 = new StringTokenFormatterSettings { Syntax = CommonTokenSyntax.Round };
-var expanded = "This interpolated string uses (token) as its syntax".FormatFromSingle("token", "expanded value", settings2);
+var settings1 = new StringTokenFormatterSettings { Syntax = CommonTokenSyntax.Round };
+// or
+var settings2 = StringTokenFormatterSettings.Default with { Syntax = CommonTokenSyntax.Round };
 ```
 
-Initially, the `Global` settings are the default settings.
+Initially, the `Global` settings are the `Default` settings.
 
 ## Settings properties
 
@@ -183,6 +194,12 @@ Applies to token values after matched and before formatting. Converters are atte
 
 They can be useful to provide post-match functionality; a great example is a when using an object which contains a property that uses a `Lazy`. The token matcher resolves the token marker to property and then through the `ValueConverters` calls the `Lazy.Value` and returns the value of the `Lazy` for formatting. 
 
+### HierarchicalDelimiter
+
+Defines the prefix for `HierarchicalTokenValueContainer` instances. Default `.`.
+
+See also [Token Value Container Builder](#building-composite-token-value-containers).
+
 ## Additional features and notes
 
 ### Flow of Control
@@ -208,6 +225,35 @@ A helper class called `InterpolatedStringResolver` exists to allow the easy reus
 
 The resolver provides methods for both expansion of tokens from `string` and parsed `InterpolatedString`.
 
+### Building composite token value containers
+
+The `TokenValueContainerBuilder` provides methods for creating `CompositeTokenValueContainer` instances.
+
+Note that matching attempts are made in the order that the containers are passed to the `CompositeTokenValueContainer` instance which will be the same as the order that they are added to the builder. This includes nested containers.
+
+Nested containers are supported such that `{prefix.token}` first matches the prefix and then uses the associated container to match the suffix. In the example below, the prefix is `Account` and the suffix `Id` exists as a property on the `account` object.
+
+```C#
+var account = new {
+    Id = 2,
+    Name = "The second account",
+};
+
+var builder = new TokenValueContainerBuilder(StringTokenFormatterSettings.Default);
+builder.AddSingle("text", "Message text");
+builder.AddNestedObject("Account", account);
+var combinedContainer = builder.CombinedResult();
+
+string interpolatedString = "Ref: {Account.Id}. {text}.";
+string actual = interpolatedString.FormatFromContainer(combinedContainer);
+
+Assert.Equal("Ref: 2. Message text.", actual);
+```
+
+The delimiter can changed in the [settings](#hierarchicaldelimiter).
+
+Deep nesting is supported but discouraged, instead opt for flatter composites by adding the nested container to the top level with a separate prefix.
+
 ### Conditions
 
 Simple boolean conditions can be used to exclude blocks of text. The `ITokenValueContainerSettings` contains the special token prefixes `ConditionStartToken` (default `if:`) and `ConditionEndToken` (default `ifend:`).
@@ -229,7 +275,7 @@ The condition prefixes are case sensitive whilst the token providing the boolean
 
 Whilst there are a number of built-in containers, it many be necessary to create a complete custom container. The container should take in the settings interface `ITokenValueContainerSettings` and obey `NameComparer` and `TokenResolutionPolicy` properties. 
 
-It is also possible to combine multiple containers using `TokenValueContainerFactory.FromCombination` so that containers of the same type or differing types can be used to match tokens to values. Note that matching attempts are made in the order that the containers are passed to the `CompositeTokenValueContainer` instance.
+See also [Token Value Container Builder](#building-composite-token-value-containers).
 
 ### Async loading of token values
 

@@ -2,13 +2,15 @@ namespace StringTokenFormatter.Tests;
 
 public class InterpolatedStringResolverTests
 {
+    private readonly StringTokenFormatterSettings settings = new()
+    {
+        Syntax = CommonTokenSyntax.Round,
+    };
+
     [Fact]
     public void FromSingle_StringSource_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
-            Syntax = CommonTokenSyntax.Round,
-        };
         var resolver = new InterpolatedStringResolver(settings);
 
         string actual = resolver.FromSingle(source, "two", 2);
@@ -21,9 +23,6 @@ public class InterpolatedStringResolverTests
     public void FromSingle_InterpolatedStringSource_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
-            Syntax = CommonTokenSyntax.Round,
-        };
         var resolver = new InterpolatedStringResolver(settings);
         var interpolatedString = InterpolatedStringParser.Parse(source, settings);
 
@@ -37,9 +36,6 @@ public class InterpolatedStringResolverTests
     public void FromPairs_StringSource_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
-            Syntax = CommonTokenSyntax.Round,
-        };
         var resolver = new InterpolatedStringResolver(settings);
         var tokenValues = new Dictionary<string, object> { { "two", 2 } };
 
@@ -53,9 +49,6 @@ public class InterpolatedStringResolverTests
     public void FromPairs_InterpolatedStringSource_ReturnsExpandedString()
     {
         string source = "first (two) third";
-                var settings = new StringTokenFormatterSettings {
-            Syntax = CommonTokenSyntax.Round,
-        };
         var resolver = new InterpolatedStringResolver(settings);
         var interpolatedString = InterpolatedStringParser.Parse(source, settings);
         var tokenValues = new Dictionary<string, object> { { "two", 2 } };
@@ -65,14 +58,93 @@ public class InterpolatedStringResolverTests
         string expected = "first 2 third";
         Assert.Equal(expected, actual);
     }
+
+
+    [Fact]
+    public void FromPairs_StringSourceWithParams_ReturnsExpandedString()
+    {
+        string source = "first (two) third";
+        var resolver = new InterpolatedStringResolver(settings);
+        var tokenValue1 = KeyValuePair.Create("one", 1);
+        var tokenValue2 = KeyValuePair.Create("two", 2);
+
+        string actual = resolver.FromPairs(source, tokenValue1, tokenValue2);
+
+        string expected = "first 2 third";
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void FromPairs_InterpolatedStringSourceWithParams_ReturnsExpandedString()
+    {
+        string source = "first (two) third";
+        var resolver = new InterpolatedStringResolver(settings);
+        var interpolatedString = InterpolatedStringParser.Parse(source, settings);
+        var tokenValue1 = KeyValuePair.Create("one", 1);
+        var tokenValue2 = KeyValuePair.Create("two", 2);
+
+        string actual = resolver.FromPairs(interpolatedString, tokenValue1, tokenValue2);
+
+        string expected = "first 2 third";
+        Assert.Equal(expected, actual);
+    }
+    
+    [Fact]
+    public void FromTuples_StringSource_ReturnsExpandedString()
+    {
+        string source = "first (two) third";
+        var resolver = new InterpolatedStringResolver(settings);
+        var tokenValues = new[] { ("two", 2) };
+
+        string actual = resolver.FromTuples(source, tokenValues);
+
+        string expected = "first 2 third";
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void FromTuples_InterpolatedStringSource_ReturnsExpandedString()
+    {
+        string source = "first (two) third";
+        var resolver = new InterpolatedStringResolver(settings);
+        var interpolatedString = InterpolatedStringParser.Parse(source, settings);
+        var tokenValues = new[] { ("two", 2) };
+
+        string actual = resolver.FromTuples(interpolatedString, tokenValues);
+
+        string expected = "first 2 third";
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void FromTuples_StringSourceWithParams_ReturnsExpandedString()
+    {
+        string source = "first (two) third";
+        var resolver = new InterpolatedStringResolver(settings);
+
+        string actual = resolver.FromTuples<object>(source, ("one", 1), ("two", "2"));
+
+        string expected = "first 2 third";
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void FromTuples_InterpolatedStringSourceWithParams_ReturnsExpandedString()
+    {
+        string source = "first (two) third";
+        var resolver = new InterpolatedStringResolver(settings);
+        var interpolatedString = InterpolatedStringParser.Parse(source, settings);
+
+        string actual = resolver.FromTuples<object>(interpolatedString, ("one", 1), ("two", "2"));
+
+        string expected = "first 2 third";
+        Assert.Equal(expected, actual);
+    }
     
     [Fact]
     public void FromObject_StringSource_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
-            Syntax = CommonTokenSyntax.Round,
-        };
         var resolver = new InterpolatedStringResolver(settings);
         var valuesObject = new { Two = 2 };
 
@@ -86,9 +158,6 @@ public class InterpolatedStringResolverTests
     public void FromObject_InterpolatedStringSource_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
-            Syntax = CommonTokenSyntax.Round,
-        };
         var resolver = new InterpolatedStringResolver(settings);
         var interpolatedString = InterpolatedStringParser.Parse(source, settings);
         var valuesObject = new { Two = 2 };
@@ -103,9 +172,6 @@ public class InterpolatedStringResolverTests
     public void FromFunc_StringSource_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
-            Syntax = CommonTokenSyntax.Round,
-        };
         var resolver = new InterpolatedStringResolver(settings);
 
         string actual = resolver.FromFunc(source, (string _token) => 2);
@@ -118,9 +184,6 @@ public class InterpolatedStringResolverTests
     public void FromFunc_InterpolatedStringSource_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
-            Syntax = CommonTokenSyntax.Round,
-        };
         var resolver = new InterpolatedStringResolver(settings);
         var interpolatedString = InterpolatedStringParser.Parse(source, settings);
 
@@ -134,14 +197,10 @@ public class InterpolatedStringResolverTests
     public void FromContainer_StringSource_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
-            Syntax = CommonTokenSyntax.Round,
-        };
         var resolver = new InterpolatedStringResolver(settings);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        var valuesContainer = new BasicContainer().Add("two", 2);
 
-        string actual = resolver.FromContainer(source, valuesStub.Object);
+        string actual = resolver.FromContainer(source, valuesContainer);
 
         string expected = "first 2 third";
         Assert.Equal(expected, actual);
@@ -151,15 +210,11 @@ public class InterpolatedStringResolverTests
     public void FromContainer_InterpolatedStringSource_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
-            Syntax = CommonTokenSyntax.Round,
-        };
         var resolver = new InterpolatedStringResolver(settings);
         var interpolatedString = InterpolatedStringParser.Parse(source, settings);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        var valuesContainer = new BasicContainer().Add("two", 2);
 
-        string actual = resolver.FromContainer(source, valuesStub.Object);
+        string actual = resolver.FromContainer(interpolatedString, valuesContainer);
 
         string expected = "first 2 third";
         Assert.Equal(expected, actual);

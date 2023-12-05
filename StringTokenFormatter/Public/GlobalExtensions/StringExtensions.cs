@@ -12,6 +12,11 @@ public static class StringExtensions
     public static string FormatFromPairs<T>(this string source, IEnumerable<KeyValuePair<string, T>> values, StringTokenFormatterSettings settings) =>
         FormatFromContainer(source, TokenValueContainerFactory.FromPairs(settings, values), settings);
 
+    public static string FormatFromTuples<T>(this string source, IEnumerable<(string, T)> values) =>
+        FormatFromTuples(source, values, StringTokenFormatterSettings.Global);
+    public static string FormatFromTuples<T>(this string source, IEnumerable<(string, T)> values, StringTokenFormatterSettings settings) =>
+        FormatFromContainer(source, TokenValueContainerFactory.FromTuples(settings, values), settings);
+
     public static string FormatFromObject<T>(this string source, T valuesObject) =>
         FormatFromObject(source, valuesObject, StringTokenFormatterSettings.Global);
     public static string FormatFromObject<T>(this string source, T valuesObject, StringTokenFormatterSettings settings) =>
