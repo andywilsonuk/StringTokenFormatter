@@ -18,6 +18,9 @@ public class TokenValueContainerBuilder
     public void AddPairs<T>(IEnumerable<KeyValuePair<string, T>> pairs) =>
         innerList.Add(TokenValueContainerFactory.FromPairs(Settings, pairs));
 
+    public void AddTuples<T>(IEnumerable<(string, T)> pairs) =>
+        innerList.Add(TokenValueContainerFactory.FromTuples(Settings, pairs));
+
     public void AddObject<T>(T containerObject) =>
         innerList.Add(TokenValueContainerFactory.FromObject(Settings, containerObject));
 
@@ -38,6 +41,9 @@ public class TokenValueContainerBuilder
 
     public void AddNestedPairs<T>(string prefix, IEnumerable<KeyValuePair<string, T>> pairs) =>
         AddNestedContainer(prefix, TokenValueContainerFactory.FromPairs(Settings, pairs));
+
+    public void AddNestedTuples<T>(string prefix, IEnumerable<(string, T)> tuples) =>
+        AddNestedContainer(prefix, TokenValueContainerFactory.FromTuples(Settings, tuples));
 
     public void AddNestedObject<T>(string prefix, T source) =>
         AddNestedContainer(prefix, TokenValueContainerFactory.FromObject(Settings, source));

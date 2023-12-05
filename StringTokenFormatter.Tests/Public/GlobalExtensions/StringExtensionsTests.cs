@@ -3,7 +3,7 @@ namespace StringTokenFormatter.Tests;
 public class StringExtensionsTests
 {
     [Fact]
-    public void FormatFromSingle_SingleValueWithDefaultSettings_ReturnsExpandedString()
+    public void FormatFromSingle_WithDefaultSettings_ReturnsExpandedString()
     {
         string source = "first {two} third";
 
@@ -14,7 +14,7 @@ public class StringExtensionsTests
     }
 
     [Fact]
-    public void FormatFromSingle_SingleValueWithSettings_ReturnsExpandedString()
+    public void FormatFromSingle_WithSettings_ReturnsExpandedString()
     {
         string source = "first (two) third";
         var settings = new StringTokenFormatterSettings {
@@ -28,7 +28,7 @@ public class StringExtensionsTests
     }
 
     [Fact]
-    public void FormatFromPairs_PairsWithDefaultSettings_ReturnsExpandedString()
+    public void FormatFromPairs_WithDefaultSettings_ReturnsExpandedString()
     {
         string source = "first {two} third";
         var tokenValues = new Dictionary<string, object> { { "two", 2 } };
@@ -40,7 +40,7 @@ public class StringExtensionsTests
     }
 
     [Fact]
-    public void FormatFromPairs_PairsWithSettings_ReturnsExpandedString()
+    public void FormatFromPairs_WithSettings_ReturnsExpandedString()
     {
         string source = "first (two) third";
         var settings = new StringTokenFormatterSettings {
@@ -55,7 +55,34 @@ public class StringExtensionsTests
     }
 
     [Fact]
-    public void FormatFromObject_ObjectWithDefaultSettings_ReturnsExpandedString()
+    public void FormatFromTuples_WithDefaultSettings_ReturnsExpandedString()
+    {
+        string source = "first {two} third";
+        var tokenValues = new [] { ("two", 2) };
+
+        string actual = source.FormatFromTuples(tokenValues);
+
+        string expected = "first 2 third";
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void FormatFromTuples_WithSettings_ReturnsExpandedString()
+    {
+        string source = "first (two) third";
+        var settings = new StringTokenFormatterSettings {
+            Syntax = CommonTokenSyntax.Round,
+        };
+        var tokenValues = new [] { ("two", 2) };
+
+        string actual = source.FormatFromTuples(tokenValues, settings);
+
+        string expected = "first 2 third";
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void FormatFromObject_WithDefaultSettings_ReturnsExpandedString()
     {
         string source = "first {two} third";
         var valuesObject = new { Two = 2 };
@@ -67,7 +94,7 @@ public class StringExtensionsTests
     }
 
     [Fact]
-    public void FormatFromObject_ObjectWithSettings_ReturnsExpandedString()
+    public void FormatFromObject_WithSettings_ReturnsExpandedString()
     {
         string source = "first (two) third";
         var settings = new StringTokenFormatterSettings {
@@ -82,7 +109,7 @@ public class StringExtensionsTests
     }
 
     [Fact]
-    public void FormatFromFunc_FuncWithDefaultSettings_ReturnsExpandedString()
+    public void FormatFromFunc_WithDefaultSettings_ReturnsExpandedString()
     {
         string source = "first {two} third";
 
@@ -93,7 +120,7 @@ public class StringExtensionsTests
     }
 
     [Fact]
-    public void FormatFromFunc_FuncWithSettings_ReturnsExpandedString()
+    public void FormatFromFunc_WithSettings_ReturnsExpandedString()
     {
         string source = "first (two) third";
         var settings = new StringTokenFormatterSettings {
@@ -107,7 +134,7 @@ public class StringExtensionsTests
     }
 
     [Fact]
-    public void FormatFromContainer_ContainerWithDefaultSettings_ReturnsExpandedString()
+    public void FormatFromContainer_WithDefaultSettings_ReturnsExpandedString()
     {
         string source = "first {two} third";
         var valuesStub = new Mock<ITokenValueContainer>();
@@ -120,7 +147,7 @@ public class StringExtensionsTests
     }
 
     [Fact]
-    public void FormatFromContainer_ContainerWithSettings_ReturnsExpandedString()
+    public void FormatFromContainer_WithSettings_ReturnsExpandedString()
     {
         string source = "first (two) third";
         var settings = new StringTokenFormatterSettings {

@@ -19,6 +19,12 @@ public class InterpolatedStringResolver
     public string FromPairs<T>(InterpolatedString interpolatedString, IEnumerable<KeyValuePair<string, T>> pairs) =>
         FromContainer(interpolatedString, TokenValueContainerFactory.FromPairs(Settings, pairs));
 
+    public string FromTuples<T>(string interpolatedString, IEnumerable<(string, T)> tuples) =>
+        FromContainer(interpolatedString, TokenValueContainerFactory.FromTuples(Settings, tuples));
+
+    public string FromTuples<T>(InterpolatedString interpolatedString, IEnumerable<(string, T)> tuples) =>
+        FromContainer(interpolatedString, TokenValueContainerFactory.FromTuples(Settings, tuples));
+
     public string FromObject<T>(string interpolatedString, T containerObject) =>
         FromContainer(interpolatedString, TokenValueContainerFactory.FromObject(Settings, containerObject));
     public string FromObject<T>(InterpolatedString interpolatedString, T containerObject) =>

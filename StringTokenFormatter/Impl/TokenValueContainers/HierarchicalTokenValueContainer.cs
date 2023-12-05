@@ -24,8 +24,6 @@ public class HierarchicalTokenValueContainer : ITokenValueContainer
         if (!settings.NameComparer.Equals(prefix, token.Substring(0, prefixIndex))) { return default; }
 
         string remainingToken = token.Substring(prefixIndex + settings.HierarchicalDelimiter.Length);
-        var value = container.TryMap(remainingToken);
-        if (value.IsSuccess && settings.TokenResolutionPolicy.Satisfies(value)) { return value; }
-        return default;
+        return container.TryMap(remainingToken);
     }
 }
