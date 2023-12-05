@@ -58,6 +58,36 @@ public class InterpolatedStringResolverTests
         string expected = "first 2 third";
         Assert.Equal(expected, actual);
     }
+
+
+    [Fact]
+    public void FromPairs_StringSourceWithParams_ReturnsExpandedString()
+    {
+        string source = "first (two) third";
+        var resolver = new InterpolatedStringResolver(settings);
+        var tokenValue1 = KeyValuePair.Create("one", 1);
+        var tokenValue2 = KeyValuePair.Create("two", 2);
+
+        string actual = resolver.FromPairs(source, tokenValue1, tokenValue2);
+
+        string expected = "first 2 third";
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void FromPairs_InterpolatedStringSourceWithParams_ReturnsExpandedString()
+    {
+        string source = "first (two) third";
+        var resolver = new InterpolatedStringResolver(settings);
+        var interpolatedString = InterpolatedStringParser.Parse(source, settings);
+        var tokenValue1 = KeyValuePair.Create("one", 1);
+        var tokenValue2 = KeyValuePair.Create("two", 2);
+
+        string actual = resolver.FromPairs(interpolatedString, tokenValue1, tokenValue2);
+
+        string expected = "first 2 third";
+        Assert.Equal(expected, actual);
+    }
     
     [Fact]
     public void FromTuples_StringSource_ReturnsExpandedString()
@@ -81,6 +111,31 @@ public class InterpolatedStringResolverTests
         var tokenValues = new[] { ("two", 2) };
 
         string actual = resolver.FromTuples(interpolatedString, tokenValues);
+
+        string expected = "first 2 third";
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void FromTuples_StringSourceWithParams_ReturnsExpandedString()
+    {
+        string source = "first (two) third";
+        var resolver = new InterpolatedStringResolver(settings);
+
+        string actual = resolver.FromTuples<object>(source, ("one", 1), ("two", "2"));
+
+        string expected = "first 2 third";
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void FromTuples_InterpolatedStringSourceWithParams_ReturnsExpandedString()
+    {
+        string source = "first (two) third";
+        var resolver = new InterpolatedStringResolver(settings);
+        var interpolatedString = InterpolatedStringParser.Parse(source, settings);
+
+        string actual = resolver.FromTuples<object>(interpolatedString, ("one", 1), ("two", "2"));
 
         string expected = "first 2 third";
         Assert.Equal(expected, actual);

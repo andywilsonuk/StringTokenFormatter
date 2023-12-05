@@ -10,7 +10,7 @@ public class HierarchicalTokenValueContainerTests
     {
         var container = new HierarchicalTokenValueContainer(prefix, innerContainer, StringTokenFormatterSettings.Default);
 
-        var actual = container.TryMap("pre.a");
+        var actual = container.TryMap($"{prefix}.a");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = "1" }, actual);
     }
@@ -35,6 +35,15 @@ public class HierarchicalTokenValueContainerTests
         Assert.Equal(new TryGetResult { IsSuccess = false, Value = default }, actual);
     }
 
+    [Fact]
+    public void TryMap_TokenWithMissingSuffix_ReturnsFailure()
+    {
+        var container = new HierarchicalTokenValueContainer(prefix, innerContainer, StringTokenFormatterSettings.Default);
+
+        var actual = container.TryMap($"{prefix}.");
+
+        Assert.Equal(new TryGetResult { IsSuccess = false, Value = default }, actual);
+    }
 
     [Fact]
     public void TryMap_TokenCasingComparerRespected_ReturnsSuccess()
@@ -46,7 +55,7 @@ public class HierarchicalTokenValueContainerTests
         };
         var container = new HierarchicalTokenValueContainer(prefix, innerContainer, settings);
 
-        var actual = container.TryMap("PRE.a");
+        var actual = container.TryMap($"{prefix.ToUpperInvariant()}.a");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = "1" }, actual);
     }
