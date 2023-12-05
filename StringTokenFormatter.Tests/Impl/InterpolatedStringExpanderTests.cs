@@ -2,6 +2,8 @@ namespace StringTokenFormatter.Tests;
 
 public class InterpolatedStringExpanderTests
 {
+    private readonly BasicContainer valuesContainer = new();
+
     [Fact]
     public void Expand_WithoutTokens_ReturnsOriginalString()
     {
@@ -10,12 +12,10 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringSegment("text only"),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
-        var valuesStub = new Mock<ITokenValueContainer>();
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("text only", actual);
-        valuesStub.VerifyNoOtherCalls();
     }
 
     [Fact]
@@ -27,10 +27,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        valuesContainer.Add("two", 2);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("one 2", actual);
     }
@@ -46,10 +45,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment(raw, token, alignment, format),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        valuesContainer.Add("two", 2);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal(expected, actual);
     }
@@ -67,10 +65,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{three}", "three", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        valuesContainer.Add("two", 2);
 
-        Assert.Throws<UnresolvedTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object));
+        Assert.Throws<UnresolvedTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
 
     [Fact]
@@ -86,10 +83,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{three}", "three", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        valuesContainer.Add("two", 2);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("one {three}", actual);
     }
@@ -108,10 +104,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(-16325.62m));
+        valuesContainer.Add("two", -16325.62m);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal(expected, actual);
     }
@@ -131,10 +126,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment(raw, token, alignment, format),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2.12m));
+        valuesContainer.Add("two", 2.12m);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal(expected, actual);
     }
@@ -149,10 +143,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(tokenValue));
+        valuesContainer.Add("two", tokenValue);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Empty(actual);
     }
@@ -165,11 +158,10 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
-        var valuesStub = new Mock<ITokenValueContainer>();
         Func<object> func = () => 2;
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(func));
+        valuesContainer.Add("two", func);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("2", actual);
     }
@@ -192,10 +184,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        valuesContainer.Add("two", 2);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("2", actual);
     }
@@ -208,11 +199,10 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
-        var valuesStub = new Mock<ITokenValueContainer>();
         Func<string, object?> func = token => token == "two" ? 2 : null;
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(func));
+        valuesContainer.Add("two", func);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("2", actual);
     }
@@ -228,10 +218,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("IsValid")).Returns(TryGetResult.Success(true));
+        valuesContainer.Add("IsValid", true);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("one two", actual);
     }
@@ -247,11 +236,10 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
-        valuesStub.Setup(x => x.TryMap("IsValid")).Returns(TryGetResult.Success(true));
+        valuesContainer.Add("two", 2);
+        valuesContainer.Add("IsValid", true);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("one 2", actual);
     }
@@ -267,10 +255,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("IsValid")).Returns(TryGetResult.Success(false));
+        valuesContainer.Add("IsValid", false);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("one ", actual);
     }
@@ -292,12 +279,11 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("IsValid")).Returns(TryGetResult.Success(true));
-        valuesStub.Setup(x => x.TryMap("IsAlsoValid")).Returns(TryGetResult.Success(true));
-        valuesStub.Setup(x => x.TryMap("IsNotValid")).Returns(TryGetResult.Success(false));
+        valuesContainer.Add("IsValid", true);
+        valuesContainer.Add("IsAlsoValid", true);
+        valuesContainer.Add("IsNotValid", false);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("one two three", actual);
     }
@@ -311,10 +297,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{if:IsValid}", "if:IsValid", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("IsValid")).Returns(TryGetResult.Success(true));
+        valuesContainer.Add("IsValid", true);
 
-        Assert.Throws<ConditionTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object));
+        Assert.Throws<ConditionTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
 
     [Fact]
@@ -327,10 +312,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Global);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("IsValid")).Returns(TryGetResult.Success(1));
+        valuesContainer.Add("IsValid", 1);
 
-        Assert.Throws<ConditionTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object));
+        Assert.Throws<ConditionTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
 
     [Fact]
@@ -345,10 +329,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{two,Z}", "two", string.Empty, "Z"),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        valuesContainer.Add("two", 2);
 
-        Assert.Throws<TokenValueFormatException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object));
+        Assert.Throws<TokenValueFormatException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
 
     [Fact]
@@ -363,10 +346,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{two,Z}", "two", string.Empty, "Z"),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        valuesContainer.Add("two", 2);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("2", actual);
     }
@@ -383,10 +365,9 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{two,Z}", "two", string.Empty, "Z"),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        valuesContainer.Add("two", 2);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesStub.Object);
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("{two,Z}", actual);
     }

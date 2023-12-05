@@ -143,10 +143,9 @@ public class InterpolatedStringResolverTests
     {
         string source = "first (two) third";
         var resolver = new InterpolatedStringResolver(settings);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        var valuesContainer = new BasicContainer().Add("two", 2);
 
-        string actual = resolver.FromContainer(source, valuesStub.Object);
+        string actual = resolver.FromContainer(source, valuesContainer);
 
         string expected = "first 2 third";
         Assert.Equal(expected, actual);
@@ -158,10 +157,9 @@ public class InterpolatedStringResolverTests
         string source = "first (two) third";
         var resolver = new InterpolatedStringResolver(settings);
         var interpolatedString = InterpolatedStringParser.Parse(source, settings);
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        var valuesContainer = new BasicContainer().Add("two", 2);
 
-        string actual = resolver.FromContainer(source, valuesStub.Object);
+        string actual = resolver.FromContainer(interpolatedString, valuesContainer);
 
         string expected = "first 2 third";
         Assert.Equal(expected, actual);

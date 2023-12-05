@@ -137,10 +137,9 @@ public class UriExtensionsTests
     public void FormatFromContainer_WithDefaultSettings_ReturnsExpandedAbsoluteUri()
     {
         var source = new Uri("http://locallhost/?q={token}");
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("token")).Returns(TryGetResult.Success(2));
+        var valuesContainer = new BasicContainer().Add("token", 2);
 
-        var actual = source.FormatFromContainer(valuesStub.Object);
+        var actual = source.FormatFromContainer(valuesContainer);
 
         var expected = new Uri("http://locallhost/?q=2");
         Assert.Equal(expected, actual);
@@ -153,10 +152,9 @@ public class UriExtensionsTests
         var settings = new StringTokenFormatterSettings {
             Syntax = CommonTokenSyntax.Round,
         };
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("token")).Returns(TryGetResult.Success(2));
+        var valuesContainer = new BasicContainer().Add("token", 2);
 
-        var actual = source.FormatFromContainer(valuesStub.Object, settings);
+        var actual = source.FormatFromContainer(valuesContainer, settings);
 
         var expected = new Uri("http://locallhost/?q=2");
         Assert.Equal(expected, actual);

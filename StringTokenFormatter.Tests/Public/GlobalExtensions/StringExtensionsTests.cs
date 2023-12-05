@@ -137,10 +137,9 @@ public class StringExtensionsTests
     public void FormatFromContainer_WithDefaultSettings_ReturnsExpandedString()
     {
         string source = "first {two} third";
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        var valuesContainer = new BasicContainer().Add("two", 2);
 
-        string actual = source.FormatFromContainer(valuesStub.Object);
+        string actual = source.FormatFromContainer(valuesContainer);
 
         string expected = "first 2 third";
         Assert.Equal(expected, actual);
@@ -153,10 +152,9 @@ public class StringExtensionsTests
         var settings = new StringTokenFormatterSettings {
             Syntax = CommonTokenSyntax.Round,
         };
-        var valuesStub = new Mock<ITokenValueContainer>();
-        valuesStub.Setup(x => x.TryMap("two")).Returns(TryGetResult.Success(2));
+        var valuesContainer = new BasicContainer().Add("two", 2);
 
-        string actual = source.FormatFromContainer(valuesStub.Object, settings);
+        string actual = source.FormatFromContainer(valuesContainer, settings);
 
         string expected = "first 2 third";
         Assert.Equal(expected, actual);
