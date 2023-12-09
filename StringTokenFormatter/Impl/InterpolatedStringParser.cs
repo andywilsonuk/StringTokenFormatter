@@ -20,34 +20,43 @@ public static partial class InterpolatedStringParser
     public static InterpolatedString Parse(string source, IInterpolatedStringSettings settings)
     {
         if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
-
-        string segmentPattern = GetRegexPattern(settings);
-        var segments = ParseInternal(source, segmentPattern, settings);
+        if (string.IsNullOrEmpty(source))
+        {
+            return new InterpolatedString(Array.Empty<InterpolatedStringSegment>(), settings);
+        }
+        var matches = GetRegexMatches(source, settings.Syntax);
+        var segments = ConvertToSegments(source, matches, settings.Syntax);
         return new InterpolatedString(segments.ToList().AsReadOnly(), settings);
     }
 
-    private static string GetRegexPattern(IInterpolatedStringSettings settings)
+    private static IEnumerable<Match> GetRegexMatches(string source, TokenSyntax syntax)
     {
-        var (startToken, endToken, escapedStartToken) = settings.Syntax;
+#if NET7_0_OR_GREATER
+        var knownRegex = CommonTokenSyntaxRegexStore.GetRegex(syntax);
+        if (knownRegex != null) { return knownRegex.Matches(source).Cast<Match>(); }
+#endif
+        var (startToken, endToken, escapedStartToken) = syntax;
         var regexEscapedStartToken = Regex.Escape(startToken);
         var regexEscapedEscapedStartToken = Regex.Escape(escapedStartToken);
         var regexEscapedEndToken = Regex.Escape(endToken);
-        return $"({regexEscapedEscapedStartToken})|({regexEscapedStartToken}.*?{regexEscapedEndToken})";
+        string segmentPattern = $"({regexEscapedEscapedStartToken})|({regexEscapedStartToken}.*?{regexEscapedEndToken})";
+        return Regex.Matches(source, segmentPattern, regexOptions).Cast<Match>();
     }
 
-    private static IEnumerable<InterpolatedStringSegment> ParseInternal(string source, string segmentPattern, IInterpolatedStringSettings settings)
+    private static IEnumerable<InterpolatedStringSegment> ConvertToSegments(string source, IEnumerable<Match> matches, TokenSyntax syntax)
     {
         if (string.IsNullOrEmpty(source)) yield break;
-        var (startToken, endToken, escapedStartToken) = settings.Syntax;
+        var (startToken, endToken, escapedStartToken) = syntax;
         int index = 0;
-        var matches = Regex.Matches(source, segmentPattern, regexOptions);
-        foreach (var match in matches.Cast<Match>())
+        foreach (var match in matches)
         {
             string segment = match.Value;
             int captureIndex = match.Index;
+            int captureLength = match.Length;
+
             if (index != captureIndex)
             {
-                string text = source.Substring(index, match.Index - index);
+                string text = source.Substring(index, captureIndex - index);
                 yield return new InterpolatedStringSegment(text);
             }
             if (segment == escapedStartToken)
@@ -65,7 +74,7 @@ public static partial class InterpolatedStringParser
                 var split = GetTokenTripleRegex().Split(tripleWithoutMarkers);
                 yield return new InterpolatedStringTokenSegment(segment, split[1], split[2], split[3]);
             }
-            index = captureIndex + match.Length;
+            index = captureIndex + captureLength;
         }
         if (index < source.Length)
         {
