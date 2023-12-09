@@ -7,7 +7,7 @@ public static class InterpolatedStringExtensions {
     /// Returns the distinct tokens present within the interpolatedString. Note: this is faithful to the original casing of the token.
     /// </summary>
     public static HashSet<string> Tokens(this InterpolatedString interpolatedString) =>
-        interpolatedString.Segments.OfType<InterpolatedStringTokenSegment>().Select(x => x.Token).ToHashSet();
+        new(interpolatedString.Segments.OfType<InterpolatedStringTokenSegment>().Select(x => x.Token));
 }
 
 public record InterpolatedStringSegment(string Raw);
