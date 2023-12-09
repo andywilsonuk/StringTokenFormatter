@@ -65,8 +65,8 @@ public class InterpolatedStringResolverTests
     {
         string source = "first (two) third";
         var resolver = new InterpolatedStringResolver(settings);
-        var tokenValue1 = KeyValuePair.Create("one", 1);
-        var tokenValue2 = KeyValuePair.Create("two", 2);
+        var tokenValue1 = new KeyValuePair<string, int>("one", 1);
+        var tokenValue2 = new KeyValuePair<string, int>("two", 2);
 
         string actual = resolver.FromPairs(source, tokenValue1, tokenValue2);
 
@@ -80,8 +80,8 @@ public class InterpolatedStringResolverTests
         string source = "first (two) third";
         var resolver = new InterpolatedStringResolver(settings);
         var interpolatedString = InterpolatedStringParser.Parse(source, settings);
-        var tokenValue1 = KeyValuePair.Create("one", 1);
-        var tokenValue2 = KeyValuePair.Create("two", 2);
+        var tokenValue1 = new KeyValuePair<string, int>("one", 1);
+        var tokenValue2 = new KeyValuePair<string, int>("two", 2);
 
         string actual = resolver.FromPairs(interpolatedString, tokenValue1, tokenValue2);
 
