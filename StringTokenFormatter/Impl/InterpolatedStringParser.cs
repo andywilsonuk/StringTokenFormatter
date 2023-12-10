@@ -63,7 +63,7 @@ public static partial class InterpolatedStringParser
             {
                 yield return new InterpolatedStringSegment(startToken);
             }
-            else if (!segment.StartsWith(startToken))
+            else if (!segment.StartsWith(startToken, StringComparison.OrdinalIgnoreCase))
             {
                 yield return new InterpolatedStringSegment(segment);
             }
