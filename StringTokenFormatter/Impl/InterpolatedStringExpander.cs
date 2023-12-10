@@ -21,7 +21,7 @@ public static class InterpolatedStringExpander
             }
             else
             {
-                sb.Append(Evaluate(segment, container, settings));
+                Evaluate(segment, container, settings, sb);
             }
         }
         return sb.ToString();
@@ -53,31 +53,41 @@ public static class InterpolatedStringExpander
             }
             else
             {
-                sbNested.Append(Evaluate(segment, container, settings));
+                Evaluate(segment, container, settings, sbNested);
             }
         }
         throw new ConditionTokenException($"Missing {settings.ConditionEndToken} for condition {actualToken}");
     }
 
-    private static string Evaluate(InterpolatedStringSegment segment, ITokenValueContainer container, IInterpolatedStringSettings settings)
+    private static void Evaluate(InterpolatedStringSegment segment, ITokenValueContainer container, IInterpolatedStringSettings settings, StringBuilder sb)
     {
         var tokenSegment = segment as InterpolatedStringTokenSegment;
         object? tokenValue = null;
         try
         {
-            if (tokenSegment == null) { return FormatValue(segment.Raw, string.Empty, string.Empty, settings.FormatProvider); }
+            if (tokenSegment == null)
+            { 
+                sb.Append(segment.Raw);
+                return;
+            }
 
             tokenValue = GetTokenValue(container, settings, tokenSegment.Token, segment.Raw);
-            return FormatValue(tokenValue, tokenSegment.Alignment, tokenSegment.Format, settings.FormatProvider);
+            FormatValue(tokenValue, tokenSegment.Alignment, tokenSegment.Format, settings.FormatProvider, sb);
         }
         catch(FormatException ex)
         {
-            return settings.InvalidFormatBehavior switch
+            if (settings.InvalidFormatBehavior == InvalidFormatBehavior.LeaveToken) {
+                sb.Append(segment.Raw);
+            }
+            else if (settings.InvalidFormatBehavior == InvalidFormatBehavior.LeaveUnformatted)
             {
-                InvalidFormatBehavior.LeaveUnformatted => tokenValue?.ToString() ?? string.Empty,
-                InvalidFormatBehavior.LeaveToken => segment.Raw,
-                _ => throw new TokenValueFormatException($"Unable to format token {segment.Raw}", ex),
-            };
+                if (tokenValue == null) { return; }
+                sb.Append(tokenValue);
+            }
+            else
+            {
+                throw new TokenValueFormatException($"Unable to format token {segment.Raw}", ex);
+            }
         }
     }
 
@@ -101,16 +111,19 @@ public static class InterpolatedStringExpander
         return converter == default ? value : converter.Value;
     }
 
-    private static string FormatValue(object? value, string alignment, string formatString, IFormatProvider formatProvider)
+    private static void FormatValue(object? value, string alignment, string formatString, IFormatProvider formatProvider, StringBuilder sb)
     {
-        if (value is null) { return string.Empty; }
+        if (value is null) { return; }
 
         bool isAlignmentEmpty = alignment == string.Empty;
         bool isFormatStringEmpty = formatString == string.Empty;
 
-        if (isAlignmentEmpty && isFormatStringEmpty) { return string.Format(formatProvider, "{0}", value); }
+        if (isAlignmentEmpty && isFormatStringEmpty) {
+            sb.AppendFormat(formatProvider, "{0}", value);
+            return;
+        }
         if (isAlignmentEmpty) { alignment = "0"; }
         if (isFormatStringEmpty) { formatString = "G"; }
-        return string.Format(formatProvider, $"{{0,{alignment}:{formatString}}}", value);
+        sb.AppendFormat(formatProvider, $"{{0,{alignment}:{formatString}}}", value);
     }
 }
