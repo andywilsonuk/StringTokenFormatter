@@ -42,11 +42,11 @@ public static class InterpolatedStringExpander
         while (enumerator.MoveNext())
         {
             var segment = enumerator.Current;
-            if (segment is InterpolatedStringTokenSegment s && s.Token.StartsWith(settings.ConditionStartToken))
+            if (segment is InterpolatedStringTokenSegment s && s.Token.StartsWith(settings.ConditionStartToken, StringComparison.OrdinalIgnoreCase))
             {
                 ConditionHandler(enumerator, container, settings, sbNested);
             }
-            else if (segment is InterpolatedStringTokenSegment s2 && s2.Token.StartsWith(settings.ConditionEndToken))
+            else if (segment is InterpolatedStringTokenSegment s2 && s2.Token.StartsWith(settings.ConditionEndToken, StringComparison.OrdinalIgnoreCase))
             {
                 if (isMet) { sb.Append(sbNested); }
                 return;
