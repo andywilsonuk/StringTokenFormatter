@@ -18,7 +18,7 @@ public static class InterpolatedStringExpander
             if (segment is InterpolatedStringTokenSegment tokenSegment)
             {
                 string token = tokenSegment.Token;
-                if (token.StartsWith(settings.ConditionStartToken, StringComparison.OrdinalIgnoreCase))
+                if (token.StartsWith(settings.ConditionStartToken, StringComparison.Ordinal))
                 {
                     ConditionHandler(enumerator, container, settings, sb);
                 }
@@ -54,8 +54,8 @@ public static class InterpolatedStringExpander
             if (segment is InterpolatedStringTokenSegment tokenSegment)
             {
                 string token = tokenSegment.Token;
-                if (token.StartsWith(endTokenPrefix, StringComparison.OrdinalIgnoreCase)) { return; }
-                if (token.StartsWith(startTokenPrefix, StringComparison.OrdinalIgnoreCase))
+                if (token.StartsWith(endTokenPrefix, StringComparison.Ordinal)) { return; }
+                if (token.StartsWith(startTokenPrefix, StringComparison.Ordinal))
                 {
                     ConditionHandler(enumerator, container, settings, sb, isMet);
                 }
