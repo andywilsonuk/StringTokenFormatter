@@ -151,19 +151,22 @@ public class InterpolatedStringExpanderTests
     }
 
     [Fact]
-    public void Expand_ValueConverters_ConvertsContainerValue()
+    public void Expand_ValueConverters_ConvertsContainerValueToBinary()
     {
+        TokenValueConverter base2Converter = (v, _n) => v is int base10 ? TryGetResult.Success(Convert.ToString(base10, 2)) : default;
         var segments = new List<InterpolatedStringSegment>
         {
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
-        Func<object> func = () => 2;
-        valuesContainer.Add("two", func);
+        var settings = StringTokenFormatterSettings.Default with {
+            ValueConverters = new TokenValueConverter[] { base2Converter },
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("two", 2);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
-        Assert.Equal("2", actual);
+        Assert.Equal("10", actual);
     }
 
     [Fact]
@@ -189,6 +192,22 @@ public class InterpolatedStringExpanderTests
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("2", actual);
+    }
+
+    [Fact]
+    public void Expand_UnmatchedValueConverters_Throws()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
+        };
+        var settings = StringTokenFormatterSettings.Default with {
+            ValueConverters = new[] { TokenValueConverters.FromNull() },
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("two", "2");
+
+        Assert.Throws<MissingValueConverterException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
 
     [Fact]

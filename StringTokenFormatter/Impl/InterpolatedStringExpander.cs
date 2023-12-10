@@ -15,111 +15,118 @@ public static class InterpolatedStringExpander
         while (enumerator.MoveNext())
         {
             var segment = enumerator.Current;
-            if (segment is InterpolatedStringTokenSegment s && s.Token.StartsWith(settings.ConditionStartToken))
+            if (segment is InterpolatedStringTokenSegment tokenSegment)
             {
-                ConditionHandler(enumerator, container, settings, sb);
+                string token = tokenSegment.Token;
+                if (token.StartsWith(settings.ConditionStartToken, StringComparison.OrdinalIgnoreCase))
+                {
+                    ConditionHandler(enumerator, container, settings, sb);
+                }
+                else
+                {
+                    Evaluate(tokenSegment, container, settings, sb);
+                }
             }
             else
             {
-                Evaluate(segment, container, settings, sb);
+                sb.Append(segment.Raw);
             }
         }
         return sb.ToString();
     }
 
-    private static void ConditionHandler(IEnumerator<InterpolatedStringSegment> enumerator, ITokenValueContainer container, IInterpolatedStringSettings settings, StringBuilder sb)
+    private static void ConditionHandler(IEnumerator<InterpolatedStringSegment> enumerator, ITokenValueContainer container, IInterpolatedStringSettings settings, StringBuilder sb, bool isAncestorMet = true)
     {
         var conditionSegment = (InterpolatedStringTokenSegment)enumerator.Current;
-        var sbNested = new StringBuilder();
-        string actualToken = conditionSegment.Token.Substring(settings.ConditionStartToken.Length);
-        object? tokenValue = GetTokenValue(container, settings, actualToken, string.Empty);
-        if (tokenValue == null || tokenValue is not bool)
+        string startTokenPrefix = settings.ConditionStartToken;
+        string endTokenPrefix = settings.ConditionEndToken;
+
+        string actualToken = conditionSegment.Token.Substring(startTokenPrefix.Length);
+        if (!TryGetTokenValue(container, settings, actualToken, out object? tokenValue) || tokenValue is not bool boolValue)
         {
             throw new ConditionTokenException($"Condition for token {actualToken} is not a boolean");
         }
-        bool isMet = (bool)tokenValue;
+        bool isMet = isAncestorMet && boolValue;
 
         while (enumerator.MoveNext())
         {
             var segment = enumerator.Current;
-            if (segment is InterpolatedStringTokenSegment s && s.Token.StartsWith(settings.ConditionStartToken, StringComparison.OrdinalIgnoreCase))
+            if (segment is InterpolatedStringTokenSegment tokenSegment)
             {
-                ConditionHandler(enumerator, container, settings, sbNested);
+                string token = tokenSegment.Token;
+                if (token.StartsWith(endTokenPrefix, StringComparison.OrdinalIgnoreCase)) { return; }
+                if (token.StartsWith(startTokenPrefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    ConditionHandler(enumerator, container, settings, sb, isMet);
+                }
+                else if (isMet)
+                {
+                    Evaluate(tokenSegment, container, settings, sb);
+                }
             }
-            else if (segment is InterpolatedStringTokenSegment s2 && s2.Token.StartsWith(settings.ConditionEndToken, StringComparison.OrdinalIgnoreCase))
+            else if (isMet)
             {
-                if (isMet) { sb.Append(sbNested); }
-                return;
-            }
-            else
-            {
-                Evaluate(segment, container, settings, sbNested);
+                sb.Append(segment.Raw);
             }
         }
-        throw new ConditionTokenException($"Missing {settings.ConditionEndToken} for condition {actualToken}");
+        throw new ConditionTokenException($"Missing {endTokenPrefix} for condition {actualToken}");
     }
 
-    private static void Evaluate(InterpolatedStringSegment segment, ITokenValueContainer container, IInterpolatedStringSettings settings, StringBuilder sb)
+    private static void Evaluate(InterpolatedStringTokenSegment tokenSegment, ITokenValueContainer container, IInterpolatedStringSettings settings, StringBuilder sb)
     {
-        var tokenSegment = segment as InterpolatedStringTokenSegment;
-        object? tokenValue = null;
+        if (!TryGetTokenValue(container, settings, tokenSegment.Token, out object? tokenValue))
+        {
+            sb.Append(tokenSegment.Raw);
+            return;
+        }
+        if (tokenValue == null) { return; }
         try
         {
-            if (tokenSegment == null)
-            { 
-                sb.Append(segment.Raw);
-                return;
-            }
-
-            tokenValue = GetTokenValue(container, settings, tokenSegment.Token, segment.Raw);
             FormatValue(tokenValue, tokenSegment.Alignment, tokenSegment.Format, settings.FormatProvider, sb);
+        }
+        catch(FormatException) when (settings.InvalidFormatBehavior == InvalidFormatBehavior.LeaveToken)
+        {
+            sb.Append(tokenSegment.Raw);
+        }
+        catch(FormatException) when (settings.InvalidFormatBehavior == InvalidFormatBehavior.LeaveUnformatted)
+        {
+            sb.Append(tokenValue);
         }
         catch(FormatException ex)
         {
-            if (settings.InvalidFormatBehavior == InvalidFormatBehavior.LeaveToken) {
-                sb.Append(segment.Raw);
-            }
-            else if (settings.InvalidFormatBehavior == InvalidFormatBehavior.LeaveUnformatted)
-            {
-                if (tokenValue == null) { return; }
-                sb.Append(tokenValue);
-            }
-            else
-            {
-                throw new TokenValueFormatException($"Unable to format token {segment.Raw}", ex);
-            }
+            throw new TokenValueFormatException($"Unable to format token {tokenSegment.Raw}", ex);
         }
     }
 
-    private static object? GetTokenValue(ITokenValueContainer container, IInterpolatedStringSettings settings, string token, string raw)
+    private static bool TryGetTokenValue(ITokenValueContainer container, IInterpolatedStringSettings settings, string token, out object? value)
     {
         var containerMatch = container.TryMap(token);
         if (containerMatch.IsSuccess)
         {
-            return ConvertValue(token, containerMatch.Value, settings);
+            var containerValue = containerMatch.Value;
+            var converter = settings.ValueConverters.Select(fn => fn(containerValue, token)).FirstOrDefault(x => x.IsSuccess);
+            if (converter != default)
+            {
+                value = converter.Value;
+                return true;
+            }
+            throw new MissingValueConverterException($"No matching value converter found for token '{token}' with container value {containerValue}");
         }
         else if (settings.UnresolvedTokenBehavior == UnresolvedTokenBehavior.Throw)
         {
             throw new UnresolvedTokenException($"Token '{token}' was not found within the container");
         }
-        return raw;
+        value = null;
+        return false;
     }
 
-    private static object? ConvertValue(string token, object? value, IInterpolatedStringSettings settings)
+    private static void FormatValue(object value, string alignment, string formatString, IFormatProvider formatProvider, StringBuilder sb)
     {
-        var converter = settings.ValueConverters.Select(fn => fn(value, token)).FirstOrDefault(x => x.IsSuccess);
-        return converter == default ? value : converter.Value;
-    }
-
-    private static void FormatValue(object? value, string alignment, string formatString, IFormatProvider formatProvider, StringBuilder sb)
-    {
-        if (value is null) { return; }
-
         bool isAlignmentEmpty = alignment == string.Empty;
         bool isFormatStringEmpty = formatString == string.Empty;
 
         if (isAlignmentEmpty && isFormatStringEmpty) {
-            sb.AppendFormat(formatProvider, "{0}", value);
+            sb.Append(Convert.ToString(value, formatProvider));
             return;
         }
         if (isAlignmentEmpty) { alignment = "0"; }

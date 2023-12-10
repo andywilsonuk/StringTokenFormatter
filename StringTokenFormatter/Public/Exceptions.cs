@@ -28,3 +28,9 @@ public class TokenValueFormatException : StringTokenFormatterException
     {
     }
 }
+public class MissingValueConverterException : StringTokenFormatterException
+{
+    public MissingValueConverterException(string? message) : base(message)
+    {
+    }
+}
