@@ -2,21 +2,8 @@
 
 namespace StringTokenFormatter.Impl;
 
-public readonly record struct TryGetResult
+public readonly record struct TryGetResult(bool IsSuccess, object? Value)
 {
-    public bool IsSuccess { get; init; }
-    public object? Value { get; init; }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TryGetResult Success(object? Value) => new()
-    {
-        IsSuccess = true,
-        Value = Value,
-    };
-
-    public void Deconstruct(out bool IsSuccess, out object? Value)
-    {
-        IsSuccess = this.IsSuccess;
-        Value = this.Value;
-    }
+    public static TryGetResult Success(object? Value) => new(true, Value);
 }
