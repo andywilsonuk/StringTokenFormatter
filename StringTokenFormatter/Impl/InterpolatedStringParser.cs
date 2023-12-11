@@ -45,7 +45,6 @@ public static partial class InterpolatedStringParser
 
     private static IEnumerable<InterpolatedStringSegment> ConvertToSegments(string source, IEnumerable<Match> matches, TokenSyntax syntax)
     {
-        if (string.IsNullOrEmpty(source)) yield break;
         var (startToken, endToken, escapedStartToken) = syntax;
         int index = 0;
         foreach (var match in matches)
@@ -56,8 +55,7 @@ public static partial class InterpolatedStringParser
 
             if (index != captureIndex)
             {
-                string text = source.Substring(index, captureIndex - index);
-                yield return new InterpolatedStringSegment(text);
+                yield return new InterpolatedStringSegment(source.Substring(index, captureIndex - index));
             }
             if (segment == escapedStartToken)
             {
