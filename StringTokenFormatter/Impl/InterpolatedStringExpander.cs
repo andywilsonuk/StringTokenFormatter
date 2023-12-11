@@ -10,7 +10,7 @@ public static class InterpolatedStringExpander
         if (container == null) { throw new ArgumentNullException(nameof(container)); }
 
         var settings = interpolatedString.Settings;
-        var sb = new StringBuilder();
+        var builder = new StringBuilder();
         var enumerator = interpolatedString.Segments.GetEnumerator();
         while (enumerator.MoveNext())
         {
@@ -20,22 +20,22 @@ public static class InterpolatedStringExpander
                 string token = tokenSegment.Token;
                 if (token.StartsWith(settings.ConditionStartToken, StringComparison.Ordinal))
                 {
-                    ConditionHandler(enumerator, container, settings, sb);
+                    ConditionHandler(builder, enumerator, container, settings);
                 }
                 else
                 {
-                    Evaluate(tokenSegment, container, settings, sb);
+                    Evaluate(builder, tokenSegment, container, settings);
                 }
             }
             else
             {
-                sb.Append(segment.Raw);
+                builder.Append(segment.Raw);
             }
         }
-        return sb.ToString();
+        return builder.ToString();
     }
 
-    private static void ConditionHandler(IEnumerator<InterpolatedStringSegment> enumerator, ITokenValueContainer container, IInterpolatedStringSettings settings, StringBuilder sb, bool isAncestorMet = true)
+    private static void ConditionHandler(StringBuilder builder, IEnumerator<InterpolatedStringSegment> enumerator, ITokenValueContainer container, IInterpolatedStringSettings settings, bool isAncestorMet = true)
     {
         var conditionSegment = (InterpolatedStringTokenSegment)enumerator.Current;
         string startTokenPrefix = settings.ConditionStartToken;
@@ -57,40 +57,40 @@ public static class InterpolatedStringExpander
                 if (token.StartsWith(endTokenPrefix, StringComparison.Ordinal)) { return; }
                 if (token.StartsWith(startTokenPrefix, StringComparison.Ordinal))
                 {
-                    ConditionHandler(enumerator, container, settings, sb, isMet);
+                    ConditionHandler(builder, enumerator, container, settings, isMet);
                 }
                 else if (isMet)
                 {
-                    Evaluate(tokenSegment, container, settings, sb);
+                    Evaluate(builder, tokenSegment, container, settings);
                 }
             }
             else if (isMet)
             {
-                sb.Append(segment.Raw);
+                builder.Append(segment.Raw);
             }
         }
         throw new ConditionTokenException($"Missing {endTokenPrefix} for condition {actualToken}");
     }
 
-    private static void Evaluate(InterpolatedStringTokenSegment tokenSegment, ITokenValueContainer container, IInterpolatedStringSettings settings, StringBuilder sb)
+    private static void Evaluate(StringBuilder builder, InterpolatedStringTokenSegment tokenSegment, ITokenValueContainer container, IInterpolatedStringSettings settings)
     {
         if (!TryGetTokenValue(container, settings, tokenSegment.Token, out object? tokenValue))
         {
-            sb.Append(tokenSegment.Raw);
+            builder.Append(tokenSegment.Raw);
             return;
         }
         if (tokenValue == null) { return; }
         try
         {
-            FormatValue(tokenValue, tokenSegment.Alignment, tokenSegment.Format, settings.FormatProvider, sb);
+            FormatValue(builder, tokenValue, tokenSegment.Alignment, tokenSegment.Format, settings.FormatProvider);
         }
         catch(FormatException) when (settings.InvalidFormatBehavior == InvalidFormatBehavior.LeaveToken)
         {
-            sb.Append(tokenSegment.Raw);
+            builder.Append(tokenSegment.Raw);
         }
         catch(FormatException) when (settings.InvalidFormatBehavior == InvalidFormatBehavior.LeaveUnformatted)
         {
-            sb.Append(tokenValue);
+            builder.Append(tokenValue);
         }
         catch(FormatException ex)
         {
@@ -120,17 +120,17 @@ public static class InterpolatedStringExpander
         return false;
     }
 
-    private static void FormatValue(object value, string alignment, string formatString, IFormatProvider formatProvider, StringBuilder sb)
+    private static void FormatValue(StringBuilder builder, object value, string alignment, string formatString, IFormatProvider formatProvider)
     {
         bool isAlignmentEmpty = alignment == string.Empty;
         bool isFormatStringEmpty = formatString == string.Empty;
 
         if (isAlignmentEmpty && isFormatStringEmpty) {
-            sb.Append(Convert.ToString(value, formatProvider));
+            builder.Append(Convert.ToString(value, formatProvider));
             return;
         }
         if (isAlignmentEmpty) { alignment = "0"; }
         if (isFormatStringEmpty) { formatString = "G"; }
-        sb.AppendFormat(formatProvider, $"{{0,{alignment}:{formatString}}}", value);
+        builder.AppendFormat(formatProvider, $"{{0,{alignment}:{formatString}}}", value);
     }
 }
