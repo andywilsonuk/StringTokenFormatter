@@ -186,7 +186,7 @@ public class InterpolatedStringExpanderTests
         {
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
+        var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", 2);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -206,6 +206,19 @@ public class InterpolatedStringExpanderTests
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", "2");
+
+        Assert.Throws<MissingValueConverterException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
+    }
+
+    [Fact]
+    public void Expand_ObjectTypeTokenValueWithoutValueConverter_Throws()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
+        valuesContainer.Add("two", new {});
 
         Assert.Throws<MissingValueConverterException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }

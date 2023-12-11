@@ -1,35 +1,58 @@
-# StringTokenFormatter v7.2
-A high-speed library to parse interpolated strings at runtime and replace tokens with corresponding values.
+# StringTokenFormatter v7.3
+This library provides token replacement for interpolated strings not known at compile time such as those retrieved from data stores (file system, database, API, config files etc) and offers support for a variety of token to value mappers.
 
-```
+Available on nuget.org at https://www.nuget.org/packages/StringTokenFormatter.
+
+```C#
+using StringTokenFormatter;
+
+string interpolatedString = "Hello {FirstName} {LastName}";
 var client = new {
     FirstName = "John",
     LastName = "Smith",
 };
-
-var message = "Hello {FirstName} {LastName}".FormatFromObject(client);
+string message = interpolatedString.FormatFromObject(client);
 ```
 
-Available on NuGet at https://www.nuget.org/packages/StringTokenFormatter/
-
-To get started, include the `using` statement so that the `string` extension methods are available:
-```C#
-using StringTokenFormatter;
-```
-
-Tokens with formatting and alignment can be specified in the same way as [string.format](https://learn.microsoft.com/en-us/dotnet/api/system.string.format), for example: `{value,10:D4}`.
-
-# Supported .NET versions
-- v7.x: .NET 6, .net framework 4.8 (C# version 10)
-- v6.1: .NET 6, .net framework 4.8 (C# version 10)
-- v6.0 and earlier: .NET Standard 2.0, .NET Framework 4.0
+# .NET versions
+.NET 6, 7, 8 and .NET Standard 2.0 with C# 10 language features
 
 # Migrating from version 6
 There are major breaking changes. See [the v6 migration page](/migration-v6.md) for details on how to upgrade from version 6 to version 7.
 
-# Example usage
+# Features overview
 
-Using an object's properties to resolve tokens:
+As well as `string` extensions, there are equivalent `Uri` extensions and a reusable [Resolver](#the-resolver) class which allows for easier sharing of custom settings.
+
+```C#
+string source = "Answer is {percent,10:P}";
+var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default);
+
+string actual = resolver.FromTuples(source, ("percent", 1.2));
+
+Assert.Equal("Answer is    120.00%", actual);
+```
+
+Tokens with formatting and alignment can be specified in the same way as `string.Format` ([.net docs](https://learn.microsoft.com/en-us/dotnet/api/system.string.format)). Alternative [token syntax](#syntax) can be selected in the settings.
+
+Nested tokens (like `prefix.name`), cascading containers and other complex token resolution setups are supported through the `CompositeTokenValueContainer`, see [Building composite containers](#building-composite-token-value-containers) for the helper class.
+
+Conditional blocks of text can be controlled through boolean token values and the [conditional syntax](#conditions-1), for example:
+
+```C#
+string original = "start {if:IsValid}{middle}{ifend:IsValid} end";
+var tokenValues = new { Middle = "center", IsValid = true };
+string result = original.FormatFromObject(tokenValues);
+Assert.Equal("start center end", result);
+```
+
+The [Value Converter](#valueconverters) settings provide `Lazy` loading and function-resolved values and can be extended to perform custom conversion logic after token matching but before formatting. Any [value container](#value-containers) can return a `Lazy` or `Func` which will be resolved before formatting.
+
+See also [additional features and notes](#additional-features-and-notes) for performance optimization strategies and advanced usage. 
+
+# Value containers
+
+Using properties of an object (including an anonymous object) to resolve tokens:
 ```C#
 string original = "start {middle} end";
 var tokenValues = new { Middle = "center" };
@@ -37,7 +60,7 @@ string result = original.FormatFromObject(tokenValues);
 Assert.Equal("start center end", result);
 ```
 
-Using a dictionary of values to resolve tokens:
+Using a dictionary of values or other implementation of `IEnumerable<KeyValuePair<string, object>>` to resolve tokens:
 ```C#
 string original = "start {middle} end";
 var tokenValues = new Dictionary<string, object> { { "middle", "center" } };
@@ -68,21 +91,7 @@ string result = original.FormatFromFunc("middle", func);
 Assert.Equal("start center end", result);
 ```
 
-Replacing tokens within a URI:
-``` C#
-Uri original = new Uri("http://temp.org/{endpoint}?id={id}");
-var tokenValues = new Dictionary<string, object> 
-{ 
-  { "endpoint", "people" },
-  { "id", 10 }
-};
-
-Uri actual = original.FormatFromPairs(tokenValues);
-
-Assert.Equal(new Uri("http://temp.org/people?id=10"), actual);
-```
-
-See also [additional features](#additional-features-and-notes) like nesting, conditions, performance optimizations, complex token resolving, IoC friendly working.
+See [building composite token value containers](#building-composite-token-value-containers) for hierarchical or cascading containers. Also [custom containers](#creating-a-custom-itokenvaluecontainer).
 
 # Settings
 All interpolating methods accept an optional `StringTokenFormatterSettings` parameter which is used in preference to the `StringTokenFormatterSettings.Global` settings.
@@ -95,7 +104,7 @@ StringTokenFormatterSettings.Global = StringTokenFormatterSettings.Global with {
 
 It should be noted that whilst overriding the global is a convenient action, it can cause side effects by other code using this library. Library implementations should not update `Global`. Alternately, consider creating an instance of `InterpolatedStringResolver` which takes the settings object in its constructor and provides the common methods for expanding from different `ITokenValueContainer` implementations.
 
-## Creating instances of the settings
+## Creating Settings instances
 
 Using the `Global` settings as the base:
 
@@ -132,7 +141,7 @@ Build-in syntax within the CommonTokenSyntax class:
 
 ### FormatProvider
 
-Is used to specify the `IFormatProvider` applied to token values and uses [string.format](https://learn.microsoft.com/en-us/dotnet/api/system.string.format) to apply formatting and alignment for example: `{value,10:D4}`. Default `CultureInfo.CurrentUICulture`.
+Is used to specify the `IFormatProvider` applied to token values and uses [string.Format](https://learn.microsoft.com/en-us/dotnet/api/system.string.format) to apply formatting and alignment for example: `{value,10:D4}`. Default `CultureInfo.CurrentUICulture`.
 
 ### NameComparer
 
@@ -158,7 +167,7 @@ The policies are:
 
 What happens next will depend upon what else is configured:
 
-1. if this is a [`CompositeTokenValueContainer`](#additional-features-and-notes) then the matching will cascade to the next container
+1. if this is a [`CompositeTokenValueContainer`](#building-composite-token-value-containers) then the matching will cascade to the next container
 2. if `UnresolvedTokenBehavior` setting is set to `Throw` then an exception will be raised
 
 ### UnresolvedTokenBehavior
@@ -184,19 +193,21 @@ Defines how string.Format exceptions are handled. Default `InvalidFormatBehavior
 
 Applies to token values after matched and before formatting. Converters are attempted in order so that once one has successfully converted the value then no further conversions take place. Default collection (from `TokenValueConverters`):
 
-| Value                        | Result                                                   |
-| :--------------------------: | :------------------------------------------------------: |
-| Null                         | no conversion                                            |
-| Primitive (string, int, etc) | no conversion                                            | 
-| Lazy\<object>                | Lazy.Value                                               |
-| Func\<object>                | function result                                          |
-| Func\<string, object>        | function result                                          |
+| Value                       | Result                                                   |
+| :-------------------------: | :------------------------------------------------------: |
+| Null                        | no conversion                                            |
+| `string` or `ValueType`     | no conversion                                            | 
+| `Lazy<T>`                   | `Lazy.Value`                                             |
+| `Func<T>`                   | function result                                          |
+| `Func<string, T>`           | Supplied token name function result                      |
 
-They can be useful to provide post-match functionality; a great example is a when using an object which contains a property that uses a `Lazy`. The token matcher resolves the token marker to property and then through the `ValueConverters` calls the `Lazy.Value` and returns the value of the `Lazy` for formatting. 
+They can be useful to provide post-match functionality; a great example is a when using an object which contains a property that uses a `Lazy`. The token matcher resolves the token marker to property and then through the `ValueConverters` calls the `Lazy.Value` and returns the value of the `Lazy` for formatting.
+
+All passed through types must be handled by a Value Converters otherwise an exception is thrown.
 
 ### HierarchicalDelimiter
 
-Defines the prefix for `HierarchicalTokenValueContainer` instances. Default `.`.
+Defines the prefix for `HierarchicalTokenValueContainer` instances. Default `.` (period).
 
 See also [Token Value Container Builder](#building-composite-token-value-containers).
 
