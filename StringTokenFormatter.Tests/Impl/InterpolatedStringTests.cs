@@ -19,4 +19,21 @@ public class InterpolatedStringTests
         var expected = new HashSet<string> { "a", "b" };
         Assert.Equivalent(expected, actual);
     }
+
+    [Fact]
+    public void Tokens_Conditional_HashsetIncludeConditionalToken()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringTokenSegment("{if>a}", "if>a", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{b}", "b", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{endif>a}", "endif>a", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
+        
+        var actual = interpolatedString.Tokens();
+
+        var expected = new HashSet<string> { "a", "b" };
+        Assert.Equivalent(expected, actual);
+    }
 }

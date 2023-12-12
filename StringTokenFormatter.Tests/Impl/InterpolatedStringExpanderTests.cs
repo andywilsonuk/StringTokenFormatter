@@ -245,9 +245,9 @@ public class InterpolatedStringExpanderTests
         var segments = new List<InterpolatedStringSegment>
         {
             new InterpolatedStringSegment("one "),
-            new InterpolatedStringTokenSegment("{if:IsValid}", "if:IsValid", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{if>IsValid}", "if>IsValid", string.Empty, string.Empty),
             new InterpolatedStringSegment("two"),
-            new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("IsValid", true);
@@ -263,9 +263,9 @@ public class InterpolatedStringExpanderTests
         var segments = new List<InterpolatedStringSegment>
         {
             new InterpolatedStringSegment("one "),
-            new InterpolatedStringTokenSegment("{if:IsValid}", "if:IsValid", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{if>IsValid}", "if>IsValid", string.Empty, string.Empty),
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("two", 2);
@@ -282,9 +282,9 @@ public class InterpolatedStringExpanderTests
         var segments = new List<InterpolatedStringSegment>
         {
             new InterpolatedStringSegment("one "),
-            new InterpolatedStringTokenSegment("{if:IsValid}", "if:IsValid", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{if>IsValid}", "if>IsValid", string.Empty, string.Empty),
             new InterpolatedStringSegment("two"),
-            new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("IsValid", false);
@@ -300,15 +300,15 @@ public class InterpolatedStringExpanderTests
         var segments = new List<InterpolatedStringSegment>
         {
             new InterpolatedStringSegment("one "),
-            new InterpolatedStringTokenSegment("{if:IsValid}", "if:IsValid", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{if>IsValid}", "if>IsValid", string.Empty, string.Empty),
             new InterpolatedStringSegment("two"),
-            new InterpolatedStringTokenSegment("{if:IsNotValid}", "if:IsNotValid", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{if>IsNotValid}", "if>IsNotValid", string.Empty, string.Empty),
             new InterpolatedStringSegment("suppressed"),
-            new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{if:IsAlsoValid}", "if:IsAlsoValid", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{if>IsAlsoValid}", "if>IsAlsoValid", string.Empty, string.Empty),
             new InterpolatedStringSegment(" three"),
-            new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("IsValid", true);
@@ -326,7 +326,7 @@ public class InterpolatedStringExpanderTests
         var segments = new List<InterpolatedStringSegment>
         {
             new InterpolatedStringSegment("one "),
-            new InterpolatedStringTokenSegment("{if:IsValid}", "if:IsValid", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{if>IsValid}", "if>IsValid", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("IsValid", true);
@@ -340,8 +340,8 @@ public class InterpolatedStringExpanderTests
         var segments = new List<InterpolatedStringSegment>
         {
             new InterpolatedStringSegment("one "),
-            new InterpolatedStringTokenSegment("{if:IsValid}", "if:IsValid", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{ifend:}", "ifend:", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{if>IsValid}", "if>IsValid", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("IsValid", 1);

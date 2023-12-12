@@ -64,11 +64,11 @@ public interface IInterpolatedStringSettings
     /// </summary>
     public InvalidFormatBehavior InvalidFormatBehavior { get; }
     /// <summary>
-    /// Token prefix for starting a conditional block. Default: `if:`
+    /// Token prefix for starting a conditional block. Default: `if>`
     /// </summary>
     public string ConditionStartToken { get; }
     /// <summary>
-    /// Token prefix for ending a conditional block. Default: `ifend:`
+    /// Token prefix for ending a conditional block. Default: `ifend>`
     /// </summary>
     public string ConditionEndToken { get; }
 }
@@ -106,8 +106,8 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
     }
     public IFormatProvider FormatProvider { get; init; } = CultureInfo.CurrentUICulture;
     public InvalidFormatBehavior InvalidFormatBehavior { get; init; } = InvalidFormatBehavior.Throw;
-    public string ConditionStartToken { get; init; } = "if:";
-    public string ConditionEndToken { get; init; } = "ifend:";
+    public string ConditionStartToken { get; init; } = "if>";
+    public string ConditionEndToken { get; init; } = "ifend>";
 
     public string HierarchicalDelimiter { get; init; } = ".";
 

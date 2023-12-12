@@ -40,7 +40,7 @@ Nested tokens (like `prefix.name`), cascading containers and other complex token
 Conditional blocks of text can be controlled through boolean token values and the [conditional syntax](#conditions-1), for example:
 
 ```C#
-string original = "start {if:IsValid}{middle}{ifend:IsValid} end";
+string original = "start {if>IsValid}{middle}{ifend>IsValid} end";
 var tokenValues = new { Middle = "center", IsValid = true };
 string result = original.FormatFromObject(tokenValues);
 Assert.Equal("start center end", result);
@@ -93,6 +93,8 @@ Assert.Equal("start center end", result);
 
 See [building composite token value containers](#building-composite-token-value-containers) for hierarchical or cascading containers. Also [custom containers](#creating-a-custom-itokenvaluecontainer).
 
+Note: comma (,) and colon (:) should not be used in token names to avoid confusion with alignment and format values.
+
 # Settings
 All interpolating methods accept an optional `StringTokenFormatterSettings` parameter which is used in preference to the `StringTokenFormatterSettings.Global` settings.
 
@@ -139,6 +141,8 @@ Build-in syntax within the CommonTokenSyntax class:
 | DollarRound            | `$(Token)`   | `$((`  |
 | DollarRoundAlternative | `$(Token)`   | `$$(`  |
 
+Note: Token markers are case sensitive.
+
 ### FormatProvider
 
 Is used to specify the `IFormatProvider` applied to token values and uses [string.Format](https://learn.microsoft.com/en-us/dotnet/api/system.string.format) to apply formatting and alignment for example: `{value,10:D4}`. Default `CultureInfo.CurrentUICulture`.
@@ -149,9 +153,11 @@ The comparer used by `ITokenValueContainer` when performing token to value look-
 
 ### Conditions
 
-Simple boolean conditions can be used to exclude blocks of text. `ConditionStartToken` with default `if:` signifies the start of the block whilst `ConditionEndToken` with default `ifend:` signifies the end. It is expected that after the condition prefix will be the name of the token whose boolean value dictates whether to include the block or not.
+Simple boolean conditions can be used to exclude blocks of text. `ConditionStartToken` with default `if>` signifies the start of the block whilst `ConditionEndToken` with default `ifend>` signifies the end. It is expected that after the condition prefix will be the name of the token whose boolean value dictates whether to include the block or not.
 
 Nested conditions are supported.
+
+Note: Condition tokens are case sensitive.
 
 ### TokenResolutionPolicy
 
@@ -267,12 +273,12 @@ Deep nesting is supported but discouraged, instead opt for flatter composites by
 
 ### Conditions
 
-Simple boolean conditions can be used to exclude blocks of text. The `ITokenValueContainerSettings` contains the special token prefixes `ConditionStartToken` (default `if:`) and `ConditionEndToken` (default `ifend:`).
+Simple boolean conditions can be used to exclude blocks of text. The `ITokenValueContainerSettings` contains the special token prefixes `ConditionStartToken` (default `if>`) and `ConditionEndToken` (default `ifend>`).
 
 It is expected that after the condition prefix will be the name of the token whose boolean value dictates whether to include the block or not.
 
 ```C#
-string original = "start {if:IsValid}{middle}{ifend:IsValid} end";
+string original = "start {if>IsValid}{middle}{ifend>IsValid} end";
 var tokenValues = new { Middle = "center", IsValid = true };
 string result = original.FormatFromObject(tokenValues);
 Assert.Equal("start center end", result);
