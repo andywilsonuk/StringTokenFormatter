@@ -4,10 +4,10 @@
 /// Converts only the properties exposed by {T} (but not any members on derived classes) to a token value container.
 /// </summary>
 /// <typeparam name="T">A type indicating the exact properties that will be used for formatting.</typeparam>
-public class ObjectTokenValueContainer<T> : ITokenValueContainer
+public class ObjectTokenValueContainer<T> : ITokenValueContainer where T : class
 {
     private static readonly PropertyCache<T> propertyCache = new();
-    private readonly IDictionary<string, NonLockingLazy<object>> dictionary;
+    private readonly IDictionary<string, NonLockingLazy<object>> pairs;
     private readonly ITokenValueContainerSettings settings;
 
     public ObjectTokenValueContainer(T source, ITokenValueContainerSettings settings)
@@ -15,12 +15,12 @@ public class ObjectTokenValueContainer<T> : ITokenValueContainer
         if (source == null) { throw new ArgumentNullException(nameof(source)); }
         this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
-        dictionary = propertyCache.GetPairs().ToDictionary(
+        pairs = propertyCache.GetPairs().ToDictionary(
             p => p.Property.Name,
             p => new NonLockingLazy<object>(() => p.Getter(source)),
             settings.NameComparer);
     }
 
     public TryGetResult TryMap(string token) =>
-        dictionary.TryGetValue(token, out var value) && settings.TokenResolutionPolicy.Satisfies(value.Value) ? TryGetResult.Success(value.Value) : default;
+        pairs.TryGetValue(token, out var value) && settings.TokenResolutionPolicy.Satisfies(value.Value) ? TryGetResult.Success(value.Value) : default;
 }

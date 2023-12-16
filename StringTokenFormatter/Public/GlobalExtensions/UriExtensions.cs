@@ -17,9 +17,9 @@ public static class UriExtensions
     public static Uri FormatFromTuples<T>(this Uri source, IEnumerable<(string, T)> values, StringTokenFormatterSettings settings) =>
         FormatFromContainer(source, TokenValueContainerFactory.FromTuples(settings, values), settings);
 
-    public static Uri FormatFromObject<T>(this Uri source, T valuesObject) =>
+    public static Uri FormatFromObject<T>(this Uri source, T valuesObject) where T : class =>
         FormatFromObject(source, valuesObject, StringTokenFormatterSettings.Global);
-    public static Uri FormatFromObject<T>(this Uri source, T valuesObject, StringTokenFormatterSettings settings) =>
+    public static Uri FormatFromObject<T>(this Uri source, T valuesObject, StringTokenFormatterSettings settings) where T : class =>
         FormatFromContainer(source, TokenValueContainerFactory.FromObject(settings, valuesObject), settings);
 
     public static Uri FormatFromFunc<T>(this Uri source, Func<string, T> func) =>

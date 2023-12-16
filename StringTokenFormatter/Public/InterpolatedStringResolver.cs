@@ -35,9 +35,9 @@ public class InterpolatedStringResolver
     public string FromTuples<T>(InterpolatedString interpolatedString, params (string, T)[] tuples) =>
         FromContainer(interpolatedString, TokenValueContainerFactory.FromTuples(Settings, tuples));
 
-    public string FromObject<T>(string interpolatedString, T containerObject) =>
+    public string FromObject<T>(string interpolatedString, T containerObject) where T : class =>
         FromContainer(interpolatedString, TokenValueContainerFactory.FromObject(Settings, containerObject));
-    public string FromObject<T>(InterpolatedString interpolatedString, T containerObject) =>
+    public string FromObject<T>(InterpolatedString interpolatedString, T containerObject) where T : class =>
         FromContainer(interpolatedString, TokenValueContainerFactory.FromObject(Settings, containerObject));
 
     public string FromFunc<T>(string interpolatedString, Func<string, T> func) =>

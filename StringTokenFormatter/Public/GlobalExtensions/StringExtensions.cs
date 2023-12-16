@@ -17,9 +17,9 @@ public static class StringExtensions
     public static string FormatFromTuples<T>(this string source, IEnumerable<(string, T)> values, StringTokenFormatterSettings settings) =>
         FormatFromContainer(source, TokenValueContainerFactory.FromTuples(settings, values), settings);
 
-    public static string FormatFromObject<T>(this string source, T valuesObject) =>
+    public static string FormatFromObject<T>(this string source, T valuesObject) where T : class =>
         FormatFromObject(source, valuesObject, StringTokenFormatterSettings.Global);
-    public static string FormatFromObject<T>(this string source, T valuesObject, StringTokenFormatterSettings settings) =>
+    public static string FormatFromObject<T>(this string source, T valuesObject, StringTokenFormatterSettings settings) where T : class =>
         FormatFromContainer(source, TokenValueContainerFactory.FromObject(settings, valuesObject), settings);
 
     public static string FormatFromFunc<T>(this string source, Func<string, T> func) =>
