@@ -1,10 +1,11 @@
+#if NET8_0_OR_GREATER
+using System.Collections.Frozen;
 using System.Text.RegularExpressions;
 
 namespace StringTokenFormatter.Impl;
 
 public static partial class CommonTokenSyntaxRegexStore
 {
-#if NET7_0_OR_GREATER
     [GeneratedRegex(@"(\{\{)|(\{.*?\})", RegexOptions.Singleline | RegexOptions.CultureInvariant)]
     private static partial Regex GetCurlyRegex();
 
@@ -20,16 +21,24 @@ public static partial class CommonTokenSyntaxRegexStore
     [GeneratedRegex(@"(\$\$\()|(\$\(.*?\))", RegexOptions.Singleline | RegexOptions.CultureInvariant)]
     private static partial Regex GetDollarRoundAlternativeRegex();
 
-    private static Dictionary<TokenSyntax, Regex> store = new()
+    private static FrozenDictionary<TokenSyntax, Regex> store = new Dictionary<TokenSyntax, Regex>()
     {
         [CommonTokenSyntax.Curly] = GetCurlyRegex(),
         [CommonTokenSyntax.DollarCurly] = GetDollarCurlyRegex(),
         [CommonTokenSyntax.Round] = GetRoundRegex(),
         [CommonTokenSyntax.DollarRound] = GetDollarRoundRegex(),
         [CommonTokenSyntax.DollarRoundAlternative] = GetDollarRoundAlternativeRegex(),
-    };
+    }.ToFrozenDictionary();
 
-    public static Regex? GetRegex(TokenSyntax syntax) => store.TryGetValue(syntax, out Regex? regex) ? regex : null;
-    public static void AddCustom(TokenSyntax syntax, Regex regex) => store.Add(syntax, regex);
-# endif
+    private static LinkedList<(TokenSyntax Syntax, Regex Regex)> customStore = new();
+    public static void AddCustom(TokenSyntax syntax, Regex regex) => customStore.AddLast((syntax, regex));
+
+    public static Regex? GetRegex(TokenSyntax syntax)
+    {
+        if (store.TryGetValue(syntax, out Regex? regex)) { return regex; }
+        var c = customStore.FirstOrDefault(x => x.Syntax == syntax);
+        if (c == default) { return null; }
+        return c.Regex;
+    }
 }
+#endif

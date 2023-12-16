@@ -31,7 +31,7 @@ public static partial class InterpolatedStringParser
 
     private static IEnumerable<Match> GetRegexMatches(string source, TokenSyntax syntax)
     {
-#if NET7_0_OR_GREATER
+#if NET8_0_OR_GREATER
         var knownRegex = CommonTokenSyntaxRegexStore.GetRegex(syntax);
         if (knownRegex != null) { return knownRegex.Matches(source).Cast<Match>(); }
 #endif

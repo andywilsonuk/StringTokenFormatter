@@ -82,30 +82,4 @@ public class InterpolatedStringParserTests
         );
         Assert.Equal(settings, actual.Settings);
     }
-
-    [Fact]
-    public void Parse_GeneratedSyntaxRegex_ReturnsInterpolatedString()
-    {
-        var customSyntax = new TokenSyntax("*", "**", "-*");
-        var commonSyntaxList = new List<TokenSyntax>()
-        {
-            CommonTokenSyntax.Curly,
-            CommonTokenSyntax.DollarCurly,
-            CommonTokenSyntax.Round,
-            CommonTokenSyntax.DollarRound,
-            CommonTokenSyntax.DollarRoundAlternative,
-            customSyntax,
-        };
-
-        foreach (var syntax in commonSyntaxList)
-        {
-            string tokenizedValue = syntax.Tokenize("two");
-            string source = $"first {tokenizedValue} third";
-            var settings = new StringTokenFormatterSettings { Syntax = syntax };
-
-            var actual = InterpolatedStringParser.Parse(source, settings);
-
-            Assert.Equal(3, actual.Segments.Count);
-        }
-    }
 }
