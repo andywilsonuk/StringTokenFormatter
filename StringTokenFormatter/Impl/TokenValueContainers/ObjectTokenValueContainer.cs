@@ -1,4 +1,8 @@
-﻿namespace StringTokenFormatter.Impl;
+﻿#if NET8_0_OR_GREATER
+using System.Collections.Frozen;
+#endif
+
+namespace StringTokenFormatter.Impl;
 
 /// <summary>
 /// Converts only the properties exposed by {T} (but not any members on derived classes) to a token value container.
@@ -7,7 +11,7 @@
 public class ObjectTokenValueContainer<T> : ITokenValueContainer where T : class
 {
     private static readonly PropertyCache<T> propertyCache = new();
-    private readonly IDictionary<string, NonLockingLazy<object>> pairs;
+    private IDictionary<string, NonLockingLazy<object>> pairs;
     private readonly ITokenValueContainerSettings settings;
 
     public ObjectTokenValueContainer(T source, ITokenValueContainerSettings settings)
@@ -23,4 +27,14 @@ public class ObjectTokenValueContainer<T> : ITokenValueContainer where T : class
 
     public TryGetResult TryMap(string token) =>
         pairs.TryGetValue(token, out var value) && settings.TokenResolutionPolicy.Satisfies(value.Value) ? TryGetResult.Success(value.Value) : default;
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Converts the inner dictionary to a FrozenDictionary for faster read performance if reused.
+    /// </summary>
+    public void Frozen()
+    {
+        pairs = pairs.ToFrozenDictionary();
+    }
+#endif
 }

@@ -54,4 +54,25 @@ public class ObjectTokenValueContainerTests
 
         Assert.Equal(default, actual);
     }
+
+#if NET8_0_OR_GREATER
+    [Fact]
+    public void TryMap_FrozenDictionary_ReturnsSuccess()
+    {
+        int value = 1;
+        var source = new TestObject(A: value);
+        var settings = new StringTokenFormatterSettings
+        {
+            NameComparer = StringComparer.Ordinal,
+            TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
+        };
+        var container = new ObjectTokenValueContainer<TestObject>(source, settings);
+        container.Frozen();
+
+        var actual = container.TryMap("A");
+
+        Assert.Equal(new TryGetResult { IsSuccess = true, Value = value }, actual);
+    }
+
+#endif
 }
