@@ -2,9 +2,9 @@
 
 public static class UriExtensions
 {    
-    public static Uri FormatFromSingle<T>(this Uri source, string token, T replacementValue) =>
+    public static Uri FormatFromSingle<T>(this Uri source, string token, T replacementValue) where T : notnull =>
         FormatFromSingle(source, token, replacementValue, StringTokenFormatterSettings.Global);
-    public static Uri FormatFromSingle<T>(this Uri source, string token, T replacementValue, StringTokenFormatterSettings settings) =>
+    public static Uri FormatFromSingle<T>(this Uri source, string token, T replacementValue, StringTokenFormatterSettings settings) where T : notnull =>
         FormatFromContainer(source, TokenValueContainerFactory.FromSingle(settings, token, replacementValue), settings);
 
     public static Uri FormatFromPairs<T>(this Uri source, IEnumerable<KeyValuePair<string, T>> values) =>

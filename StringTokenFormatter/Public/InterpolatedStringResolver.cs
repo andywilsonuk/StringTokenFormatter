@@ -9,9 +9,9 @@ public class InterpolatedStringResolver
         Settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
-    public string FromSingle<T>(string interpolatedString, string token, T value) =>
+    public string FromSingle<T>(string interpolatedString, string token, T value) where T : notnull =>
         FromContainer(interpolatedString, TokenValueContainerFactory.FromSingle(Settings, token, value));
-    public string FromSingle<T>(InterpolatedString interpolatedString, string token, T value) =>
+    public string FromSingle<T>(InterpolatedString interpolatedString, string token, T value) where T : notnull =>
         FromContainer(interpolatedString, TokenValueContainerFactory.FromSingle(Settings, token, value));
 
     public string FromPairs<T>(string interpolatedString, IEnumerable<KeyValuePair<string, T>> pairs) =>

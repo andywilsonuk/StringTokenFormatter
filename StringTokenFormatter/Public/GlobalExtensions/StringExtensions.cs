@@ -2,9 +2,9 @@
 
 public static class StringExtensions
 {
-    public static string FormatFromSingle<T>(this string source, string token, T replacementValue) =>
+    public static string FormatFromSingle<T>(this string source, string token, T replacementValue) where T : notnull =>
         FormatFromSingle(source, token, replacementValue, StringTokenFormatterSettings.Global);
-    public static string FormatFromSingle<T>(this string source, string token, T replacementValue, StringTokenFormatterSettings settings) =>
+    public static string FormatFromSingle<T>(this string source, string token, T replacementValue, StringTokenFormatterSettings settings) where T : notnull =>
         FormatFromContainer(source, TokenValueContainerFactory.FromSingle(settings, token, replacementValue), settings);
 
     public static string FormatFromPairs<T>(this string source, IEnumerable<KeyValuePair<string, T>> values) =>
