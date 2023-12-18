@@ -83,7 +83,7 @@ public class DictionaryTokenValueContainerTests
     }
 
     [Fact]
-    public void TryMap_CaseInsensitiveOverridesPreviousEquivalent_ReturnsSuccess()
+    public void Constructor_CaseInsensitiveWithPreviousEquivalent_Throws()
     {
          var pairs = new (string, int?)[]
         {
@@ -93,13 +93,25 @@ public class DictionaryTokenValueContainerTests
         var settings = new StringTokenFormatterSettings
         {
             NameComparer = StringComparer.OrdinalIgnoreCase,
-            TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new DictionaryTokenValueContainer<int?>(pairs, settings);
 
-        var actual = container.TryMap("a");
+        Assert.Throws<InvalidTokenNameException>(() => new DictionaryTokenValueContainer<int?>(pairs, settings));
+    }
+    
+    [Fact]
+    public void Constructor_EmptyTokenName_Throws()
+    {
+        var pairs = new (string, int?)[]
+        {
+            (string.Empty, 1),
+            ("b", 2),
+        };
+        var settings = new StringTokenFormatterSettings
+        {
+            NameComparer = StringComparer.Ordinal,
+        };
 
-        Assert.Equal(new TryGetResult { IsSuccess = true, Value = 2 }, actual);
+        Assert.Throws<InvalidTokenNameException>(() => new DictionaryTokenValueContainer<int?>(pairs, settings));
     }
 
 #if NET8_0_OR_GREATER

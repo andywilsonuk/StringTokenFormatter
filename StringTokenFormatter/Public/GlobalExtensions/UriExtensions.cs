@@ -12,9 +12,9 @@ public static class UriExtensions
     public static Uri FormatFromPairs<T>(this Uri source, IEnumerable<KeyValuePair<string, T>> values, StringTokenFormatterSettings settings) =>
         FormatFromContainer(source, TokenValueContainerFactory.FromPairs(settings, values), settings);
 
-    public static Uri FormatFromTuples<T>(this Uri source, IEnumerable<(string, T)> values) =>
+    public static Uri FormatFromTuples<T>(this Uri source, IEnumerable<(string TokenName, T Value)> values) =>
         FormatFromTuples(source, values, StringTokenFormatterSettings.Global);
-    public static Uri FormatFromTuples<T>(this Uri source, IEnumerable<(string, T)> values, StringTokenFormatterSettings settings) =>
+    public static Uri FormatFromTuples<T>(this Uri source, IEnumerable<(string TokenName, T Value)> values, StringTokenFormatterSettings settings) =>
         FormatFromContainer(source, TokenValueContainerFactory.FromTuples(settings, values), settings);
 
     public static Uri FormatFromObject<T>(this Uri source, T valuesObject) where T : class =>

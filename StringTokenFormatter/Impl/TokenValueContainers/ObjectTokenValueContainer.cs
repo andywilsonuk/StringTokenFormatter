@@ -26,7 +26,7 @@ public class ObjectTokenValueContainer<T> : ITokenValueContainer where T : class
     }
 
     public TryGetResult TryMap(string token) =>
-        pairs.TryGetValue(token, out var value) && settings.TokenResolutionPolicy.Satisfies(value.Value) ? TryGetResult.Success(value.Value) : default;
+        pairs.TryGetValue(token, out var lazy) && settings.TokenResolutionPolicy.Satisfies(lazy.Value) ? TryGetResult.Success(lazy.Value) : default;
 
 #if NET8_0_OR_GREATER
     /// <summary>

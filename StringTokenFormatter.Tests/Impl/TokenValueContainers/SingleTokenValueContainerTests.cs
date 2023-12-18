@@ -52,4 +52,18 @@ public class SingleTokenValueContainerTests
 
         Assert.Equal(default, actual);
     }
+
+    [Fact]
+    public void Constructor_EmptyTokenName_Throws()
+    {
+        string tokenName = string.Empty;
+        int value = 1;
+        var settings = new StringTokenFormatterSettings
+        {
+            NameComparer = StringComparer.OrdinalIgnoreCase,
+            TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
+        };
+
+        Assert.Throws<InvalidTokenNameException>(() => new SingleTokenValueContainer<int>(tokenName, value, settings));
+    }
 }

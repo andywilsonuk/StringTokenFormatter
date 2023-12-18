@@ -12,15 +12,18 @@ public class DictionaryTokenValueContainer<T> : ITokenValueContainer
     private IDictionary<string, T> pairs;
     private readonly ITokenValueContainerSettings settings;
 
-    public DictionaryTokenValueContainer(IEnumerable<(string, T)> source, ITokenValueContainerSettings settings)
+    public DictionaryTokenValueContainer(IEnumerable<(string TokenName, T Value)> source, ITokenValueContainerSettings settings)
     {
         if (source == null) { throw new ArgumentNullException(nameof(source)); }
         this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
         pairs = new Dictionary<string, T>(settings.NameComparer);
-        foreach (var pair in source.Where(p => !string.IsNullOrEmpty(p.Item1)))
+        foreach (var pair in source)
         {
-            pairs[pair.Item1] = pair.Item2;
+            var (tokenName, value) = pair;
+            if (tokenName == string.Empty) { throw new InvalidTokenNameException("Empty string cannot be used as token name"); }
+            if (pairs.ContainsKey(tokenName)) { throw new InvalidTokenNameException($"The container already has a token with name '{tokenName}'"); }
+            pairs.Add(tokenName, value);
         }
     }
 

@@ -23,16 +23,16 @@ public class InterpolatedStringResolver
     public string FromPairs<T>(InterpolatedString interpolatedString, params KeyValuePair<string, T>[] pairs) =>
         FromContainer(interpolatedString, TokenValueContainerFactory.FromPairs(Settings, pairs));
 
-    public string FromTuples<T>(string interpolatedString, IEnumerable<(string, T)> tuples) =>
+    public string FromTuples<T>(string interpolatedString, IEnumerable<(string TokenName, T Value)> tuples) =>
         FromContainer(interpolatedString, TokenValueContainerFactory.FromTuples(Settings, tuples));
 
-    public string FromTuples<T>(string interpolatedString, params (string, T)[] tuples) =>
+    public string FromTuples<T>(string interpolatedString, params (string TokenName, T Value)[] tuples) =>
         FromContainer(interpolatedString, TokenValueContainerFactory.FromTuples(Settings, tuples));
 
-    public string FromTuples<T>(InterpolatedString interpolatedString, IEnumerable<(string, T)> tuples) =>
+    public string FromTuples<T>(InterpolatedString interpolatedString, IEnumerable<(string TokenName, T Value)> tuples) =>
         FromContainer(interpolatedString, TokenValueContainerFactory.FromTuples(Settings, tuples));
 
-    public string FromTuples<T>(InterpolatedString interpolatedString, params (string, T)[] tuples) =>
+    public string FromTuples<T>(InterpolatedString interpolatedString, params (string TokenName, T Value)[] tuples) =>
         FromContainer(interpolatedString, TokenValueContainerFactory.FromTuples(Settings, tuples));
 
     public string FromObject<T>(string interpolatedString, T containerObject) where T : class =>
