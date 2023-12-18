@@ -12,7 +12,7 @@ public class TokenValueContainerBuilder
         Settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
-    public void AddSingle<T>(string token, T value) =>
+    public void AddSingle<T>(string token, T value) where T : notnull =>
         innerList.Add(TokenValueContainerFactory.FromSingle(Settings, token, value));
 
     public void AddPairs<T>(IEnumerable<KeyValuePair<string, T>> pairs) =>
@@ -36,7 +36,7 @@ public class TokenValueContainerBuilder
     public void AddContainers(IEnumerable<ITokenValueContainer> containers) =>
         innerList.AddRange(containers);
 
-    public void AddNestedSingle<T>(string prefix, string token, T value) =>
+    public void AddNestedSingle<T>(string prefix, string token, T value) where T : notnull =>
         AddNestedContainer(prefix, TokenValueContainerFactory.FromSingle(Settings, token, value));
 
     public void AddNestedPairs<T>(string prefix, IEnumerable<KeyValuePair<string, T>> pairs) =>

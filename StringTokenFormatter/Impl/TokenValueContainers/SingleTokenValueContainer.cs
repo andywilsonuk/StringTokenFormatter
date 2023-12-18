@@ -3,7 +3,7 @@
 /// <summary>
 /// This Value Container matches a single token name.
 /// </summary>
-public class SingleTokenValueContainer<T> : ITokenValueContainer
+public class SingleTokenValueContainer<T> : ITokenValueContainer where T : notnull
 {
     private readonly string tokenName;
     private readonly T value;
