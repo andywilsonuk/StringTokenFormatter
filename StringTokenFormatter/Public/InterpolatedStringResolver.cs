@@ -6,7 +6,7 @@ public class InterpolatedStringResolver
 
     public InterpolatedStringResolver(StringTokenFormatterSettings settings)
     {
-        Settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
+        Settings = Guard.NotNull(settings, nameof(settings));
     }
 
     public string FromSingle<T>(string interpolatedString, string token, T value) where T : notnull =>

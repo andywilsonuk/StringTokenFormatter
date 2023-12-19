@@ -28,6 +28,6 @@ public class CompositeTokenValueContainerTests
     [Fact]
     public void Constructor_NullContainer_Throw()
     {
-        Assert.Throws<ArgumentNullException>(() => TokenValueContainerFactory.FromCombination(StringTokenFormatterSettings.Default, innerContainer1, null!));
+        Assert.Throws<ArgumentException>(() => TokenValueContainerFactory.FromCombination(StringTokenFormatterSettings.Default, innerContainer1, null!));
     }
 }

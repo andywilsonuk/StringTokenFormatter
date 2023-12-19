@@ -82,4 +82,26 @@ public class InterpolatedStringParserTests
         );
         Assert.Equal(settings, actual.Settings);
     }
+
+    [Fact]
+    public void Parse_WithBlankToken_Throws()
+    {
+        string source = "first {} third";
+        var settings = new StringTokenFormatterSettings {
+            Syntax = CommonTokenSyntax.Curly,
+        };
+
+        Assert.Throws<ParserException>(() => InterpolatedStringParser.Parse(source, settings));
+    }
+
+    [Fact]
+    public void Parse_WithInvalidSyntax_Throws()
+    {
+        string source = "first {a} third";
+        var settings = new StringTokenFormatterSettings {
+            Syntax = new TokenSyntax(string.Empty, "}", "{{"),
+        };
+
+        Assert.Throws<ArgumentException>(() => InterpolatedStringParser.Parse(source, settings));
+    }
 }

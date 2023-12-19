@@ -19,7 +19,7 @@ public static partial class InterpolatedStringParser
 
     public static InterpolatedString Parse(string source, IInterpolatedStringSettings settings)
     {
-        ValidateArgs.AssertNotNull(settings, nameof(settings));
+        ValidateSettings(settings);
         if (string.IsNullOrEmpty(source))
         {
             return new InterpolatedString(Array.Empty<InterpolatedStringSegment>(), settings);
@@ -27,6 +27,15 @@ public static partial class InterpolatedStringParser
         var matches = GetRegexMatches(source, settings.Syntax);
         var segments = ConvertToSegments(source, matches, settings.Syntax);
         return new InterpolatedString(segments.ToList().AsReadOnly(), settings);
+    }
+
+    private static void ValidateSettings(IInterpolatedStringSettings settings)
+    {
+        Guard.NotNull(settings, nameof(settings));
+        var syntax = settings.Syntax;
+        Guard.NotEmpty(syntax.Start, nameof(syntax.Start));
+        Guard.NotEmpty(syntax.End, nameof(syntax.End));
+        Guard.NotEmpty(syntax.EscapedStart, nameof(syntax.EscapedStart));
     }
 
     private static IEnumerable<Match> GetRegexMatches(string source, TokenSyntax syntax)
@@ -70,6 +79,7 @@ public static partial class InterpolatedStringParser
                 int middleLength = segment.Length - startToken.Length - endToken.Length;
                 string tripleWithoutMarkers = segment.Substring(startToken.Length, middleLength);
                 var split = GetTokenTripleRegex().Split(tripleWithoutMarkers);
+                if (split[1].Length == 0) { throw new ParserException($"Blank token marker matched: {segment}"); }
                 yield return new InterpolatedStringTokenSegment(segment, split[1], split[2], split[3]);
             }
             index = captureIndex + captureLength;

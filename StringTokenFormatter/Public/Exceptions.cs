@@ -40,3 +40,9 @@ public class TokenContainerException : StringTokenFormatterException
     {
     }
 }
+public class ParserException : StringTokenFormatterException
+{
+    public ParserException(string message) : base(message)
+    {
+    }
+}

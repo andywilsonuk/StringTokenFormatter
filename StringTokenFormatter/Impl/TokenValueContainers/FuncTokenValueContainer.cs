@@ -7,8 +7,8 @@ public sealed class FuncTokenValueContainer<T> : ITokenValueContainer
 
     internal FuncTokenValueContainer(ITokenValueContainerSettings settings, Func<string, T> func)
     {
-        this.settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
-        this.func = ValidateArgs.AssertNotNull(func, nameof(func));
+        this.settings = Guard.NotNull(settings, nameof(settings));
+        this.func = Guard.NotNull(func, nameof(func));
     }
 
     public TryGetResult TryMap(string token)
