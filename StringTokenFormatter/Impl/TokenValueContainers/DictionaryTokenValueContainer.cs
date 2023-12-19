@@ -4,15 +4,12 @@ using System.Collections.Frozen;
 
 namespace StringTokenFormatter.Impl;
 
-/// <summary>
-/// This Value Container uses key/value pairs for token matching.
-/// </summary>
-public class DictionaryTokenValueContainer<T> : ITokenValueContainer
+public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
 {
     private IDictionary<string, T> pairs;
     private readonly ITokenValueContainerSettings settings;
 
-    public DictionaryTokenValueContainer(IEnumerable<(string TokenName, T Value)> source, ITokenValueContainerSettings settings)
+    internal DictionaryTokenValueContainer(IEnumerable<(string TokenName, T Value)> source, ITokenValueContainerSettings settings)
     {
         if (source == null) { throw new ArgumentNullException(nameof(source)); }
         this.settings = settings ?? throw new ArgumentNullException(nameof(settings));

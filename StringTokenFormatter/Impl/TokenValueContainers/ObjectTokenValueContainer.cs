@@ -4,17 +4,13 @@ using System.Collections.Frozen;
 
 namespace StringTokenFormatter.Impl;
 
-/// <summary>
-/// Converts only the properties exposed by {T} (but not any members on derived classes) to a token value container.
-/// </summary>
-/// <typeparam name="T">A type indicating the exact properties that will be used for formatting.</typeparam>
-public class ObjectTokenValueContainer<T> : ITokenValueContainer where T : class
+public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T : class
 {
     private static readonly PropertyCache<T> propertyCache = new();
     private IDictionary<string, NonLockingLazy<object>> pairs;
     private readonly ITokenValueContainerSettings settings;
 
-    public ObjectTokenValueContainer(T source, ITokenValueContainerSettings settings)
+    internal ObjectTokenValueContainer(T source, ITokenValueContainerSettings settings)
     {
         if (source == null) { throw new ArgumentNullException(nameof(source)); }
         this.settings = settings ?? throw new ArgumentNullException(nameof(settings));

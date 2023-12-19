@@ -8,7 +8,7 @@ public class CompositeTokenValueContainerTests
     [Fact]
     public void TryMap_TokenInFirst_ReturnsSuccess()
     {
-        var container = new CompositeTokenValueContainer(new[] { innerContainer1, innerContainer2 }, StringTokenFormatterSettings.Default);
+        var container = TokenValueContainerFactory.FromCombination(StringTokenFormatterSettings.Default, innerContainer1, innerContainer2);
 
         var actual = container.TryMap("a");
 
@@ -18,7 +18,7 @@ public class CompositeTokenValueContainerTests
     [Fact]
     public void TryMap_TokenInSecond_ReturnsSuccess()
     {
-        var container = new CompositeTokenValueContainer(new[] { innerContainer1, innerContainer2 }, StringTokenFormatterSettings.Default);
+        var container = TokenValueContainerFactory.FromCombination(StringTokenFormatterSettings.Default, innerContainer1, innerContainer2);
 
         var actual = container.TryMap("b");
 

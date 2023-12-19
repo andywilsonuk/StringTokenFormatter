@@ -1,14 +1,11 @@
 ﻿namespace StringTokenFormatter.Impl;
 
-/// <summary>
-/// This Value Container searches child containers in order added for the provided token value and returns the first value found. 
-/// </summary>
-public class CompositeTokenValueContainer : ITokenValueContainer
+public sealed class CompositeTokenValueContainer : ITokenValueContainer
 {
     private readonly ITokenValueContainer[] containers;
     private readonly ITokenValueContainerSettings settings;
 
-    public CompositeTokenValueContainer(IEnumerable<ITokenValueContainer> containers, ITokenValueContainerSettings settings)
+    internal CompositeTokenValueContainer(IEnumerable<ITokenValueContainer> containers, ITokenValueContainerSettings settings)
     {
         if (containers == null) { throw new ArgumentNullException(nameof(containers)); }
         this.containers = containers.Where(x => x is { }).ToArray();

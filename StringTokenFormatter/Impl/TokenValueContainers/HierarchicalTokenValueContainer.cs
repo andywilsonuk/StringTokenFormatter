@@ -1,15 +1,12 @@
 namespace StringTokenFormatter.Impl;
 
-/// <summary>
-/// This Value Container attempts to match the prefix to the supplied token and passes the remainder to the inner container for matching. 
-/// </summary>
-public class HierarchicalTokenValueContainer : ITokenValueContainer
+public sealed class HierarchicalTokenValueContainer : ITokenValueContainer
 {
     private readonly string prefix;
     private readonly ITokenValueContainer container;
     private readonly IHierarchicalTokenValueContainerSettings settings;
 
-    public HierarchicalTokenValueContainer(string prefix, ITokenValueContainer container, IHierarchicalTokenValueContainerSettings settings)
+    internal HierarchicalTokenValueContainer(string prefix, ITokenValueContainer container, IHierarchicalTokenValueContainerSettings settings)
     {
         if (prefix.Length == 0) { throw new ArgumentNullException(nameof(prefix)); }
         this.prefix = prefix;

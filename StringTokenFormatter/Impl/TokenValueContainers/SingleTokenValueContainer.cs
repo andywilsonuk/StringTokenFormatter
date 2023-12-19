@@ -1,15 +1,12 @@
 ﻿namespace StringTokenFormatter.Impl;
 
-/// <summary>
-/// This Value Container matches a single token name.
-/// </summary>
-public class SingleTokenValueContainer<T> : ITokenValueContainer where T : notnull
+public sealed class SingleTokenValueContainer<T> : ITokenValueContainer where T : notnull
 {
     private readonly string tokenName;
     private readonly T value;
     private readonly ITokenValueContainerSettings settings;
 
-    public SingleTokenValueContainer(string tokenName, T value, ITokenValueContainerSettings settings)
+    internal SingleTokenValueContainer(string tokenName, T value, ITokenValueContainerSettings settings)
     {
         if (string.IsNullOrEmpty(tokenName)) { throw new InvalidTokenNameException("Empty string cannot be used as token name"); }
         this.tokenName = tokenName;

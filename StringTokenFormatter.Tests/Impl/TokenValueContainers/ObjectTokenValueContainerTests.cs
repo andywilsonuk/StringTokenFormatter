@@ -14,7 +14,7 @@ public class ObjectTokenValueContainerTests
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new ObjectTokenValueContainer<TestObject>(source, settings);
+        var container = TokenValueContainerFactory.FromObject(settings, source);
 
         var actual = container.TryMap("a");
 
@@ -31,7 +31,7 @@ public class ObjectTokenValueContainerTests
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new ObjectTokenValueContainer<TestObject>(source, settings);
+        var container = TokenValueContainerFactory.FromObject(settings, source);
 
         var actual = container.TryMap("a");
 
@@ -48,7 +48,7 @@ public class ObjectTokenValueContainerTests
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNull,
         };
-        var container = new ObjectTokenValueContainer<TestObject>(source, settings);
+        var container = TokenValueContainerFactory.FromObject(settings, source);
 
         var actual = container.TryMap("a");
 
@@ -66,7 +66,7 @@ public class ObjectTokenValueContainerTests
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new ObjectTokenValueContainer<TestObject>(source, settings);
+        var container = TokenValueContainerFactory.FromObject(settings, source);
         container.Frozen();
 
         var actual = container.TryMap("A");

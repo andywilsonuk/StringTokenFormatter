@@ -12,7 +12,7 @@ public class SingleTokenValueContainerTests
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new SingleTokenValueContainer<int>(tokenName, value, settings);
+        var container = TokenValueContainerFactory.FromSingle(settings, tokenName, value);
 
         var actual = container.TryMap("A");
 
@@ -29,7 +29,7 @@ public class SingleTokenValueContainerTests
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new SingleTokenValueContainer<int>(tokenName, value, settings);
+        var container = TokenValueContainerFactory.FromSingle(settings, tokenName, value);
 
         var actual = container.TryMap("A");
 
@@ -46,7 +46,7 @@ public class SingleTokenValueContainerTests
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNullOrEmpty,
         };
-        var container = new SingleTokenValueContainer<string>(tokenName, value, settings);
+        var container = TokenValueContainerFactory.FromSingle(settings, tokenName, value);
 
         var actual = container.TryMap("a");
 
@@ -64,6 +64,6 @@ public class SingleTokenValueContainerTests
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
 
-        Assert.Throws<InvalidTokenNameException>(() => new SingleTokenValueContainer<int>(tokenName, value, settings));
+        Assert.Throws<InvalidTokenNameException>(() => TokenValueContainerFactory.FromSingle(settings, tokenName, value));
     }
 }

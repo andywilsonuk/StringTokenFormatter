@@ -15,7 +15,7 @@ public class DictionaryTokenValueContainerTests
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new DictionaryTokenValueContainer<int?>(pairs, settings);
+        var container = TokenValueContainerFactory.FromTuples(settings, pairs);
 
         var actual = container.TryMap("A");
 
@@ -35,7 +35,7 @@ public class DictionaryTokenValueContainerTests
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new DictionaryTokenValueContainer<int?>(pairs, settings);
+        var container = TokenValueContainerFactory.FromTuples(settings, pairs);
 
         var actual = container.TryMap("A");
 
@@ -55,7 +55,7 @@ public class DictionaryTokenValueContainerTests
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNull,
         };
-        var container = new DictionaryTokenValueContainer<int?>(pairs, settings);
+        var container = TokenValueContainerFactory.FromTuples(settings, pairs);
 
         var actual = container.TryMap("a");
 
@@ -75,7 +75,7 @@ public class DictionaryTokenValueContainerTests
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new DictionaryTokenValueContainer<int?>(pairs, settings);
+        var container = TokenValueContainerFactory.FromTuples(settings, pairs);
 
         var actual = container.TryMap("a");
 
@@ -95,7 +95,7 @@ public class DictionaryTokenValueContainerTests
             NameComparer = StringComparer.OrdinalIgnoreCase,
         };
 
-        Assert.Throws<InvalidTokenNameException>(() => new DictionaryTokenValueContainer<int?>(pairs, settings));
+        Assert.Throws<InvalidTokenNameException>(() => TokenValueContainerFactory.FromTuples(settings, pairs));
     }
     
     [Fact]
@@ -111,7 +111,7 @@ public class DictionaryTokenValueContainerTests
             NameComparer = StringComparer.Ordinal,
         };
 
-        Assert.Throws<InvalidTokenNameException>(() => new DictionaryTokenValueContainer<int?>(pairs, settings));
+        Assert.Throws<InvalidTokenNameException>(() => TokenValueContainerFactory.FromTuples(settings, pairs));
     }
 
 #if NET8_0_OR_GREATER
@@ -128,13 +128,12 @@ public class DictionaryTokenValueContainerTests
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new DictionaryTokenValueContainer<int?>(pairs, settings);
+        var container = TokenValueContainerFactory.FromTuples(settings, pairs);
         container.Frozen();
 
         var actual = container.TryMap("a");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = 1 }, actual);
     }
-
 #endif
 }
