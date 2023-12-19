@@ -11,17 +11,28 @@ public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
 
     internal DictionaryTokenValueContainer(ITokenValueContainerSettings settings, IEnumerable<(string TokenName, T Value)> source)
     {
-        if (source == null) { throw new ArgumentNullException(nameof(source)); }
-        this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        this.settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
+        this.pairs = Populate(ValidateArgs.AssertNotNull(source, nameof(source)));
+    }
 
-        pairs = new Dictionary<string, T>(settings.NameComparer);
-        foreach (var pair in source)
+    internal DictionaryTokenValueContainer(ITokenValueContainerSettings settings, IEnumerable<KeyValuePair<string, T>> source)
+    {
+        this.settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
+        ValidateArgs.AssertNotNull(source, nameof(source));
+        this.pairs = Populate(source.Select(x => (x.Key, x.Value)));
+    }
+
+    private Dictionary<string, T> Populate(IEnumerable<(string TokenName, T Value)> source)
+    {
+        var d = new Dictionary<string, T>(settings.NameComparer);
+        foreach (var (tokenName, value) in source)
         {
-            var (tokenName, value) = pair;
-            if (tokenName == string.Empty) { throw new InvalidTokenNameException("Empty string cannot be used as token name"); }
-            if (pairs.ContainsKey(tokenName)) { throw new InvalidTokenNameException($"The container already has a token with name '{tokenName}'"); }
-            pairs.Add(tokenName, value);
+            if (d.ContainsKey(tokenName)) { throw new TokenContainerException($"The container already has a token with name '{tokenName}'"); }
+            d.Add(tokenName, value);
         }
+        if (d.ContainsKey(string.Empty)) { throw new TokenContainerException("Empty string cannot be used as token name"); }
+        if (d.Count == 0) { throw new TokenContainerException("The container is empty"); }
+        return d;
     }
 
     public TryGetResult TryMap(string token) =>

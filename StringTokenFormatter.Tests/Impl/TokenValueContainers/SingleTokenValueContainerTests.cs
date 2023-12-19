@@ -64,6 +64,6 @@ public class SingleTokenValueContainerTests
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
 
-        Assert.Throws<InvalidTokenNameException>(() => TokenValueContainerFactory.FromSingle(settings, tokenName, value));
+        Assert.Throws<TokenContainerException>(() => TokenValueContainerFactory.FromSingle(settings, tokenName, value));
     }
 }

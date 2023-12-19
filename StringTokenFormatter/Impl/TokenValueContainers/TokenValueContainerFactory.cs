@@ -5,7 +5,7 @@ public static class TokenValueContainerFactory
     /// <summary>
     /// Uses key/value pairs for token matching.
     /// </summary>
-    public static DictionaryTokenValueContainer<T> FromPairs<T>(ITokenValueContainerSettings settings, IEnumerable<KeyValuePair<string, T>> source) => new(settings, source.Select(x => (x.Key, x.Value)));
+    public static DictionaryTokenValueContainer<T> FromPairs<T>(ITokenValueContainerSettings settings, IEnumerable<KeyValuePair<string, T>> source) => new(settings, source);
     /// <summary>
     /// Tuple key/value pairs for token matching.
     /// </summary>

@@ -34,9 +34,9 @@ public class MissingValueConverterException : StringTokenFormatterException
     {
     }
 }
-public class InvalidTokenNameException : StringTokenFormatterException
+public class TokenContainerException : StringTokenFormatterException
 {
-    public InvalidTokenNameException(string message) : base(message)
+    public TokenContainerException(string message) : base(message)
     {
     }
 }

@@ -12,8 +12,8 @@ public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T 
 
     internal ObjectTokenValueContainer(ITokenValueContainerSettings settings, T source)
     {
-        if (source == null) { throw new ArgumentNullException(nameof(source)); }
-        this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        this.settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
+        ValidateArgs.AssertNotNull(source, nameof(source));
 
         pairs = propertyCache.GetPairs().ToDictionary(
             p => p.Property.Name,

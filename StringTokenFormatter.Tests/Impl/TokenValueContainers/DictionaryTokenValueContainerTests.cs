@@ -95,7 +95,7 @@ public class DictionaryTokenValueContainerTests
             NameComparer = StringComparer.OrdinalIgnoreCase,
         };
 
-        Assert.Throws<InvalidTokenNameException>(() => TokenValueContainerFactory.FromTuples(settings, pairs));
+        Assert.Throws<TokenContainerException>(() => TokenValueContainerFactory.FromTuples(settings, pairs));
     }
     
     [Fact]
@@ -111,8 +111,40 @@ public class DictionaryTokenValueContainerTests
             NameComparer = StringComparer.Ordinal,
         };
 
-        Assert.Throws<InvalidTokenNameException>(() => TokenValueContainerFactory.FromTuples(settings, pairs));
+        Assert.Throws<TokenContainerException>(() => TokenValueContainerFactory.FromTuples(settings, pairs));
     }
+
+    [Fact]
+    public void Constructor_EmptySource_Throws()
+    {
+        var pairs = Array.Empty<(string, int?)>();
+        var settings = new StringTokenFormatterSettings
+        {
+            NameComparer = StringComparer.Ordinal,
+        };
+
+        Assert.Throws<TokenContainerException>(() => TokenValueContainerFactory.FromTuples(settings, pairs));
+    }
+
+    [Fact]
+    public void TryMap_UsingKeyValuePairs_ReturnsSuccess()
+    {
+        var pairs = new[]
+        {
+            new KeyValuePair<string, int>("a", 1),
+            new KeyValuePair<string, int>("b", 2),
+        };
+        var settings = new StringTokenFormatterSettings
+        {
+            TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
+        };
+        var container = TokenValueContainerFactory.FromPairs(settings, pairs);
+
+        var actual = container.TryMap("a");
+
+        Assert.Equal(new TryGetResult { IsSuccess = true, Value = 1 }, actual);
+    }
+
 
 #if NET8_0_OR_GREATER
     [Fact]

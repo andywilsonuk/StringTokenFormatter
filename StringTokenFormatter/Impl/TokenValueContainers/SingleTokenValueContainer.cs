@@ -8,10 +8,10 @@ public sealed class SingleTokenValueContainer<T> : ITokenValueContainer where T 
 
     internal SingleTokenValueContainer(ITokenValueContainerSettings settings, string tokenName, T value)
     {
-        if (string.IsNullOrEmpty(tokenName)) { throw new InvalidTokenNameException("Empty string cannot be used as token name"); }
+        this.settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
+        if (string.IsNullOrEmpty(tokenName)) { throw new TokenContainerException("Empty string cannot be used as token name"); }
         this.tokenName = tokenName;
         this.value = value;
-        this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
     public TryGetResult TryMap(string token) =>

@@ -7,9 +7,9 @@ public sealed class CompositeTokenValueContainer : ITokenValueContainer
 
     internal CompositeTokenValueContainer(ITokenValueContainerSettings settings, IEnumerable<ITokenValueContainer> containers)
     {
-        if (containers == null) { throw new ArgumentNullException(nameof(containers)); }
+        this.settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
+        ValidateArgs.AssertNotNull(containers, nameof(containers));
         this.containers = containers.Where(x => x is { }).ToArray();
-        this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
     public TryGetResult TryMap(string token)

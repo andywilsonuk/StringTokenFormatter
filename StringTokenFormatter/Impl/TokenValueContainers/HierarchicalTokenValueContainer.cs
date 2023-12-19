@@ -8,10 +8,10 @@ public sealed class HierarchicalTokenValueContainer : ITokenValueContainer
 
     internal HierarchicalTokenValueContainer(IHierarchicalTokenValueContainerSettings settings, string prefix, ITokenValueContainer container)
     {
-        if (prefix.Length == 0) { throw new ArgumentNullException(nameof(prefix)); }
+        this.settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
+        if (string.IsNullOrEmpty(prefix)) { throw new ArgumentNullException(nameof(prefix)); }
         this.prefix = prefix;
-        this.container = container ?? throw new ArgumentNullException(nameof(container));
-        this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        this.container = ValidateArgs.AssertNotNull(container, nameof(container));
     }
 
     public TryGetResult TryMap(string token)
