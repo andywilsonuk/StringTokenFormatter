@@ -12,16 +12,16 @@ public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
     internal DictionaryTokenValueContainer(ITokenValueContainerSettings settings, IEnumerable<(string TokenName, T Value)> source)
     {
         this.settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
-        this.pairs = Populate(ValidateArgs.AssertNotNull(source, nameof(source)));
+        this.pairs = CreateDictionary(ValidateArgs.AssertNotNull(source, nameof(source)));
     }
 
     internal DictionaryTokenValueContainer(ITokenValueContainerSettings settings, IEnumerable<KeyValuePair<string, T>> source)
     {
         this.settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
-        this.pairs = Populate(ValidateArgs.AssertNotNull(source, nameof(source)).Select(x => (x.Key, x.Value)));
+        this.pairs = CreateDictionary(ValidateArgs.AssertNotNull(source, nameof(source)).Select(x => (x.Key, x.Value)));
     }
 
-    private Dictionary<string, T> Populate(IEnumerable<(string TokenName, T Value)> source)
+    private Dictionary<string, T> CreateDictionary(IEnumerable<(string TokenName, T Value)> source)
     {
         var d = new Dictionary<string, T>(settings.NameComparer);
         foreach (var (tokenName, value) in source)

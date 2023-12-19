@@ -55,6 +55,18 @@ public class ObjectTokenValueContainerTests
         Assert.Equal(default, actual);
     }
 
+    [Fact]
+    public void Constructor_EmptySource_Throws()
+    {
+        var source = new {};
+        var settings = new StringTokenFormatterSettings
+        {
+            NameComparer = StringComparer.Ordinal,
+        };
+
+        Assert.Throws<TokenContainerException>(() => TokenValueContainerFactory.FromObject(settings, source));
+    }
+
 #if NET8_0_OR_GREATER
     [Fact]
     public void TryMap_FrozenDictionary_ReturnsSuccess()

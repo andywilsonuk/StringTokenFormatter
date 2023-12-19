@@ -8,17 +8,23 @@ public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T 
 {
     private static readonly PropertyCache<T> propertyCache = new();
     private readonly ITokenValueContainerSettings settings;
-    private IDictionary<string, NonLockingLazy<object>> pairs;
+    private IDictionary<string, NonLockingLazy> pairs;
 
     internal ObjectTokenValueContainer(ITokenValueContainerSettings settings, T source)
     {
         this.settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
-        ValidateArgs.AssertNotNull(source, nameof(source));
+        this.pairs = CreateDictionary(ValidateArgs.AssertNotNull(source, nameof(source)));
+    }
 
-        pairs = propertyCache.GetPairs().ToDictionary(
-            p => p.Property.Name,
-            p => new NonLockingLazy<object>(() => p.Getter(source)),
-            settings.NameComparer);
+    private Dictionary<string, NonLockingLazy> CreateDictionary(T source)
+    {
+        var d = new Dictionary<string, NonLockingLazy>(settings.NameComparer);
+        foreach (var (propertyName, getValue) in propertyCache.GetPairs())
+        {
+            d.Add(propertyName, new NonLockingLazy(() => getValue(source)));
+        }
+        if (d.Count == 0) { throw new TokenContainerException("The container is empty"); }
+        return d;
     }
 
     public TryGetResult TryMap(string token) =>
