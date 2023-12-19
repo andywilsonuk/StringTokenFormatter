@@ -7,4 +7,10 @@ internal static class ValidateArgs
         if (source == null) { throw new ArgumentNullException(sourceName); }        
         return source;
     }
+
+    public static string AssertNotEmpty(string source, string sourceName)
+    {
+        if (string.IsNullOrEmpty(source)) { throw new ArgumentNullException(sourceName, "String cannot be null or empty"); }        
+        return source;
+    }
 }

@@ -2,15 +2,14 @@
 
 public sealed class SingleTokenValueContainer<T> : ITokenValueContainer where T : notnull
 {
+    private readonly ITokenValueContainerSettings settings;
     private readonly string tokenName;
     private readonly T value;
-    private readonly ITokenValueContainerSettings settings;
 
     internal SingleTokenValueContainer(ITokenValueContainerSettings settings, string tokenName, T value)
     {
         this.settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
-        if (string.IsNullOrEmpty(tokenName)) { throw new TokenContainerException("Empty string cannot be used as token name"); }
-        this.tokenName = tokenName;
+        this.tokenName = ValidateArgs.AssertNotEmpty(tokenName, nameof(tokenName));
         this.value = value;
     }
 

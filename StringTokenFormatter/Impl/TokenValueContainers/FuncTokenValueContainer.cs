@@ -2,8 +2,8 @@
 
 public sealed class FuncTokenValueContainer<T> : ITokenValueContainer
 {
-    private readonly Func<string, T> func;
     private readonly ITokenValueContainerSettings settings;
+    private readonly Func<string, T> func;
 
     internal FuncTokenValueContainer(ITokenValueContainerSettings settings, Func<string, T> func)
     {

@@ -6,8 +6,8 @@ namespace StringTokenFormatter.Impl;
 
 public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
 {
-    private IDictionary<string, T> pairs;
     private readonly ITokenValueContainerSettings settings;
+    private IDictionary<string, T> pairs;
 
     internal DictionaryTokenValueContainer(ITokenValueContainerSettings settings, IEnumerable<(string TokenName, T Value)> source)
     {
@@ -18,8 +18,7 @@ public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
     internal DictionaryTokenValueContainer(ITokenValueContainerSettings settings, IEnumerable<KeyValuePair<string, T>> source)
     {
         this.settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
-        ValidateArgs.AssertNotNull(source, nameof(source));
-        this.pairs = Populate(source.Select(x => (x.Key, x.Value)));
+        this.pairs = Populate(ValidateArgs.AssertNotNull(source, nameof(source)).Select(x => (x.Key, x.Value)));
     }
 
     private Dictionary<string, T> Populate(IEnumerable<(string TokenName, T Value)> source)

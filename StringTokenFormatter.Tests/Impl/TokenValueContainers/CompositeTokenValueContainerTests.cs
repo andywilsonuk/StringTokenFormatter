@@ -24,4 +24,10 @@ public class CompositeTokenValueContainerTests
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = "2" }, actual);
     }
+
+    [Fact]
+    public void Constructor_NullContainer_Throw()
+    {
+        Assert.Throws<ArgumentNullException>(() => TokenValueContainerFactory.FromCombination(StringTokenFormatterSettings.Default, innerContainer1, null!));
+    }
 }

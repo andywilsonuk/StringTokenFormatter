@@ -6,8 +6,8 @@ public static class InterpolatedStringExpander
 {
     public static string Expand(InterpolatedString interpolatedString, ITokenValueContainer container)
     {
-        if (interpolatedString == null) { throw new ArgumentNullException(nameof(interpolatedString)); }
-        if (container == null) { throw new ArgumentNullException(nameof(container)); }
+        ValidateArgs.AssertNotNull(interpolatedString, nameof(interpolatedString));
+        ValidateArgs.AssertNotNull(container, nameof(container));
 
         var settings = interpolatedString.Settings;
         var builder = new StringBuilder();

@@ -7,8 +7,8 @@ namespace StringTokenFormatter.Impl;
 public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T : class
 {
     private static readonly PropertyCache<T> propertyCache = new();
-    private IDictionary<string, NonLockingLazy<object>> pairs;
     private readonly ITokenValueContainerSettings settings;
+    private IDictionary<string, NonLockingLazy<object>> pairs;
 
     internal ObjectTokenValueContainer(ITokenValueContainerSettings settings, T source)
     {

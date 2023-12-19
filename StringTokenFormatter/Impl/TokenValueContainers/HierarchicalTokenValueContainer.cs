@@ -2,15 +2,14 @@ namespace StringTokenFormatter.Impl;
 
 public sealed class HierarchicalTokenValueContainer : ITokenValueContainer
 {
+    private readonly IHierarchicalTokenValueContainerSettings settings;
     private readonly string prefix;
     private readonly ITokenValueContainer container;
-    private readonly IHierarchicalTokenValueContainerSettings settings;
 
     internal HierarchicalTokenValueContainer(IHierarchicalTokenValueContainerSettings settings, string prefix, ITokenValueContainer container)
     {
         this.settings = ValidateArgs.AssertNotNull(settings, nameof(settings));
-        if (string.IsNullOrEmpty(prefix)) { throw new ArgumentNullException(nameof(prefix)); }
-        this.prefix = prefix;
+        this.prefix = ValidateArgs.AssertNotEmpty(prefix, nameof(prefix));
         this.container = ValidateArgs.AssertNotNull(container, nameof(container));
     }
 
