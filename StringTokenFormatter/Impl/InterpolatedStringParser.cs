@@ -19,7 +19,7 @@ public static partial class InterpolatedStringParser
 
     public static InterpolatedString Parse(string source, IInterpolatedStringSettings settings)
     {
-        if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
+        ValidateArgs.AssertNotNull(settings, nameof(settings));
         if (string.IsNullOrEmpty(source))
         {
             return new InterpolatedString(Array.Empty<InterpolatedStringSegment>(), settings);
