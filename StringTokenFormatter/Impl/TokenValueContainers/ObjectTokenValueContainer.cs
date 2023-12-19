@@ -10,7 +10,7 @@ public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T 
     private IDictionary<string, NonLockingLazy<object>> pairs;
     private readonly ITokenValueContainerSettings settings;
 
-    internal ObjectTokenValueContainer(T source, ITokenValueContainerSettings settings)
+    internal ObjectTokenValueContainer(ITokenValueContainerSettings settings, T source)
     {
         if (source == null) { throw new ArgumentNullException(nameof(source)); }
         this.settings = settings ?? throw new ArgumentNullException(nameof(settings));

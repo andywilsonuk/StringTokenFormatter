@@ -6,7 +6,7 @@ public sealed class SingleTokenValueContainer<T> : ITokenValueContainer where T 
     private readonly T value;
     private readonly ITokenValueContainerSettings settings;
 
-    internal SingleTokenValueContainer(string tokenName, T value, ITokenValueContainerSettings settings)
+    internal SingleTokenValueContainer(ITokenValueContainerSettings settings, string tokenName, T value)
     {
         if (string.IsNullOrEmpty(tokenName)) { throw new InvalidTokenNameException("Empty string cannot be used as token name"); }
         this.tokenName = tokenName;
@@ -16,6 +16,4 @@ public sealed class SingleTokenValueContainer<T> : ITokenValueContainer where T 
 
     public TryGetResult TryMap(string token) =>
         settings.NameComparer.Equals(token, tokenName) && settings.TokenResolutionPolicy.Satisfies(value) ? TryGetResult.Success(value) : default;
-
-    public static SingleTokenValueContainer<T2> From<T2>(string tokenName, T2 value, ITokenValueContainerSettings settings) where T2 : notnull => new(tokenName, value, settings);
 }

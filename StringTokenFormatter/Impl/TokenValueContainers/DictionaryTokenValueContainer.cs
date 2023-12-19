@@ -9,7 +9,7 @@ public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
     private IDictionary<string, T> pairs;
     private readonly ITokenValueContainerSettings settings;
 
-    internal DictionaryTokenValueContainer(IEnumerable<(string TokenName, T Value)> source, ITokenValueContainerSettings settings)
+    internal DictionaryTokenValueContainer(ITokenValueContainerSettings settings, IEnumerable<(string TokenName, T Value)> source)
     {
         if (source == null) { throw new ArgumentNullException(nameof(source)); }
         this.settings = settings ?? throw new ArgumentNullException(nameof(settings));

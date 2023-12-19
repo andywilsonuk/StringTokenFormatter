@@ -5,7 +5,7 @@ public sealed class CompositeTokenValueContainer : ITokenValueContainer
     private readonly ITokenValueContainer[] containers;
     private readonly ITokenValueContainerSettings settings;
 
-    internal CompositeTokenValueContainer(IEnumerable<ITokenValueContainer> containers, ITokenValueContainerSettings settings)
+    internal CompositeTokenValueContainer(ITokenValueContainerSettings settings, IEnumerable<ITokenValueContainer> containers)
     {
         if (containers == null) { throw new ArgumentNullException(nameof(containers)); }
         this.containers = containers.Where(x => x is { }).ToArray();

@@ -6,7 +6,7 @@ public sealed class HierarchicalTokenValueContainer : ITokenValueContainer
     private readonly ITokenValueContainer container;
     private readonly IHierarchicalTokenValueContainerSettings settings;
 
-    internal HierarchicalTokenValueContainer(string prefix, ITokenValueContainer container, IHierarchicalTokenValueContainerSettings settings)
+    internal HierarchicalTokenValueContainer(IHierarchicalTokenValueContainerSettings settings, string prefix, ITokenValueContainer container)
     {
         if (prefix.Length == 0) { throw new ArgumentNullException(nameof(prefix)); }
         this.prefix = prefix;

@@ -5,7 +5,7 @@ public sealed class FuncTokenValueContainer<T> : ITokenValueContainer
     private readonly Func<string, T> func;
     private readonly ITokenValueContainerSettings settings;
 
-    internal FuncTokenValueContainer(Func<string, T> func, ITokenValueContainerSettings settings)
+    internal FuncTokenValueContainer(ITokenValueContainerSettings settings, Func<string, T> func)
     {
         this.func = func ?? throw new ArgumentNullException(nameof(func));
         this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
