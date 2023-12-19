@@ -16,8 +16,8 @@ public class InterpolatedStringTests
         
         var actual = interpolatedString.Tokens();
 
-        var expected = new HashSet<string> { "a", "b" };
-        Assert.Equivalent(expected, actual);
+        var expected = new HashSet<string> { "a", "A", "b" };
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
@@ -27,13 +27,13 @@ public class InterpolatedStringTests
         {
             new InterpolatedStringTokenSegment("{if>a}", "if>a", string.Empty, string.Empty),
             new InterpolatedStringTokenSegment("{b}", "b", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{endif>a}", "endif>a", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{ifend>a}", "ifend>a", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         
         var actual = interpolatedString.Tokens();
 
         var expected = new HashSet<string> { "a", "b" };
-        Assert.Equivalent(expected, actual);
+        Assert.Equal(expected, actual);
     }
 }

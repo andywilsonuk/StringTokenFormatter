@@ -6,20 +6,25 @@ public static class InterpolatedStringExtensions {
     /// <summary>
     /// Returns the distinct tokens present within the interpolatedString. Note: this is faithful to the original casing of the token.
     /// </summary>
-    public static HashSet<string> Tokens(this InterpolatedString interpolatedString) =>
-        new(interpolatedString.Segments.OfType<InterpolatedStringTokenSegment>().Select(x =>
+    public static HashSet<string> Tokens(this InterpolatedString interpolatedString)
+    {
+        string conditionStartToken = interpolatedString.Settings.ConditionStartToken;
+        string conditionEndToken = interpolatedString.Settings.ConditionEndToken;
+
+        return new(interpolatedString.Segments.OfType<InterpolatedStringTokenSegment>().Select(x =>
         {
             string tokenName = x.Token;
-            if (tokenName.StartsWith(interpolatedString.Settings.ConditionStartToken, StringComparison.Ordinal))
+            if (tokenName.StartsWith(conditionStartToken, StringComparison.Ordinal))
             {
-                return tokenName.Substring(interpolatedString.Settings.ConditionStartToken.Length);
+                return tokenName.Substring(conditionStartToken.Length);
             }
-            if (tokenName.StartsWith(interpolatedString.Settings.ConditionEndToken, StringComparison.Ordinal))
+            if (tokenName.StartsWith(conditionEndToken, StringComparison.Ordinal))
             {
-                return tokenName.Substring(interpolatedString.Settings.ConditionEndToken.Length);
+                return tokenName.Substring(conditionEndToken.Length);
             }
             return tokenName;
         }));
+    }
 }
 
 public record InterpolatedStringSegment(string Raw);
