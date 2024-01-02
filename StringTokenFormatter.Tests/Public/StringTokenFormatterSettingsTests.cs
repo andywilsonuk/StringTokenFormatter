@@ -22,7 +22,7 @@ public class StringTokenFormatterSettingsTests : IDisposable
         {
             ValueConverters = new List<TokenValueConverter>
             {
-                TokenValueConverters.FromPrimitives(),
+                TokenValueConverters.PrimitiveConverter(),
             }
         };
 
@@ -39,8 +39,8 @@ public class StringTokenFormatterSettingsTests : IDisposable
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
             ValueConverters = new List<TokenValueConverter>
             {
-                TokenValueConverters.FromNull(),
-                TokenValueConverters.FromPrimitives(),
+                TokenValueConverters.NullConverter(),
+                TokenValueConverters.PrimitiveConverter(),
             },
             FormatProvider = CultureInfo.InvariantCulture,
         };

@@ -115,13 +115,13 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
 
     private static readonly IReadOnlyCollection<TokenValueConverter> defaultValueConverters = new List<TokenValueConverter>
     {
-        TokenValueConverters.FromNull(),
-        TokenValueConverters.FromPrimitives(),
-        TokenValueConverters.FromLazy<string>(),
-        TokenValueConverters.FromLazy<object>(),
-        TokenValueConverters.FromFunc<string>(),
-        TokenValueConverters.FromFunc<object>(),
-        TokenValueConverters.FromTokenFunc<string>(),
-        TokenValueConverters.FromTokenFunc<object>()
+        TokenValueConverters.NullConverter(),
+        TokenValueConverters.PrimitiveConverter(),
+        TokenValueConverters.LazyConverter<string>(),
+        TokenValueConverters.LazyConverter<object>(),
+        TokenValueConverters.FuncConverter<string>(),
+        TokenValueConverters.FuncConverter<object>(),
+        TokenValueConverters.TokenFuncConverter<string>(),
+        TokenValueConverters.TokenFuncConverter<object>()
     }.AsReadOnly();
 }
