@@ -13,5 +13,6 @@ public static class TokenValueConverters
     public static TokenValueConverter FuncConverter<T>() => (v, _n) => v is Func<T> func ? TryGetResult.Success(func()) : default;
 
     public static TokenValueConverter TokenFuncConverter<T>() => (v, n) => v is Func<string, T> func ? TryGetResult.Success(func(n)) : default;
-    public static TokenValueConverter ToStringConverter() => (v, _n) => v is not null ? TryGetResult.Success(v.ToString()) : default;
+    
+    public static TokenValueConverter ToStringConverter<T>() => (v, _n) => v is not null && v is T ? TryGetResult.Success(v.ToString()) : default;
 }

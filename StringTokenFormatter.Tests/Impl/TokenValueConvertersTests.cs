@@ -104,17 +104,26 @@ public class TokenValueConvertersTests
     [Fact]
     public void ToStringConverter_IsDecimal_ReturnsSuccess()
     {
-        object? source = 1;
-        var actual = TokenValueConverters.ToStringConverter()(source, string.Empty);
+        int? source = 1;
+        var actual = TokenValueConverters.ToStringConverter<int>()(source, string.Empty);
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = source.ToString() }, actual);
+    }
+
+     [Fact]
+    public void ToStringConverter_IsWrongType_ReturnsDefault()
+    {
+        int? source = null;
+        var actual = TokenValueConverters.ToStringConverter<decimal>()(source, string.Empty);
+
+        Assert.Equal(default, actual);
     }
 
     [Fact]
     public void ToStringConverter_IsNull_ReturnsDefault()
     {
         object? source = null;
-        var actual = TokenValueConverters.ToStringConverter()(source, string.Empty);
+        var actual = TokenValueConverters.ToStringConverter<int>()(source, string.Empty);
 
         Assert.Equal(default, actual);
     }
