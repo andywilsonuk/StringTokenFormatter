@@ -10,7 +10,7 @@ public class InterpolatedStringTests
             new InterpolatedStringTokenSegment("{a}", "a", string.Empty, string.Empty),
             new InterpolatedStringTokenSegment("{A}", "A", string.Empty, string.Empty),
             new InterpolatedStringTokenSegment("{b}", "b", string.Empty, string.Empty),
-            new InterpolatedStringSegment("c"),
+            new InterpolatedStringLiteralSegment("c"),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         

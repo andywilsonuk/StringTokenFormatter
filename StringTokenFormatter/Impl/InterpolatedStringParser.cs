@@ -64,15 +64,15 @@ public static partial class InterpolatedStringParser
 
             if (index != captureIndex)
             {
-                yield return new InterpolatedStringSegment(source.Substring(index, captureIndex - index));
+                yield return new InterpolatedStringLiteralSegment(source.Substring(index, captureIndex - index));
             }
             if (segment == escapedStartToken)
             {
-                yield return new InterpolatedStringSegment(startToken);
+                yield return new InterpolatedStringLiteralSegment(startToken);
             }
             else if (!segment.StartsWith(startToken, StringComparison.Ordinal))
             {
-                yield return new InterpolatedStringSegment(segment);
+                yield return new InterpolatedStringLiteralSegment(segment);
             }
             else
             {
@@ -86,7 +86,7 @@ public static partial class InterpolatedStringParser
         }
         if (index < source.Length)
         {
-            yield return new InterpolatedStringSegment(source.Substring(index));
+            yield return new InterpolatedStringLiteralSegment(source.Substring(index));
         }
     }
 }

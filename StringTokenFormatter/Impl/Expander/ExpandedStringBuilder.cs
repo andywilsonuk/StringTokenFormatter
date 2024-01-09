@@ -6,7 +6,6 @@ public class ExpandedStringBuilder
 {
     private readonly StringBuilder sb = new();
     private readonly IFormatProvider formatProvider;
-    private int disabledCount = 0;
 
     public ExpandedStringBuilder(IFormatProvider formatProvider)
     {
@@ -15,19 +14,16 @@ public class ExpandedStringBuilder
 
     public void AppendLiteral(string literal)
     {
-        if (IsDisabled) { return; }
         sb.Append(literal);
     }
 
     public void AppendUnformatted(object? value)
     {
-        if (IsDisabled) { return; }
         sb.Append(value);
     }
 
     public void AppendFormat(object value, string alignment, string formatString)
     {
-        if (IsDisabled) { return; }
         bool isAlignmentEmpty = alignment == string.Empty;
         bool isFormatStringEmpty = formatString == string.Empty;
 
@@ -41,8 +37,4 @@ public class ExpandedStringBuilder
     }
 
     public string ExpandedString() => sb.ToString();
-
-    public void Disable() => disabledCount++;
-    public void Enable() => disabledCount--;
-    public bool IsDisabled => disabledCount > 0;
 }

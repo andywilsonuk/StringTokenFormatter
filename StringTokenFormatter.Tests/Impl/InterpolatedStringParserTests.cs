@@ -13,9 +13,9 @@ public class InterpolatedStringParserTests
         var actual = InterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
-            a => Assert.Equal(new InterpolatedStringSegment("first "), a),
+            a => Assert.Equal(new InterpolatedStringLiteralSegment("first "), a),
             a => Assert.Equal(new InterpolatedStringTokenSegment("(two)", "two", string.Empty, string.Empty), a),
-            a => Assert.Equal(new InterpolatedStringSegment(" third"), a)
+            a => Assert.Equal(new InterpolatedStringLiteralSegment(" third"), a)
         );
         Assert.Equal(settings, actual.Settings);
     }
@@ -31,7 +31,7 @@ public class InterpolatedStringParserTests
         var actual = InterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
-            a => Assert.Equal(new InterpolatedStringSegment(source), a)
+            a => Assert.Equal(new InterpolatedStringLiteralSegment(source), a)
         );
     }
 
@@ -76,9 +76,9 @@ public class InterpolatedStringParserTests
         var actual = InterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
-            a => Assert.Equal(new InterpolatedStringSegment("first "), a),
-            a => Assert.Equal(new InterpolatedStringSegment("("), a),
-            a => Assert.Equal(new InterpolatedStringSegment("two) third"), a)
+            a => Assert.Equal(new InterpolatedStringLiteralSegment("first "), a),
+            a => Assert.Equal(new InterpolatedStringLiteralSegment("("), a),
+            a => Assert.Equal(new InterpolatedStringLiteralSegment("two) third"), a)
         );
         Assert.Equal(settings, actual.Settings);
     }
