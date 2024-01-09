@@ -64,13 +64,9 @@ public interface IInterpolatedStringSettings
     /// </summary>
     public InvalidFormatBehavior InvalidFormatBehavior { get; }
     /// <summary>
-    /// Token prefix for starting a conditional block. Default: `if>`
+    /// Gets the collection of Block Commands.
     /// </summary>
-    public string ConditionStartToken { get; }
-    /// <summary>
-    /// Token prefix for ending a conditional block. Default: `ifend>`
-    /// </summary>
-    public string ConditionEndToken { get; }
+    public IReadOnlyCollection<IBlockCommand> BlockCommands { get; }
 }
 public interface ITokenValueContainerSettings
 {
@@ -109,19 +105,29 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
     public string ConditionStartToken { get; init; } = "if>";
     public string ConditionEndToken { get; init; } = "ifend>";
 
+    public IReadOnlyCollection<IBlockCommand> BlockCommands {
+        get { return blockCommands ?? defaultBlockCommands; }
+        init { blockCommands = value; }
+    }
+
     public string HierarchicalDelimiter { get; init; } = ".";
 
     private IReadOnlyCollection<TokenValueConverter> valueConverters = defaultValueConverters;
-
     private static readonly IReadOnlyCollection<TokenValueConverter> defaultValueConverters = new List<TokenValueConverter>
     {
-        TokenValueConverters.NullConverter(),
-        TokenValueConverters.PrimitiveConverter(),
-        TokenValueConverters.LazyConverter<string>(),
-        TokenValueConverters.LazyConverter<object>(),
-        TokenValueConverters.FuncConverter<string>(),
-        TokenValueConverters.FuncConverter<object>(),
-        TokenValueConverters.TokenFuncConverter<string>(),
-        TokenValueConverters.TokenFuncConverter<object>()
+        TokenValueConverterFactory.NullConverter(),
+        TokenValueConverterFactory.PrimitiveConverter(),
+        TokenValueConverterFactory.LazyConverter<string>(),
+        TokenValueConverterFactory.LazyConverter<object>(),
+        TokenValueConverterFactory.FuncConverter<string>(),
+        TokenValueConverterFactory.FuncConverter<object>(),
+        TokenValueConverterFactory.TokenFuncConverter<string>(),
+        TokenValueConverterFactory.TokenFuncConverter<object>()
+    }.AsReadOnly();
+
+    private IReadOnlyCollection<IBlockCommand> blockCommands = defaultBlockCommands;
+    private static readonly IReadOnlyCollection<IBlockCommand> defaultBlockCommands = new List<IBlockCommand>
+    {
+        BlockCommandFactory.Conditional,
     }.AsReadOnly();
 }

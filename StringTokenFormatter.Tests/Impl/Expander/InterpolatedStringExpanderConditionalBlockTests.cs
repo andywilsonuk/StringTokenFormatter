@@ -3,8 +3,18 @@ namespace StringTokenFormatter.Tests;
 public class InterpolatedStringExpanderConditionalBlockTests
 {
     private readonly BasicContainer valuesContainer = new();
+    private readonly StringTokenFormatterSettings settings;
 
-    
+    public InterpolatedStringExpanderConditionalBlockTests()
+    {
+        settings = StringTokenFormatterSettings.Default with {
+            BlockCommands = new List<IBlockCommand>
+            {
+                BlockCommandFactory.Conditional,
+            }
+        };
+    }
+
     [Fact]
     public void Expand_ConditionLiteralValue_StringWithLiteralValue()
     {
@@ -15,7 +25,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             new InterpolatedStringLiteralSegment("two"),
             new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
+        var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("IsValid", true);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -33,7 +43,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
             new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
+        var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", 2);
         valuesContainer.Add("IsValid", true);
 
@@ -52,7 +62,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             new InterpolatedStringLiteralSegment("two"),
             new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
+        var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("IsValid", false);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -76,7 +86,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
             new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
+        var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("IsValid", true);
         valuesContainer.Add("IsAlsoValid", true);
         valuesContainer.Add("IsNotValid", false);
@@ -94,7 +104,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             new InterpolatedStringLiteralSegment("one "),
             new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
+        var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("IsValid", true);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
@@ -109,7 +119,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
             new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
         };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
+        var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("IsValid", 1);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));

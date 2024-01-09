@@ -202,7 +202,7 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
         var settings = StringTokenFormatterSettings.Default with {
-            ValueConverters = new[] { TokenValueConverters.NullConverter() },
+            ValueConverters = new[] { TokenValueConverterFactory.NullConverter() },
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", "2");

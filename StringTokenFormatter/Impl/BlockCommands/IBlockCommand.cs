@@ -1,6 +1,6 @@
 namespace StringTokenFormatter.Impl;
 
-public interface ICommandBlock
+public interface IBlockCommand
 {
     public string StartCommandName { get; }
     public string EndCommandName { get; }

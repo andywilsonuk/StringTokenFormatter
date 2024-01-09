@@ -1,11 +1,11 @@
 namespace StringTokenFormatter.Impl;
 
-public class ConditionalBlock : ICommandBlock
+public class ConditionalBlockCommand : IBlockCommand
 {
+    internal ConditionalBlockCommand() {}
+    
     public string StartCommandName { get; } = "if";
     public string EndCommandName { get; } = "ifend";
-
-    private const string disableCountStoreKey = "DisabledCount";
 
     public void Start(ExpanderContext context, InterpolatedStringBlockSegment blockSegment)
     {
@@ -45,7 +45,7 @@ public class ConditionalBlock : ICommandBlock
         context.SkipActiveBlocks = disabledCount > 0;
     }
 
-    private static int GetDisabledCount(ExpanderValueStore store) => store.Get(nameof(ConditionalBlock), disableCountStoreKey, () => 0);
-    private static void SetDisabledCount(ExpanderValueStore store, int disabledCount) => store.Set(nameof(ConditionalBlock), disableCountStoreKey, disabledCount);
-
+    private const string disableCountStoreKey = "DisabledCount";
+    private static int GetDisabledCount(ExpanderValueStore store) => store.Get(nameof(ConditionalBlockCommand), disableCountStoreKey, () => 0);
+    private static void SetDisabledCount(ExpanderValueStore store, int disabledCount) => store.Set(nameof(ConditionalBlockCommand), disableCountStoreKey, disabledCount);
 }

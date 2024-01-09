@@ -2,7 +2,7 @@
 
 public delegate TryGetResult TokenValueConverter(object? value, string tokenName);
 
-public static class TokenValueConverters
+public static class TokenValueConverterFactory
 {
     public static TokenValueConverter NullConverter() => (v, _n) => v is null ? TryGetResult.Success(null) : default;
 

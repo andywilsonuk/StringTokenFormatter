@@ -2,7 +2,7 @@ using System.Text;
 
 namespace StringTokenFormatter.Impl;
 
-public class ExpandedStringBuilder
+public sealed class ExpandedStringBuilder
 {
     private readonly StringBuilder sb = new();
     private readonly IFormatProvider formatProvider;

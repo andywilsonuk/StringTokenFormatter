@@ -1,8 +1,8 @@
 namespace StringTokenFormatter.Impl;
 
-public class ExpanderContext
+public sealed class ExpanderContext
 {
-    public ExpanderContext(ExpandedStringBuilder stringBuilder, ITokenValueContainer container, IInterpolatedStringSettings settings, Dictionary<string, ICommandBlock> definedCommands)
+    public ExpanderContext(ExpandedStringBuilder stringBuilder, ITokenValueContainer container, IInterpolatedStringSettings settings, Dictionary<string, IBlockCommand> definedCommands)
     {
         StringBuilder = stringBuilder;
         Container = container;
@@ -13,10 +13,11 @@ public class ExpanderContext
     public ExpandedStringBuilder StringBuilder { get; init; }
     public ITokenValueContainer Container { get; init; }
     public IInterpolatedStringSettings Settings { get; init; }
-    public IDictionary<string, ICommandBlock> DefinedCommands { get; init; }
+    public IDictionary<string, IBlockCommand> DefinedCommands { get; init; }
     public ExpanderValueStore ValueStore { get; } = new();
 
     public InterpolatedStringSegment? CurrentSegment { get; internal set; }
     public bool SkipActiveBlocks { get; set; } = false;
-    internal Stack<ICommandBlock> ActiveBlocks { get; } = new Stack<ICommandBlock>();
+    internal Stack<IBlockCommand> ActiveBlocks { get; } = new Stack<IBlockCommand>();
+    public IEnumerable<IBlockCommand> CurrentActiveBlocks => ActiveBlocks;
 }

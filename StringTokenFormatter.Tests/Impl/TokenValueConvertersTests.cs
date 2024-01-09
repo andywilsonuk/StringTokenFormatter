@@ -6,7 +6,7 @@ public class TokenValueConvertersTests
     public void NullConverter_IsNull_ReturnsSuccess()
     {
         object? source = null;
-        var actual = TokenValueConverters.NullConverter()(source, string.Empty);
+        var actual = TokenValueConverterFactory.NullConverter()(source, string.Empty);
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = source }, actual);
     }
@@ -15,7 +15,7 @@ public class TokenValueConvertersTests
     public void NullConverter_IsNotNull_ReturnsDefault()
     {
         object? source = "a";
-        var actual = TokenValueConverters.NullConverter()(source, string.Empty);
+        var actual = TokenValueConverterFactory.NullConverter()(source, string.Empty);
 
         Assert.Equal(default, actual);
     }
@@ -24,7 +24,7 @@ public class TokenValueConvertersTests
     public void PrimitiveConverter_IsString_ReturnsSuccess()
     {
         object? source = "a";
-        var actual = TokenValueConverters.PrimitiveConverter()(source, string.Empty);
+        var actual = TokenValueConverterFactory.PrimitiveConverter()(source, string.Empty);
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = source }, actual);
     }
@@ -33,7 +33,7 @@ public class TokenValueConvertersTests
     public void PrimitiveConverter_IsDecimal_ReturnsSuccess()
     {
         object? source = 1;
-        var actual = TokenValueConverters.PrimitiveConverter()(source, string.Empty);
+        var actual = TokenValueConverterFactory.PrimitiveConverter()(source, string.Empty);
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = source }, actual);
     }
@@ -42,7 +42,7 @@ public class TokenValueConvertersTests
     public void PrimitiveConverter_IsObject_ReturnsDefault()
     {
         object? source = new {};
-        var actual = TokenValueConverters.PrimitiveConverter()(source, string.Empty);
+        var actual = TokenValueConverterFactory.PrimitiveConverter()(source, string.Empty);
 
         Assert.Equal(default, actual);
     }
@@ -51,7 +51,7 @@ public class TokenValueConvertersTests
     public void LazyConverter_IsLazy_ReturnsSuccess()
     {
         object? source = new Lazy<string>(() => "a");
-        var actual = TokenValueConverters.LazyConverter<string>()(source, string.Empty);
+        var actual = TokenValueConverterFactory.LazyConverter<string>()(source, string.Empty);
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = "a" }, actual);
     }
@@ -60,7 +60,7 @@ public class TokenValueConvertersTests
     public void LazyConverter_IsNotLazy_ReturnsDefault()
     {
         object? source = string.Empty;
-        var actual = TokenValueConverters.LazyConverter<string>()(source, string.Empty);
+        var actual = TokenValueConverterFactory.LazyConverter<string>()(source, string.Empty);
 
         Assert.Equal(default, actual);
     }
@@ -69,7 +69,7 @@ public class TokenValueConvertersTests
     public void FuncConverter_IsFunc_ReturnsSuccess()
     {
         object? source = () => "a";
-        var actual = TokenValueConverters.FuncConverter<string>()(source, string.Empty);
+        var actual = TokenValueConverterFactory.FuncConverter<string>()(source, string.Empty);
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = "a" }, actual);
     }
@@ -78,7 +78,7 @@ public class TokenValueConvertersTests
     public void FuncConverter_IsNotFunc_ReturnsDefault()
     {
         object? source = string.Empty;
-        var actual = TokenValueConverters.FuncConverter<string>()(source, string.Empty);
+        var actual = TokenValueConverterFactory.FuncConverter<string>()(source, string.Empty);
 
         Assert.Equal(default, actual);
     }
@@ -87,7 +87,7 @@ public class TokenValueConvertersTests
     public void TokenFuncConverter_IsFunc_ReturnsSuccess()
     {
         object? source = (string _token) => "a";
-        var actual = TokenValueConverters.TokenFuncConverter<string>()(source, string.Empty);
+        var actual = TokenValueConverterFactory.TokenFuncConverter<string>()(source, string.Empty);
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = "a" }, actual);
     }
@@ -96,7 +96,7 @@ public class TokenValueConvertersTests
     public void TokenFuncConverter_IsNotFunc_ReturnsDefault()
     {
         object? source = string.Empty;
-        var actual = TokenValueConverters.TokenFuncConverter<string>()(source, string.Empty);
+        var actual = TokenValueConverterFactory.TokenFuncConverter<string>()(source, string.Empty);
 
         Assert.Equal(default, actual);
     }
@@ -105,7 +105,7 @@ public class TokenValueConvertersTests
     public void ToStringConverter_IsDecimal_ReturnsSuccess()
     {
         int? source = 1;
-        var actual = TokenValueConverters.ToStringConverter<int>()(source, string.Empty);
+        var actual = TokenValueConverterFactory.ToStringConverter<int>()(source, string.Empty);
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = source.ToString() }, actual);
     }
@@ -114,7 +114,7 @@ public class TokenValueConvertersTests
     public void ToStringConverter_IsWrongType_ReturnsDefault()
     {
         int? source = null;
-        var actual = TokenValueConverters.ToStringConverter<decimal>()(source, string.Empty);
+        var actual = TokenValueConverterFactory.ToStringConverter<decimal>()(source, string.Empty);
 
         Assert.Equal(default, actual);
     }
@@ -123,7 +123,7 @@ public class TokenValueConvertersTests
     public void ToStringConverter_IsNull_ReturnsDefault()
     {
         object? source = null;
-        var actual = TokenValueConverters.ToStringConverter<int>()(source, string.Empty);
+        var actual = TokenValueConverterFactory.ToStringConverter<int>()(source, string.Empty);
 
         Assert.Equal(default, actual);
     }
