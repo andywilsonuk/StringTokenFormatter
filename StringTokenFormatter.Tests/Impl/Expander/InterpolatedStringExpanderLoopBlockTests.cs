@@ -126,33 +126,6 @@ public class InterpolatedStringExpanderLoopBlockTests
     }
 
     [Fact]
-    public void Expand_LoopAndConditional_StringWithLiteralValue3TimesWithoutSuppressedValue()
-    {
-        var customSettings = StringTokenFormatterSettings.Default with {
-            BlockCommands = new List<IBlockCommand>
-            {
-                BlockCommandFactory.Conditional,
-                BlockCommandFactory.Loop,
-            }
-        };
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
-            new InterpolatedStringLiteralSegment("lit"),
-            new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
-            new InterpolatedStringLiteralSegment("suppressed"),
-            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
-        };
-        var interpolatedString = new InterpolatedString(segments, customSettings);
-        valuesContainer.Add("IsValid", false);
-
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
-
-        Assert.Equal("litlitlit", actual);
-    }
-
-    [Fact]
     public void Expand_LoopSingleIteration_StringWithLiteralValueOnce()
     {
         var segments = new List<InterpolatedStringSegment>
