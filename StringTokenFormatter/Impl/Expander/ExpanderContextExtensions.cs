@@ -26,7 +26,7 @@ public static class ExpanderContextExtensions
 
     public static void EvaluateCurrentSegment(this ExpanderContext context)
     {
-        var segment = context.CurrentSegment ?? throw new ExpanderException("Context current segment is expected not to be null");
+        var segment = context.SegmentIterator.Current;
         if (segment is InterpolatedStringTokenSegment tokenSegment)
         {
             context.StringBuilder.AppendTokenValue(context, tokenSegment);
@@ -34,21 +34,7 @@ public static class ExpanderContextExtensions
         }
         if (segment is InterpolatedStringBlockSegment blockSegment)
         {
-            if (!context.DefinedCommands.TryGetValue(blockSegment.Command, out var command))
-            {
-                throw new ExpanderException($"Command {blockSegment.Command} has not been defined");
-            }
-            if (command.StartCommandName == blockSegment.Command)
-            {
-                command.Start(context, blockSegment);
-                context.ActiveBlocks.Push(command);
-            }
-            else
-            {
-                var lastCommand = context.ActiveBlocks.Pop();
-                if (command != lastCommand) { throw new ExpanderException($"Command {command.EndCommandName} does not match expected command {lastCommand.EndCommandName}"); }
-                command.End(context, blockSegment);
-            }
+            // blocks are already handled by commands
             return;
         }
         context.StringBuilder.AppendLiteral(segment.Raw);

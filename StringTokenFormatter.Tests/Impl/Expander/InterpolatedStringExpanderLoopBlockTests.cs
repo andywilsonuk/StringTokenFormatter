@@ -10,7 +10,6 @@ public class InterpolatedStringExpanderLoopBlockTests
         settings = StringTokenFormatterSettings.Default with {
             BlockCommands = new List<IBlockCommand>
             {
-                BlockCommandFactory.Conditional,
                 BlockCommandFactory.Loop,
             }
         };
@@ -22,14 +21,14 @@ public class InterpolatedStringExpanderLoopBlockTests
         var segments = new List<InterpolatedStringSegment>
         {
             new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
-            new InterpolatedStringLiteralSegment("two"),
+            new InterpolatedStringLiteralSegment("lit"),
             new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
-        Assert.Equal("twotwotwo", actual);
+        Assert.Equal("litlitlit", actual);
     }
 
     [Fact]
@@ -38,7 +37,7 @@ public class InterpolatedStringExpanderLoopBlockTests
         var segments = new List<InterpolatedStringSegment>
         {
             new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterations", string.Empty),
-            new InterpolatedStringLiteralSegment("two"),
+            new InterpolatedStringLiteralSegment("lit"),
             new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
@@ -46,9 +45,140 @@ public class InterpolatedStringExpanderLoopBlockTests
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
-        Assert.Equal("twotwotwo", actual);
+        Assert.Equal("litlitlit", actual);
     }
 
-    // nested loops
-    // loops and conditional together
+    [Fact]
+    public void Expand_LoopDataIterations_StringWithTokenValue3Times()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
+            new InterpolatedStringTokenSegment("{tok}", "tok", string.Empty, string.Empty),
+            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("tok", 2);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("222", actual);
+    }
+
+    [Fact]
+    public void Expand_NestedLoop_StringWithLiteralValue3TimesTwice()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
+            new InterpolatedStringLiteralSegment("a"),
+            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "2"),
+            new InterpolatedStringLiteralSegment("-"),
+            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringLiteralSegment("b"),
+            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("a--ba--ba--b", actual);
+    }
+
+    [Fact]
+    public void Expand_LoopMissingLoopEndCommand_Throws()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
+            new InterpolatedStringLiteralSegment("lit"),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+
+        Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
+    }
+
+    [Fact]
+    public void Expand_LoopMissingLoopCommand_Throws()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringLiteralSegment("lit"),
+            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+
+        Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
+    }
+
+    [Fact]
+    public void Expand_LoopWithInvalidType_Throws()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "a"),
+            new InterpolatedStringLiteralSegment("lit"),
+            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+
+        Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
+    }
+
+    [Fact]
+    public void Expand_LoopAndConditional_StringWithLiteralValue3TimesWithoutSuppressedValue()
+    {
+        var customSettings = StringTokenFormatterSettings.Default with {
+            BlockCommands = new List<IBlockCommand>
+            {
+                BlockCommandFactory.Conditional,
+                BlockCommandFactory.Loop,
+            }
+        };
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
+            new InterpolatedStringLiteralSegment("lit"),
+            new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
+            new InterpolatedStringLiteralSegment("suppressed"),
+            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
+            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, customSettings);
+        valuesContainer.Add("IsValid", false);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("litlitlit", actual);
+    }
+
+    [Fact]
+    public void Expand_LoopSingleIteration_StringWithLiteralValueOnce()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "1"),
+            new InterpolatedStringLiteralSegment("lit"),
+            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("lit", actual);
+    }
+
+    [Fact]
+    public void Expand_LoopZeroIterations_Throw()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "0"),
+            new InterpolatedStringLiteralSegment("lit"),
+            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+
+        Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
+    }
 }

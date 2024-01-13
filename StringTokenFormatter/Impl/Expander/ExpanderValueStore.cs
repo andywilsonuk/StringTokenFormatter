@@ -18,5 +18,7 @@ public sealed class ExpanderValueStore
         innerStore[FullKey(bucketName, key)] = value;
     }
 
+    public bool Exists(string bucketName, string key) => innerStore.ContainsKey(FullKey(bucketName, key));
+
     private static string FullKey(string bucketName, string key) => $"{bucketName}_{key}";
 }

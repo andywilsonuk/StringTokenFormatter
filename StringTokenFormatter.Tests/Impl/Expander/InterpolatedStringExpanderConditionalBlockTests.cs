@@ -97,7 +97,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_ConditionMissingEndIf_Throws()
+    public void Expand_ConditionMissingEndIfCommand_Throws()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -107,6 +107,18 @@ public class InterpolatedStringExpanderConditionalBlockTests
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("IsValid", true);
 
+        Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
+    }
+
+    [Fact]
+    public void Expand_ConditionMissingIfCommand_Throws()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringLiteralSegment("one "),
+            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
 

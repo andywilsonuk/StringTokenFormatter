@@ -102,9 +102,6 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
     }
     public IFormatProvider FormatProvider { get; init; } = CultureInfo.CurrentUICulture;
     public InvalidFormatBehavior InvalidFormatBehavior { get; init; } = InvalidFormatBehavior.Throw;
-    public string ConditionStartToken { get; init; } = "if>";
-    public string ConditionEndToken { get; init; } = "ifend>";
-
     public IReadOnlyCollection<IBlockCommand> BlockCommands {
         get { return blockCommands ?? defaultBlockCommands; }
         init { blockCommands = value; }

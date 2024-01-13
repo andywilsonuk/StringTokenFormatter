@@ -8,53 +8,33 @@ public static class InterpolatedStringExpander
         Guard.NotNull(container, nameof(container));
 
         var settings = interpolatedString.Settings;
+        var iterator = new ExpandedStringIterator(interpolatedString.Segments);
         var builder = new ExpandedStringBuilder(settings.FormatProvider);
-        var commands = BuildCommandsLookup(settings.BlockCommands);
-        var context = new ExpanderContext(builder, container, settings, commands);
-        IterateSegments(interpolatedString, context);
+        var context = new ExpanderContext(iterator, builder, container, settings, settings.BlockCommands);
+        IterateSegments(context);
         return builder.ExpandedString();
     }
 
-    private static Dictionary<string, IBlockCommand> BuildCommandsLookup(IEnumerable<IBlockCommand> definedCommands)
+    private static void IterateSegments(ExpanderContext context)
     {
-        var lookup = new Dictionary<string, IBlockCommand>(InterpolatedStringBlockSegment.CommandComparer);
-        foreach (var command in definedCommands)
+        var iterator = context.SegmentIterator;
+        while (iterator.MoveNext())
         {
-            if (lookup.ContainsKey(command.StartCommandName))
-            {
-                throw new ExpanderException($"Command block with start {command.StartCommandName} has already been defined");
-            }
-            if (lookup.ContainsKey(command.EndCommandName))
-            {
-                throw new ExpanderException($"Command block with end {command.EndCommandName} has already been defined");
-            }
-            lookup.Add(command.StartCommandName, command);
-            lookup.Add(command.EndCommandName, command);
-        }
-        return lookup;
-    }
+            context.SkipRemainingBlockCommands = false;
 
-    private static void IterateSegments(InterpolatedString interpolatedString, ExpanderContext context)
-    {
-        var enumerator = interpolatedString.Segments.GetEnumerator();
-        while (enumerator.MoveNext())
-        {
-            context.SkipActiveBlocks = false;
-            context.CurrentSegment = enumerator.Current;
-
-            foreach (var command in context.ActiveBlocks)
+            foreach (var command in context.Commands)
             {
                 command.Evaluate(context);
-                if (context.SkipActiveBlocks) { break; }
+                if (context.SkipRemainingBlockCommands) { break; }
             }
-            if (!context.SkipActiveBlocks)
+            if (!context.SkipRemainingBlockCommands)
             {
                 context.EvaluateCurrentSegment();
             }
         }
-        if (context.ActiveBlocks.Count > 0)
+        foreach (var command in context.Commands)
         {
-            throw new ExpanderException($"Missing end command {context.ActiveBlocks.Last().EndCommandName}");
+            command.Finished(context);
         }
     }
 }

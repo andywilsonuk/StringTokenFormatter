@@ -4,16 +4,54 @@ public sealed class LoopBlockCommand : IBlockCommand
 {
     internal LoopBlockCommand() {}
 
-    public string StartCommandName { get; } = "loop";
-    public string EndCommandName { get; } = "loopend";
+    private const string startCommandName = "loop";
+    private const string endCommandName = "loopend";
 
+    public void Evaluate(ExpanderContext context)
+    {
+        var segment = context.SegmentIterator.Current;
+        if (segment is InterpolatedStringBlockSegment blockSegment)
+        {
+            if (blockSegment.IsCommand(startCommandName))
+            {
+                Start(context, blockSegment);
+                context.SkipRemainingBlockCommands = true;
+            }
+            else if (blockSegment.IsCommand(endCommandName))
+            {
+                End(context);
+                context.SkipRemainingBlockCommands = true;
+            }
+        }
+    }
+    
     public void Start(ExpanderContext context, InterpolatedStringBlockSegment blockSegment)
     {
-        int nestingCount = GetNestingCount(context.ValueStore);
-        SetNestingCount(context.ValueStore, nestingCount + 1);
+        int currentSegmentIndex = context.SegmentIterator.CurrentIndex;
+        int iterations = GetRequiredIterations(context, blockSegment);
+        PushStack(context, new IterationData(currentSegmentIndex, iterations));
+    }
 
+    public void End(ExpanderContext context)
+    {
+        var (currentSegmentIndex, iterations) = PopStack(context);
+
+        if (iterations == 1)
+        {
+            context.SkipRemainingBlockCommands = true;
+            return;
+        }
+
+        PushStack(context, new IterationData(currentSegmentIndex, iterations - 1));
+
+        context.SegmentIterator.JumpToSegment(currentSegmentIndex);
+        context.SkipRemainingBlockCommands = true;
+    }
+
+    private static int GetRequiredIterations(ExpanderContext context, InterpolatedStringBlockSegment blockSegment)
+    {
         int iterations;
-        if (blockSegment.Data != string.Empty) 
+        if (blockSegment.Data != string.Empty)
         {
             if (!int.TryParse(blockSegment.Data, out int dataResult))
             {
@@ -29,61 +67,35 @@ public sealed class LoopBlockCommand : IBlockCommand
             }
             iterations = iterationsFromTokenValue;
         }
-        if (iterations <= 0)
-        {
-            throw new ExpanderException($"Loop iterations cannot be less than zero");
-        }
-        SetIterations(context.ValueStore, nestingCount, iterations);
-        SetSegments(context.ValueStore, nestingCount);
+        if (iterations <= 0) { throw new ExpanderException($"Loop iterations cannot be less than zero"); }
+        return iterations;
     }
 
-    public void End(ExpanderContext context, InterpolatedStringBlockSegment blockSegment)
+    public void Finished(ExpanderContext context)
     {
-        int nestingCount = GetNestingCount(context.ValueStore);
-
-        var segments = GetSegments(context.ValueStore, nestingCount - 1);
-        int iterations = GetIterations(context.ValueStore, nestingCount - 1);
-
-        for (int i = 0; i < iterations - 1; i++)
-        {
-            foreach (var segment in segments)
-            {
-                context.CurrentSegment = segment;
-                context.EvaluateCurrentSegment();
-            }
-        }
-        segments.Clear();
-
-        SetNestingCount(context.ValueStore, nestingCount - 1);
-        context.CurrentSegment = blockSegment;
+        if (!HasStack(context)) { return; }
+        var stack = GetStack(context);
+        if (stack.Count > 0) { throw new ExpanderException($"Missing loop end command"); }
     }
 
-    public void Evaluate(ExpanderContext context)
+    private const string storeBucketName = nameof(LoopBlockCommand);
+    private const string nestingStackStoreKey = "NestingStack";
+    private void PushStack(ExpanderContext context, IterationData iterationData)
     {
-        var segment = context.CurrentSegment ?? throw new ExpanderException("Context current segment is expected not to be null");
-        if (segment is InterpolatedStringBlockSegment blockSegment && blockSegment.IsCommand(EndCommandName))
-        {
-            // don't store end of this block
-            return;
-        }
-
-        int nestingCount = GetNestingCount(context.ValueStore);
-        for (int i = 0; i < nestingCount; i++)
-        {
-            var segmentsList = GetSegments(context.ValueStore, i);
-            segmentsList.Add(segment);
-        }
+        var stack = context.ValueStore.Get(storeBucketName, nestingStackStoreKey, () => new Stack<IterationData>());
+        stack.Push(iterationData);
+        context.ValueStore.Set(storeBucketName, nestingStackStoreKey, stack);
     }
+    private IterationData PopStack(ExpanderContext context)
+    {
+        if (!HasStack(context)) { throw new ExpanderException($"Loop end command without start"); }
+        var stack = GetStack(context);
+        if (stack.Count == 0) { throw new ExpanderException($"Loop end command without start"); }
+        return stack.Pop();
+    }
+    private bool HasStack(ExpanderContext context) => context.ValueStore.Exists(storeBucketName, nestingStackStoreKey);
+    private Stack<IterationData> GetStack(ExpanderContext context) =>
+        context.ValueStore.Get<Stack<IterationData>>(storeBucketName, nestingStackStoreKey, () => throw new ExpanderException("Cannot get loop stack when it has not been created"));
 
-    private const string nestingCountStoreKey = "NestingCount";
-    private const string memoSegmentsStoreKey = "MemoSegments";
-    private const string iterationsStoreKey = "Iterations";
-    private int GetNestingCount(ExpanderValueStore store) => store.Get(nameof(LoopBlockCommand), nestingCountStoreKey, () => 0);
-    private static void SetNestingCount(ExpanderValueStore store, int nestingCount) => store.Set(nameof(LoopBlockCommand), nestingCountStoreKey, nestingCount);
-    private int GetIterations(ExpanderValueStore store, int index) => store.Get(nameof(LoopBlockCommand), $"{iterationsStoreKey}_{index}", () => 0);
-    private static void SetIterations(ExpanderValueStore store, int index, int iterations) => store.Set(nameof(LoopBlockCommand), $"{iterationsStoreKey}_{index}", iterations);
-    private List<InterpolatedStringSegment> GetSegments(ExpanderValueStore store, int index) =>
-        store.Get<List<InterpolatedStringSegment>>(nameof(LoopBlockCommand), $"{memoSegmentsStoreKey}_{index}", () => throw new ExpanderException("Cannot get segments when List has not been created"));
-    private void SetSegments(ExpanderValueStore store, int index) =>
-        store.Set(nameof(LoopBlockCommand), $"{memoSegmentsStoreKey}_{index}", new List<InterpolatedStringSegment>());
+    record struct IterationData(int SegmentIndex, int RemainingIterations);
 }
