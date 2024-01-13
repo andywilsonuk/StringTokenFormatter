@@ -2,6 +2,6 @@ namespace StringTokenFormatter.Impl;
 
 public static class BlockCommandFactory
 {
-    public static ConditionalBlockCommand Conditional { get; } = new ConditionalBlockCommand();
-    public static LoopBlockCommand Loop { get; } = new LoopBlockCommand();
+    public static ConditionalBlockCommand Conditional { get; } = new();
+    public static LoopBlockCommand Loop { get; } = new();
 }

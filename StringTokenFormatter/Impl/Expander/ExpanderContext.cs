@@ -11,12 +11,12 @@ public sealed class ExpanderContext
         Commands = commands;
     }
 
+    public ExpandedStringIterator SegmentIterator { get; init; }
     public ExpandedStringBuilder StringBuilder { get; init; }
     public ITokenValueContainer Container { get; init; }
     public IInterpolatedStringSettings Settings { get; init; }
     public IReadOnlyCollection<IBlockCommand> Commands { get; init; }
     public ExpanderValueStore ValueStore { get; } = new();
-    public ExpandedStringIterator SegmentIterator { get; init; }
 
     public bool SkipRemainingBlockCommands { get; set; } = false;
 }

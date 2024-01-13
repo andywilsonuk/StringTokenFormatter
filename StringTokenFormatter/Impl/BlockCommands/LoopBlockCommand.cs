@@ -34,7 +34,11 @@ public sealed class LoopBlockCommand : IBlockCommand
 
     public void End(ExpanderContext context)
     {
-        var (currentSegmentIndex, iterations) = PopStack(context);
+         if (!TryGetStack(context, out var stack) || stack!.Count == 0)
+        {
+            throw new ExpanderException("Loop end command block without start");
+        }
+        var (currentSegmentIndex, iterations) = stack.Pop();
 
         if (iterations == 1)
         {
@@ -44,7 +48,7 @@ public sealed class LoopBlockCommand : IBlockCommand
 
         PushStack(context, new IterationData(currentSegmentIndex, iterations - 1));
 
-        context.SegmentIterator.JumpToSegment(currentSegmentIndex);
+        context.SegmentIterator.JumpToIndex(currentSegmentIndex);
         context.SkipRemainingBlockCommands = true;
     }
 
@@ -55,7 +59,7 @@ public sealed class LoopBlockCommand : IBlockCommand
         {
             if (!int.TryParse(blockSegment.Data, out int dataResult))
             {
-                throw new ExpanderException($"Loop data '{blockSegment.Data}' is not a int");
+                throw new ExpanderException($"Loop data '{blockSegment.Data}' is not an int");
             }
             iterations = dataResult;
         }
@@ -63,7 +67,7 @@ public sealed class LoopBlockCommand : IBlockCommand
         {
             if (!context.TryGetTokenValue(blockSegment.Token, out object? tokenValue) || tokenValue is not int iterationsFromTokenValue)
             {
-                throw new ExpanderException($"Loop token '{blockSegment.Token}' value is not a int");
+                throw new ExpanderException($"Loop token '{blockSegment.Token}' value is not an int");
             }
             iterations = iterationsFromTokenValue;
         }
@@ -73,9 +77,10 @@ public sealed class LoopBlockCommand : IBlockCommand
 
     public void Finished(ExpanderContext context)
     {
-        if (!HasStack(context)) { return; }
-        var stack = GetStack(context);
-        if (stack.Count > 0) { throw new ExpanderException($"Missing loop end command"); }
+        if (TryGetStack(context, out var stack) && stack!.Count > 0)
+        {
+            throw new ExpanderException("Missing loop end command block");
+        }
     }
 
     private const string storeBucketName = nameof(LoopBlockCommand);
@@ -86,16 +91,13 @@ public sealed class LoopBlockCommand : IBlockCommand
         stack.Push(iterationData);
         context.ValueStore.Set(storeBucketName, nestingStackStoreKey, stack);
     }
-    private IterationData PopStack(ExpanderContext context)
+    private bool TryGetStack(ExpanderContext context, out Stack<IterationData>? stack)
     {
-        if (!HasStack(context)) { throw new ExpanderException($"Loop end command without start"); }
-        var stack = GetStack(context);
-        if (stack.Count == 0) { throw new ExpanderException($"Loop end command without start"); }
-        return stack.Pop();
+        stack = context.ValueStore.Exists(storeBucketName, nestingStackStoreKey)
+            ? context.ValueStore.Get<Stack<IterationData>>(storeBucketName, nestingStackStoreKey, () => throw new ExpanderException("Cannot get loop stack when it has not been created"))
+            : null;
+        return stack is not null;
     }
-    private bool HasStack(ExpanderContext context) => context.ValueStore.Exists(storeBucketName, nestingStackStoreKey);
-    private Stack<IterationData> GetStack(ExpanderContext context) =>
-        context.ValueStore.Get<Stack<IterationData>>(storeBucketName, nestingStackStoreKey, () => throw new ExpanderException("Cannot get loop stack when it has not been created"));
 
     record struct IterationData(int SegmentIndex, int RemainingIterations);
 }

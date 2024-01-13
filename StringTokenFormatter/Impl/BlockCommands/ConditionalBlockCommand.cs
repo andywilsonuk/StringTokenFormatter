@@ -59,7 +59,7 @@ public class ConditionalBlockCommand : IBlockCommand
     public void Finished(ExpanderContext context)
     {
         int nestedCount = GetNestedCount(context);
-        if (nestedCount != 0) { throw new ExpanderException($"Mismatch of conditional commands start and end counts"); }
+        if (nestedCount != 0) { throw new ExpanderException("Mismatch of conditional commands start and end counts"); }
     }
 
     private const string storeBucketName = nameof(ConditionalBlockCommand);

@@ -126,5 +126,6 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
     private static readonly IReadOnlyCollection<IBlockCommand> defaultBlockCommands = new List<IBlockCommand>
     {
         BlockCommandFactory.Conditional,
+        BlockCommandFactory.Loop,
     }.AsReadOnly();
 }

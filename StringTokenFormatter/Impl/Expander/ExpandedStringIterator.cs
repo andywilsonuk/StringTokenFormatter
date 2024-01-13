@@ -12,7 +12,7 @@ public sealed class ExpandedStringIterator
 
     public InterpolatedStringSegment Current => Segments[CurrentIndex];
 
-    public void JumpToSegment(int index)
+    public void JumpToIndex(int index)
     {
         if (index < 0 || index >= Segments.Length) { throw new ExpanderException($"Jump to segment index {index} is out of range, max is {Segments.Length - 1}"); }
         CurrentIndex = index;

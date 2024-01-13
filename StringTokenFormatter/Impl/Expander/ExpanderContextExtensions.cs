@@ -32,7 +32,7 @@ public static class ExpanderContextExtensions
             context.StringBuilder.AppendTokenValue(context, tokenSegment);
             return;
         }
-        if (segment is InterpolatedStringBlockSegment blockSegment)
+        if (segment is InterpolatedStringBlockSegment)
         {
             // blocks are already handled by commands
             return;
