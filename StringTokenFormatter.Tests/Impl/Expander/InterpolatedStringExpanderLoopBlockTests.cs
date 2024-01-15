@@ -154,4 +154,33 @@ public class InterpolatedStringExpanderLoopBlockTests
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
+
+    [Fact]
+    public void Expand_LoopInnerTokenFunc_EachValueIsOutput()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "2"),
+            new InterpolatedStringTokenSegment("{Val}", "Val", string.Empty, string.Empty),
+            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+
+        int callCount = 0;
+        var calls = () => {
+            callCount++;
+            return callCount switch
+            {
+                1 => "a",
+                2 => "b",                
+                _ => throw new IndexOutOfRangeException("Too many calls"),
+            };
+        };
+
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("Val", calls);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("ab", actual);
+    }
 }
