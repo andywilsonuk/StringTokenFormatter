@@ -36,7 +36,7 @@ public sealed class LoopBlockCommand : IBlockCommand
     {
          if (!TryGetStack(context, out var stack) || stack!.Count == 0)
         {
-            throw new ExpanderException("Loop end command block without start");
+            throw new ExpanderException("Loop end block command without start");
         }
         var (currentSegmentIndex, iterations) = stack.Pop();
 
@@ -79,7 +79,7 @@ public sealed class LoopBlockCommand : IBlockCommand
     {
         if (TryGetStack(context, out var stack) && stack!.Count > 0)
         {
-            throw new ExpanderException("Missing loop end command block");
+            throw new ExpanderException("Missing loop end block command");
         }
     }
 

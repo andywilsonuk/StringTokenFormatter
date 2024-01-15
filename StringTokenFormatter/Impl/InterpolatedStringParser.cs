@@ -4,10 +4,10 @@ namespace StringTokenFormatter.Impl;
 
 public static partial class InterpolatedStringParser
 {
-    private const string commandBlockPrefix = ":";
+    private const string blockCommandPrefix = ":";
     private const string paddingSeparator = ",";
     private const string formattingSeparator = ":";
-    private const string tokenComponentsPattern = $"^({commandBlockPrefix})?([^{paddingSeparator}{formattingSeparator}]*){paddingSeparator}?([^{formattingSeparator}]*){formattingSeparator}?(.*)$";
+    private const string tokenComponentsPattern = $"^({blockCommandPrefix})?([^{paddingSeparator}{formattingSeparator}]*){paddingSeparator}?([^{formattingSeparator}]*){formattingSeparator}?(.*)$";
     private static readonly RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant;
 
 #if NET7_0_OR_GREATER
@@ -78,10 +78,11 @@ public static partial class InterpolatedStringParser
             else
             {
                 int middleLength = segment.Length - startToken.Length - endToken.Length;
-                string tripleWithoutMarkers = segment.Substring(startToken.Length, middleLength);
-                var split = GetTokenComponentsRegex().Split(tripleWithoutMarkers);
+                string componentPartsString = segment.Substring(startToken.Length, middleLength);
+                var split = GetTokenComponentsRegex().Split(componentPartsString);
+                bool isBlockCommand = blockCommandPrefix.Equals(split[1], StringComparison.Ordinal);
 
-                if (commandBlockPrefix.Equals(split[1], StringComparison.Ordinal))
+                if (isBlockCommand)
                 {
                     if (split[2].Length == 0) { throw new ParserException($"Blank token marker matched: {segment}"); }
                     yield return new InterpolatedStringBlockSegment(segment, split[2], split[3], split[4]);
