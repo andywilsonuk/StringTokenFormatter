@@ -5,7 +5,7 @@ namespace StringTokenFormatter.Impl;
 
 public class PropertyCache<T>
 {
-    public record PropertyPairs(PropertyInfo Property, Func<T, object> Getter);
+    public record PropertyPairs(string PropertyName, Func<T, object> GetValue);
 
     const BindingFlags bindingFilter = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
     private readonly List<PropertyPairs> propertyCache = GetPropertyPairs();
@@ -17,7 +17,7 @@ public class PropertyCache<T>
         let getMethod = prop.GetGetMethod()
         where getMethod != null && getMethod.GetParameters().Length == 0
         let getterFn = CreateGetter(getMethod)
-        select new PropertyPairs(prop, getterFn)
+        select new PropertyPairs(prop.Name, getterFn)
     ).ToList();
 
     private static IEnumerable<PropertyInfo> GetPublicProperties(Type type) =>

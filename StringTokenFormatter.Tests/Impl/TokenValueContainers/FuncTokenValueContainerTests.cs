@@ -10,7 +10,7 @@ public class FuncTokenValueContainerTests
         {
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new FuncTokenValueContainer<int?>(func, settings);
+        var container = TokenValueContainerFactory.FromFunc(settings, func);
 
         var actual = container.TryMap("a");
 
@@ -25,7 +25,7 @@ public class FuncTokenValueContainerTests
         {
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new FuncTokenValueContainer<int?>(func, settings);
+        var container = TokenValueContainerFactory.FromFunc(settings, func);
 
         var actual = container.TryMap("a");
 
@@ -40,7 +40,7 @@ public class FuncTokenValueContainerTests
         {
             TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNull,
         };
-        var container = new FuncTokenValueContainer<int?>(func, settings);
+        var container = TokenValueContainerFactory.FromFunc(settings, func);
 
         var actual = container.TryMap("a");
 

@@ -1,4 +1,5 @@
-# StringTokenFormatter v7.3
+# StringTokenFormatter v8.0
+
 This library provides token replacement for interpolated strings not known at compile time such as those retrieved from data stores (file system, database, API, config files etc) and offers support for a variety of token to value mappers.
 
 Available on nuget.org at https://www.nuget.org/packages/StringTokenFormatter.
@@ -15,9 +16,11 @@ string message = interpolatedString.FormatFromObject(client);
 ```
 
 # .NET versions
+
 .NET 6, 7, 8 and .NET Standard 2.0 with C# 10 language features
 
 # Migrating from version 6
+
 There are major breaking changes. See [the v6 migration page](/migration-v6.md) for details on how to upgrade from version 6 to version 7.
 
 # Features overview
@@ -37,10 +40,10 @@ Tokens with formatting and alignment can be specified in the same way as `string
 
 Nested tokens (like `prefix.name`), cascading containers and other complex token resolution setups are supported through the `CompositeTokenValueContainer`, see [Building composite containers](#building-composite-token-value-containers) for the helper class.
 
-Conditional blocks of text can be controlled through boolean token values and the [conditional syntax](#conditions-1), for example:
+Conditional blocks of text and loops can be controlled through [block commands](#block-commands), for example:
 
 ```C#
-string original = "start {if>IsValid}{middle}{ifend>IsValid} end";
+string original = "start {:if,IsValid}{middle}{:ifend,IsValid} end";
 var tokenValues = new { Middle = "center", IsValid = true };
 string result = original.FormatFromObject(tokenValues);
 Assert.Equal("start center end", result);
@@ -96,6 +99,7 @@ See [building composite token value containers](#building-composite-token-value-
 Note: comma (,) and colon (:) should not be used in token names to avoid confusion with alignment and format values.
 
 # Settings
+
 All interpolating methods accept an optional `StringTokenFormatterSettings` parameter which is used in preference to the `StringTokenFormatterSettings.Global` settings.
 
 The settings record is immutable so the `with` keyword is used to mutate the settings, so for example to replace the global settings, something like the following can be used:
@@ -127,7 +131,7 @@ Initially, the `Global` settings are the `Default` settings.
 
 ## Settings properties
 
-### Syntax
+### `Syntax`
 
 Takes a `TokenSyntax` instance and defines the syntax is used for detecting tokens. Default `CommonTokenSyntax.Curly`.
 
@@ -143,23 +147,26 @@ Build-in syntax within the CommonTokenSyntax class:
 
 Note: Token markers are case sensitive.
 
-### FormatProvider
+### `FormatProvider`
 
 Is used to specify the `IFormatProvider` applied to token values and uses [string.Format](https://learn.microsoft.com/en-us/dotnet/api/system.string.format) to apply formatting and alignment for example: `{value,10:D4}`. Default `CultureInfo.CurrentUICulture`.
 
-### NameComparer
+### `NameComparer`
 
 The comparer used by `ITokenValueContainer` when performing token to value look-ups. Takes a standard `StringComparer`. Default `StringComparer.OrdinalIgnoreCase`.
 
-### Conditions
+### `BlockCommands`
 
-Simple boolean conditions can be used to exclude blocks of text. `ConditionStartToken` with default `if>` signifies the start of the block whilst `ConditionEndToken` with default `ifend>` signifies the end. It is expected that after the condition prefix will be the name of the token whose boolean value dictates whether to include the block or not.
+The collection of Block Commands to be used by the `InterpolatedStringExpander`. Default collection from `BlockCommandFactory`:
 
-Nested conditions are supported.
+| Block              | Result                                                   |
+| :----------------: | :------------------------------------------------------: |
+| Conditional        | Controls includes of wrapped text based on boolean value |
+| Loop               | Allows for repeated text based on specific iterations    | 
 
-Note: Condition tokens are case sensitive.
+See [Block Commands](#block-commands) for more information.
 
-### TokenResolutionPolicy
+### `TokenResolutionPolicy`
 
 Controls how token values are handled by `ITokenValueContainer` implementations. Default `TokenResolutionPolicy.ResolveAll`.
 
@@ -176,7 +183,7 @@ What happens next will depend upon what else is configured:
 1. if this is a [`CompositeTokenValueContainer`](#building-composite-token-value-containers) then the matching will cascade to the next container
 2. if `UnresolvedTokenBehavior` setting is set to `Throw` then an exception will be raised
 
-### UnresolvedTokenBehavior
+### `UnresolvedTokenBehavior`
 
 Defines what should happen if the token specified in the interpolated string cannot be matched within the `ITokenValueContainer`. Default `UnresolvedTokenBehavior.Throw`.
 
@@ -185,7 +192,7 @@ Defines what should happen if the token specified in the interpolated string can
 | Throw             | An `UnresolvedTokenException` exception is raised        |
 | LeaveUnresolved   | The text will contain the original token unmodified      |
 
-### InvalidFormatBehavior
+### `InvalidFormatBehavior`
 
 Defines how string.Format exceptions are handled. Default `InvalidFormatBehavior.Throw`.
 
@@ -195,9 +202,9 @@ Defines how string.Format exceptions are handled. Default `InvalidFormatBehavior
 | LeaveUnformatted  | The text will contain the token value unformatted        |
 | LeaveToken        | The text will contain the original token unmodified      |
 
-### ValueConverters
+### `ValueConverters`
 
-Applies to token values after matched and before formatting. Converters are attempted in order so that once one has successfully converted the value then no further conversions take place. Default collection (from `TokenValueConverters`):
+Applies to token values after matching but before formatting. Converters are attempted in order so that once one has successfully converted the value then no further conversions take place. Default collection (from `TokenValueConverterFactory`):
 
 | Value                       | Result                                                   |
 | :-------------------------: | :------------------------------------------------------: |
@@ -209,9 +216,11 @@ Applies to token values after matched and before formatting. Converters are atte
 
 They can be useful to provide post-match functionality; a great example is a when using an object which contains a property that uses a `Lazy`. The token matcher resolves the token marker to property and then through the `ValueConverters` calls the `Lazy.Value` and returns the value of the `Lazy` for formatting.
 
-All passed through types must be handled by a Value Converters otherwise an exception is thrown.
+All passed through types must be handled by a Value Converter otherwise an exception is thrown.
 
-### HierarchicalDelimiter
+By design `ToString` is not used as a value converter because calling that on a custom object will yield the `object.ToString` result which is often not the intended behavior. For scenarios when the `ToString` has been overridden, the result of calling `TokenValueConverterFactory.ToStringConverter<T>` can be added to the settings list of `ValueConverters` so that the `ToString` method for that specific type will be used as a valid value conversion.
+
+### `HierarchicalDelimiter`
 
 Defines the prefix for `HierarchicalTokenValueContainer` instances. Default `.` (period).
 
@@ -220,6 +229,7 @@ See also [Token Value Container Builder](#building-composite-token-value-contain
 ## Additional features and notes
 
 ### Flow of Control
+
 When resolving the token values within an interpolated string, the following sequence is followed:
 
 1. The `InterpolatedStringParser` turns a `string` into an `InterpolatedString`
@@ -228,11 +238,13 @@ When resolving the token values within an interpolated string, the following seq
     2. A value conversion is then attempted based on the collection of `ValueConverters` in the settings
     3. If the token contains alignment or formatting details, `string.Format` is called with the `FormatProvider` from the settings
 
+Block Commands are processed by the `InterpolatedStringExpander` and follow the flow of steps 2.1 and 2.2 for obtaining their relevant values from tokens. 
+
 ### Reusing InterpolatedString instances
 
 The `InterpolatedStringParser.Parse` method is responsible for identifying tokens within the source string and returning the `InterpolatedString` of segments. Generating the `InterpolatedString` takes time but can be stored and pass multiple times to the `InterpolatedStringExpander.Expand` method. 
 
-An example would be a mail merge whereby the same message text is used but with client-specific details within the `ITokenValueContainer`.
+An example would be an email template merge whereby the same message text is used each time but with client-specific details within the `ITokenValueContainer`.
 
 See also [The Resolver](#the-resolver).
 
@@ -271,28 +283,63 @@ The delimiter can changed in the [settings](#hierarchicaldelimiter).
 
 Deep nesting is supported but discouraged, instead opt for flatter composites by adding the nested container to the top level with a separate prefix.
 
-### Conditions
+### Block commands
 
-Simple boolean conditions can be used to exclude blocks of text. The `ITokenValueContainerSettings` contains the special token prefixes `ConditionStartToken` (default `if>`) and `ConditionEndToken` (default `ifend>`).
+Introduced in v8, Block Commands wrap literal or token segments and provide behavior configurable by container values.
 
-It is expected that after the condition prefix will be the name of the token whose boolean value dictates whether to include the block or not.
+The block command names are always lowercase whilst tokens abide by the `TokenResolutionPolicy` (as well as `ValueConverters`).
+
+#### Conditional block
+
+Simple boolean conditions can be used to exclude blocks of text. 
+
+The starting command format is `:if,token` where the `token` resolves to a boolean value dictating whether to include the block. The ending command is `:ifend` and can optionally include the token name.
 
 ```C#
-string original = "start {if>IsValid}{middle}{ifend>IsValid} end";
-var tokenValues = new { Middle = "center", IsValid = true };
+string original = "start {:if,IsValid}{middle}{:ifend,IsValid} end";
+var tokenValues = new { Middle = "center", IsValid = false };
 string result = original.FormatFromObject(tokenValues);
-Assert.Equal("start center end", result);
+Assert.Equal("start  end", result);
 ```
 
-Nested conditions are supported. For `ConditionEndToken`, the token name suffix is purely for clarity and is optional.
+Nested conditions are supported.
 
-The condition prefixes are case sensitive whilst the token providing the boolean value abides by the `TokenResolutionPolicy` (as well as `ValueConverters`).
+#### Loop blocks
+
+Provides a fixed number of iterations for the nested block.
+
+For token derived iterations `{:loop,token}` is used and for constant iterations `{:loop:value}` where `value` is the number of iterations required. The ending command is `{:loopend}`.
+
+```C#
+string original = "outside {:loop,Iterations}{innerValue}{:loopend} outside";
+int callCount = 0;
+var called = () => {
+    callCount++;
+    return callCount switch
+    {
+        1 => "a",
+        2 => "b",                
+        _ => throw new IndexOutOfRangeException("Too many calls"),
+    };
+};
+var tokenValues = new { Iterations = 2, InnerValue = called };
+string result = original.FormatFromObject(tokenValues);
+Assert.Equal("outside ab outside", result);
+```
+
+In this example, the token value `InnerValue` is a `Func<string>` which returns a different value on each call to the function.
+
+Nested loops are supported.
 
 ### Creating a custom `ITokenValueContainer`
 
 Whilst there are a number of built-in containers, it many be necessary to create a complete custom container. The container should take in the settings interface `ITokenValueContainerSettings` and obey `NameComparer` and `TokenResolutionPolicy` properties. 
 
 See also [Token Value Container Builder](#building-composite-token-value-containers).
+
+### `FrozenDictionary` support in .NET 8
+
+When compiling against the .NET 8 version of the library, a method `Frozen` is available on `DictionaryTokenValueContainer` and `ObjectTokenValueContainer` instances which sets the backing dictionary and can provide a significant performance boost when reusing instances.
 
 ### Async loading of token values
 

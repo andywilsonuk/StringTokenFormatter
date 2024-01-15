@@ -9,7 +9,7 @@ public class InterpolatedStringExpanderTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringSegment("text only"),
+            new InterpolatedStringLiteralSegment("text only"),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
 
@@ -23,7 +23,7 @@ public class InterpolatedStringExpanderTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringSegment("one "),
+            new InterpolatedStringLiteralSegment("one "),
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
@@ -61,7 +61,7 @@ public class InterpolatedStringExpanderTests
         };
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringSegment("one "),
+            new InterpolatedStringLiteralSegment("one "),
             new InterpolatedStringTokenSegment("{three}", "three", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
@@ -79,7 +79,7 @@ public class InterpolatedStringExpanderTests
         };
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringSegment("one "),
+            new InterpolatedStringLiteralSegment("one "),
             new InterpolatedStringTokenSegment("{three}", "three", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
@@ -202,7 +202,7 @@ public class InterpolatedStringExpanderTests
             new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
         };
         var settings = StringTokenFormatterSettings.Default with {
-            ValueConverters = new[] { TokenValueConverters.FromNull() },
+            ValueConverters = new[] { TokenValueConverterFactory.NullConverter() },
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", "2");
@@ -237,116 +237,6 @@ public class InterpolatedStringExpanderTests
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("2", actual);
-    }
-
-    [Fact]
-    public void Expand_ConditionLiteralValue_StringWithLiteralValue()
-    {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringSegment("one "),
-            new InterpolatedStringTokenSegment("{if>IsValid}", "if>IsValid", string.Empty, string.Empty),
-            new InterpolatedStringSegment("two"),
-            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
-        };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
-        valuesContainer.Add("IsValid", true);
-
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
-
-        Assert.Equal("one two", actual);
-    }
-
-    [Fact]
-    public void Expand_ConditionTokenValue_StringWithTokenValue()
-    {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringSegment("one "),
-            new InterpolatedStringTokenSegment("{if>IsValid}", "if>IsValid", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
-        };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
-        valuesContainer.Add("two", 2);
-        valuesContainer.Add("IsValid", true);
-
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
-
-        Assert.Equal("one 2", actual);
-    }
-
-    [Fact]
-    public void Expand_FalseCondition_StringWithoutValue()
-    {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringSegment("one "),
-            new InterpolatedStringTokenSegment("{if>IsValid}", "if>IsValid", string.Empty, string.Empty),
-            new InterpolatedStringSegment("two"),
-            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
-        };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
-        valuesContainer.Add("IsValid", false);
-
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
-
-        Assert.Equal("one ", actual);
-    }
-
-    [Fact]
-    public void Expand_NestedConditions_StringWithNestedValue()
-    {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringSegment("one "),
-            new InterpolatedStringTokenSegment("{if>IsValid}", "if>IsValid", string.Empty, string.Empty),
-            new InterpolatedStringSegment("two"),
-            new InterpolatedStringTokenSegment("{if>IsNotValid}", "if>IsNotValid", string.Empty, string.Empty),
-            new InterpolatedStringSegment("suppressed"),
-            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{if>IsAlsoValid}", "if>IsAlsoValid", string.Empty, string.Empty),
-            new InterpolatedStringSegment(" three"),
-            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
-        };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
-        valuesContainer.Add("IsValid", true);
-        valuesContainer.Add("IsAlsoValid", true);
-        valuesContainer.Add("IsNotValid", false);
-
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
-
-        Assert.Equal("one two three", actual);
-    }
-
-    [Fact]
-    public void Expand_ConditionMissingEndIf_Throws()
-    {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringSegment("one "),
-            new InterpolatedStringTokenSegment("{if>IsValid}", "if>IsValid", string.Empty, string.Empty),
-        };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
-        valuesContainer.Add("IsValid", true);
-
-        Assert.Throws<ConditionTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
-    }
-
-    [Fact]
-    public void Expand_ConditionInvalidTokenValue_Throws()
-    {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringSegment("one "),
-            new InterpolatedStringTokenSegment("{if>IsValid}", "if>IsValid", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{ifend>}", "ifend>", string.Empty, string.Empty),
-        };
-        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
-        valuesContainer.Add("IsValid", 1);
-
-        Assert.Throws<ConditionTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
 
     [Fact]

@@ -4,22 +4,23 @@ namespace StringTokenFormatter.Impl;
 
 public static partial class InterpolatedStringParser
 {
+    private const string blockCommandPrefix = ":";
     private const string paddingSeparator = ",";
     private const string formattingSeparator = ":";
-    private const string tokenTriplePattern = $"^([^{paddingSeparator}{formattingSeparator}]*){paddingSeparator}?([^{formattingSeparator}]*){formattingSeparator}?(.*)$";
+    private const string tokenComponentsPattern = $"^({blockCommandPrefix})?([^{paddingSeparator}{formattingSeparator}]*){paddingSeparator}?([^{formattingSeparator}]*){formattingSeparator}?(.*)$";
     private static readonly RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant;
 
 #if NET7_0_OR_GREATER
-    [GeneratedRegex(tokenTriplePattern, RegexOptions.Singleline | RegexOptions.CultureInvariant)]
-    private static partial Regex GetTokenTripleRegex();
+    [GeneratedRegex(tokenComponentsPattern, RegexOptions.Singleline | RegexOptions.CultureInvariant)]
+    private static partial Regex GetTokenComponentsRegex();
 # else
-    private static readonly Regex tokenTripleRegex = new(tokenTriplePattern, regexOptions);
-    private static Regex GetTokenTripleRegex() => tokenTripleRegex;
+    private static readonly Regex tokenComponentsRegex = new(tokenComponentsPattern, regexOptions);
+    private static Regex GetTokenComponentsRegex() => tokenComponentsRegex;
 #endif
 
     public static InterpolatedString Parse(string source, IInterpolatedStringSettings settings)
     {
-        if (settings == null) { throw new ArgumentNullException(nameof(settings)); }
+        ValidateSettings(settings);
         if (string.IsNullOrEmpty(source))
         {
             return new InterpolatedString(Array.Empty<InterpolatedStringSegment>(), settings);
@@ -29,9 +30,18 @@ public static partial class InterpolatedStringParser
         return new InterpolatedString(segments.ToList().AsReadOnly(), settings);
     }
 
+    private static void ValidateSettings(IInterpolatedStringSettings settings)
+    {
+        Guard.NotNull(settings, nameof(settings));
+        var syntax = settings.Syntax;
+        Guard.NotEmpty(syntax.Start, nameof(syntax.Start));
+        Guard.NotEmpty(syntax.End, nameof(syntax.End));
+        Guard.NotEmpty(syntax.EscapedStart, nameof(syntax.EscapedStart));
+    }
+
     private static IEnumerable<Match> GetRegexMatches(string source, TokenSyntax syntax)
     {
-#if NET7_0_OR_GREATER
+#if NET8_0_OR_GREATER
         var knownRegex = CommonTokenSyntaxRegexStore.GetRegex(syntax);
         if (knownRegex != null) { return knownRegex.Matches(source).Cast<Match>(); }
 #endif
@@ -55,28 +65,39 @@ public static partial class InterpolatedStringParser
 
             if (index != captureIndex)
             {
-                yield return new InterpolatedStringSegment(source.Substring(index, captureIndex - index));
+                yield return new InterpolatedStringLiteralSegment(source.Substring(index, captureIndex - index));
             }
             if (segment == escapedStartToken)
             {
-                yield return new InterpolatedStringSegment(startToken);
+                yield return new InterpolatedStringLiteralSegment(startToken);
             }
             else if (!segment.StartsWith(startToken, StringComparison.Ordinal))
             {
-                yield return new InterpolatedStringSegment(segment);
+                yield return new InterpolatedStringLiteralSegment(segment);
             }
             else
             {
                 int middleLength = segment.Length - startToken.Length - endToken.Length;
-                string tripleWithoutMarkers = segment.Substring(startToken.Length, middleLength);
-                var split = GetTokenTripleRegex().Split(tripleWithoutMarkers);
-                yield return new InterpolatedStringTokenSegment(segment, split[1], split[2], split[3]);
+                string componentPartsString = segment.Substring(startToken.Length, middleLength);
+                var split = GetTokenComponentsRegex().Split(componentPartsString);
+                bool isBlockCommand = blockCommandPrefix.Equals(split[1], StringComparison.Ordinal);
+
+                if (isBlockCommand)
+                {
+                    if (split[2].Length == 0) { throw new ParserException($"Blank token marker matched: {segment}"); }
+                    yield return new InterpolatedStringBlockSegment(segment, split[2], split[3], split[4]);
+                }
+                else 
+                {
+                    if (split[1].Length == 0) { throw new ParserException($"Blank token marker matched: {segment}"); }
+                    yield return new InterpolatedStringTokenSegment(segment, split[1], split[2], split[3]);
+                }
             }
             index = captureIndex + captureLength;
         }
         if (index < source.Length)
         {
-            yield return new InterpolatedStringSegment(source.Substring(index));
+            yield return new InterpolatedStringLiteralSegment(source.Substring(index));
         }
     }
 }

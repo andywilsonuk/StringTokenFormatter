@@ -1,18 +1,15 @@
 ﻿namespace StringTokenFormatter.Impl;
 
-/// <summary>
-/// This Value Container searches child containers in order added for the provided token value and returns the first value found. 
-/// </summary>
-public class CompositeTokenValueContainer : ITokenValueContainer
+public sealed class CompositeTokenValueContainer : ITokenValueContainer
 {
-    private readonly ITokenValueContainer[] containers;
     private readonly ITokenValueContainerSettings settings;
+    private readonly ITokenValueContainer[] containers;
 
-    public CompositeTokenValueContainer(IEnumerable<ITokenValueContainer> containers, ITokenValueContainerSettings settings)
+    internal CompositeTokenValueContainer(ITokenValueContainerSettings settings, IEnumerable<ITokenValueContainer> containers)
     {
-        if (containers == null) { throw new ArgumentNullException(nameof(containers)); }
-        this.containers = containers.Where(x => x is { }).ToArray();
-        this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        this.settings = Guard.NotNull(settings, nameof(settings));
+        Guard.NotNull(containers, nameof(containers));
+        this.containers = containers.Select(x => Guard.NotNull(x, $"Child container of {nameof(containers)} is null")).ToArray();
     }
 
     public TryGetResult TryMap(string token)

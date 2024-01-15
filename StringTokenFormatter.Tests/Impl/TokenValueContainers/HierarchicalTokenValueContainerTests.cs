@@ -8,7 +8,7 @@ public class HierarchicalTokenValueContainerTests
     [Fact]
     public void TryMap_TokenWithPrefix_ReturnsSuccess()
     {
-        var container = new HierarchicalTokenValueContainer(prefix, innerContainer, StringTokenFormatterSettings.Default);
+        var container = TokenValueContainerFactory.FromHierarchical(StringTokenFormatterSettings.Default, prefix, innerContainer);
 
         var actual = container.TryMap($"{prefix}.a");
 
@@ -18,7 +18,7 @@ public class HierarchicalTokenValueContainerTests
     [Fact]
     public void TryMap_TokenWithoutPrefix_ReturnsFailure()
     {
-        var container = new HierarchicalTokenValueContainer(prefix, innerContainer, StringTokenFormatterSettings.Default);
+        var container = TokenValueContainerFactory.FromHierarchical(StringTokenFormatterSettings.Default, prefix, innerContainer);
 
         var actual = container.TryMap("a");
 
@@ -28,7 +28,7 @@ public class HierarchicalTokenValueContainerTests
     [Fact]
     public void TryMap_TokenWithIncorrectPrefix_ReturnsFailure()
     {
-        var container = new HierarchicalTokenValueContainer(prefix, innerContainer, StringTokenFormatterSettings.Default);
+        var container = TokenValueContainerFactory.FromHierarchical(StringTokenFormatterSettings.Default, prefix, innerContainer);
 
         var actual = container.TryMap("bad.a");
 
@@ -38,7 +38,7 @@ public class HierarchicalTokenValueContainerTests
     [Fact]
     public void TryMap_TokenWithMissingSuffix_ReturnsFailure()
     {
-        var container = new HierarchicalTokenValueContainer(prefix, innerContainer, StringTokenFormatterSettings.Default);
+        var container = TokenValueContainerFactory.FromHierarchical(StringTokenFormatterSettings.Default, prefix, innerContainer);
 
         var actual = container.TryMap($"{prefix}.");
 
@@ -53,7 +53,7 @@ public class HierarchicalTokenValueContainerTests
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new HierarchicalTokenValueContainer(prefix, innerContainer, settings);
+        var container = TokenValueContainerFactory.FromHierarchical(settings, prefix, innerContainer);
 
         var actual = container.TryMap($"{prefix.ToUpperInvariant()}.a");
 

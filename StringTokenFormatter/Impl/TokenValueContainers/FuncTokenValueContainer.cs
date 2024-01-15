@@ -1,17 +1,14 @@
 ﻿namespace StringTokenFormatter.Impl;
 
-/// <summary>
-/// This Value Container delegates token matching to the func.
-/// </summary>
-public class FuncTokenValueContainer<T> : ITokenValueContainer
+public sealed class FuncTokenValueContainer<T> : ITokenValueContainer
 {
-    private readonly Func<string, T> func;
     private readonly ITokenValueContainerSettings settings;
+    private readonly Func<string, T> func;
 
-    public FuncTokenValueContainer(Func<string, T> func, ITokenValueContainerSettings settings)
+    internal FuncTokenValueContainer(ITokenValueContainerSettings settings, Func<string, T> func)
     {
-        this.func = func ?? throw new ArgumentNullException(nameof(func));
-        this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        this.settings = Guard.NotNull(settings, nameof(settings));
+        this.func = Guard.NotNull(func, nameof(func));
     }
 
     public TryGetResult TryMap(string token)

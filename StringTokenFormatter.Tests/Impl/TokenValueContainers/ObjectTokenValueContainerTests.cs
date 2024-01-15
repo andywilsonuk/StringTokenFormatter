@@ -14,7 +14,7 @@ public class ObjectTokenValueContainerTests
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new ObjectTokenValueContainer<TestObject>(source, settings);
+        var container = TokenValueContainerFactory.FromObject(settings, source);
 
         var actual = container.TryMap("a");
 
@@ -31,7 +31,7 @@ public class ObjectTokenValueContainerTests
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new ObjectTokenValueContainer<TestObject>(source, settings);
+        var container = TokenValueContainerFactory.FromObject(settings, source);
 
         var actual = container.TryMap("a");
 
@@ -48,10 +48,43 @@ public class ObjectTokenValueContainerTests
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNull,
         };
-        var container = new ObjectTokenValueContainer<TestObject>(source, settings);
+        var container = TokenValueContainerFactory.FromObject(settings, source);
 
         var actual = container.TryMap("a");
 
         Assert.Equal(default, actual);
     }
+
+    [Fact]
+    public void Constructor_EmptySource_Throws()
+    {
+        var source = new {};
+        var settings = new StringTokenFormatterSettings
+        {
+            NameComparer = StringComparer.Ordinal,
+        };
+
+        Assert.Throws<TokenContainerException>(() => TokenValueContainerFactory.FromObject(settings, source));
+    }
+
+#if NET8_0_OR_GREATER
+    [Fact]
+    public void TryMap_FrozenDictionary_ReturnsSuccess()
+    {
+        int value = 1;
+        var source = new TestObject(A: value);
+        var settings = new StringTokenFormatterSettings
+        {
+            NameComparer = StringComparer.Ordinal,
+            TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
+        };
+        var container = TokenValueContainerFactory.FromObject(settings, source);
+        container.Frozen();
+
+        var actual = container.TryMap("A");
+
+        Assert.Equal(new TryGetResult { IsSuccess = true, Value = value }, actual);
+    }
+
+#endif
 }

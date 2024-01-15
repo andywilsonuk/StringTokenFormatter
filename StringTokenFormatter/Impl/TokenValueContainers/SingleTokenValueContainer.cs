@@ -1,19 +1,16 @@
 ﻿namespace StringTokenFormatter.Impl;
 
-/// <summary>
-/// This Value Container matches a single token name.
-/// </summary>
-public class SingleTokenValueContainer<T> : ITokenValueContainer
+public sealed class SingleTokenValueContainer<T> : ITokenValueContainer where T : notnull
 {
+    private readonly ITokenValueContainerSettings settings;
     private readonly string tokenName;
     private readonly T value;
-    private readonly ITokenValueContainerSettings settings;
 
-    public SingleTokenValueContainer(string tokenName, T value, ITokenValueContainerSettings settings)
+    internal SingleTokenValueContainer(ITokenValueContainerSettings settings, string tokenName, T value)
     {
-        this.tokenName = tokenName;
+        this.settings = Guard.NotNull(settings, nameof(settings));
+        this.tokenName = Guard.NotEmpty(tokenName, nameof(tokenName));
         this.value = value;
-        this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
     }
 
     public TryGetResult TryMap(string token) =>

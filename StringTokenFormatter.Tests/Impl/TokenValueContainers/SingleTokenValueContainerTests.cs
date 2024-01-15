@@ -6,13 +6,13 @@ public class SingleTokenValueContainerTests
     public void TryMap_MatchingTokenCaseInsensitive_ReturnsSuccess()
     {
         string tokenName = "a";
-        int? value = 1;
+        int value = 1;
         var settings = new StringTokenFormatterSettings
         {
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new SingleTokenValueContainer<int?>(tokenName, value, settings);
+        var container = TokenValueContainerFactory.FromSingle(settings, tokenName, value);
 
         var actual = container.TryMap("A");
 
@@ -23,13 +23,13 @@ public class SingleTokenValueContainerTests
     public void TryMap_MismatchedTokenCasing_ReturnsDefault()
     {
         string tokenName = "a";
-        int? value = 1;
+        int value = 1;
         var settings = new StringTokenFormatterSettings
         {
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = new SingleTokenValueContainer<int?>(tokenName, value, settings);
+        var container = TokenValueContainerFactory.FromSingle(settings, tokenName, value);
 
         var actual = container.TryMap("A");
 
@@ -40,13 +40,13 @@ public class SingleTokenValueContainerTests
     public void TryMap_MatchingTokenPolicyViolation_ReturnsDefault()
     {
         string tokenName = "a";
-        int? value = null;
+        string value = string.Empty;
         var settings = new StringTokenFormatterSettings
         {
             NameComparer = StringComparer.OrdinalIgnoreCase,
-            TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNull,
+            TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNullOrEmpty,
         };
-        var container = new SingleTokenValueContainer<int?>(tokenName, value, settings);
+        var container = TokenValueContainerFactory.FromSingle(settings, tokenName, value);
 
         var actual = container.TryMap("a");
 
