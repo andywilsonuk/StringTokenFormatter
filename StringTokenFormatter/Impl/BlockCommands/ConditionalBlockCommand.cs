@@ -65,8 +65,8 @@ public class ConditionalBlockCommand : IBlockCommand
     private const string storeBucketName = nameof(ConditionalBlockCommand);
     private const string disableCountStoreKey = "DisabledCount";
     private const string nestCountStoreKey = "NestedCount";
-    private static int GetDisabledCount(ExpanderContext context) => context.ValueStore.Get(storeBucketName, disableCountStoreKey, () => 0);
-    private static void SetDisabledCount(ExpanderContext context, int disabledCount) => context.ValueStore.Set(storeBucketName, disableCountStoreKey, disabledCount);
-    private static int GetNestedCount(ExpanderContext context) => context.ValueStore.Get(storeBucketName, nestCountStoreKey, () => 0);
-    private static void SetNestedCount(ExpanderContext context, int nestingCount) => context.ValueStore.Set(storeBucketName, nestCountStoreKey, nestingCount);
+    private static int GetDisabledCount(ExpanderContext context) => context.DataStore.Get(storeBucketName, disableCountStoreKey, () => 0);
+    private static void SetDisabledCount(ExpanderContext context, int disabledCount) => context.DataStore.Set(storeBucketName, disableCountStoreKey, disabledCount);
+    private static int GetNestedCount(ExpanderContext context) => context.DataStore.Get(storeBucketName, nestCountStoreKey, () => 0);
+    private static void SetNestedCount(ExpanderContext context, int nestingCount) => context.DataStore.Set(storeBucketName, nestCountStoreKey, nestingCount);
 }

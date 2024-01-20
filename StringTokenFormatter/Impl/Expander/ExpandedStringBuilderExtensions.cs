@@ -4,7 +4,8 @@ public static class ExpandedStringBuilderExtensions
 {
     public static void AppendTokenValue(this ExpandedStringBuilder builder, ExpanderContext context, InterpolatedStringTokenSegment tokenSegment)
     {
-        if (!context.TryGetTokenValue(tokenSegment.Token, out object? tokenValue))
+        string tokenName = tokenSegment.Token;
+        if (!context.TryGetTokenValue(tokenName, out object? tokenValue))
         {
             builder.AppendLiteral(tokenSegment.Raw);
             return;
@@ -12,7 +13,7 @@ public static class ExpandedStringBuilderExtensions
         if (tokenValue == null) { return; }
         try
         {
-            builder.AppendFormat(tokenValue, tokenSegment.Alignment, tokenSegment.Format);
+            builder.AppendFormat(tokenValue, tokenName, tokenSegment.Alignment, tokenSegment.Format);
         }
         catch(FormatException) when (context.Settings.InvalidFormatBehavior == InvalidFormatBehavior.LeaveToken)
         {

@@ -1,6 +1,6 @@
 namespace StringTokenFormatter.Impl;
 
-public sealed class ExpanderValueStore
+public sealed class ExpanderDataStore
 {
     private readonly Dictionary<string, object> innerStore = new();
 

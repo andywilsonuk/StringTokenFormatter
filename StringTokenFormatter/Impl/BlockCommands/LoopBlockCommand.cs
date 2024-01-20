@@ -87,14 +87,14 @@ public sealed class LoopBlockCommand : IBlockCommand
     private const string nestingStackStoreKey = "NestingStack";
     private void PushStack(ExpanderContext context, IterationData iterationData)
     {
-        var stack = context.ValueStore.Get(storeBucketName, nestingStackStoreKey, () => new Stack<IterationData>());
+        var stack = context.DataStore.Get(storeBucketName, nestingStackStoreKey, () => new Stack<IterationData>());
         stack.Push(iterationData);
-        context.ValueStore.Set(storeBucketName, nestingStackStoreKey, stack);
+        context.DataStore.Set(storeBucketName, nestingStackStoreKey, stack);
     }
     private bool TryGetStack(ExpanderContext context, out Stack<IterationData>? stack)
     {
-        stack = context.ValueStore.Exists(storeBucketName, nestingStackStoreKey)
-            ? context.ValueStore.Get<Stack<IterationData>>(storeBucketName, nestingStackStoreKey, () => throw new ExpanderException("Cannot get loop stack when it has not been created"))
+        stack = context.DataStore.Exists(storeBucketName, nestingStackStoreKey)
+            ? context.DataStore.Get<Stack<IterationData>>(storeBucketName, nestingStackStoreKey, () => throw new ExpanderException("Cannot get loop stack when it has not been created"))
             : null;
         return stack is not null;
     }

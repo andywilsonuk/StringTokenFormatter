@@ -45,4 +45,8 @@ public class TokenValueFormatException : StringTokenFormatterException
     public TokenValueFormatException(string message, Exception ex) : base(message, ex)
     {
     }
+
+    public TokenValueFormatException(string message) : base(message)
+    {
+    }
 }

@@ -16,7 +16,7 @@ public sealed class ExpanderContext
     public ITokenValueContainer Container { get; init; }
     public IInterpolatedStringSettings Settings { get; init; }
     public IReadOnlyCollection<IBlockCommand> Commands { get; init; }
-    public ExpanderValueStore ValueStore { get; } = new();
+    public ExpanderDataStore DataStore { get; } = new();
 
     public bool SkipRemainingBlockCommands { get; set; } = false;
 }

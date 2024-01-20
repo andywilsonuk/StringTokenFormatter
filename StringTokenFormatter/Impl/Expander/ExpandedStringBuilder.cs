@@ -5,10 +5,12 @@ namespace StringTokenFormatter.Impl;
 public sealed class ExpandedStringBuilder
 {
     private readonly StringBuilder sb = new();
+    private readonly ExpanderValueFormatter valueFormatter;
     private readonly IFormatProvider formatProvider;
 
-    public ExpandedStringBuilder(IFormatProvider formatProvider)
+    public ExpandedStringBuilder(ExpanderValueFormatter valueFormatter, IFormatProvider formatProvider)
     {
+        this.valueFormatter = Guard.NotNull(valueFormatter, nameof(valueFormatter));
         this.formatProvider = Guard.NotNull(formatProvider, nameof(formatProvider));
     }
 
@@ -22,8 +24,14 @@ public sealed class ExpandedStringBuilder
         sb.Append(value);
     }
 
-    public void AppendFormat(object value, string alignment, string formatString)
+    public void AppendFormat(object value, string tokenName, string alignment, string formatString)
     {
+        if (valueFormatter.TryFormat(value, tokenName, formatString, out string formattedValue))
+        {
+            sb.AppendFormat(formatProvider, $"{{0,{alignment}}}", formattedValue);
+            return;
+        }
+
         bool isAlignmentEmpty = alignment == string.Empty;
         bool isFormatStringEmpty = formatString == string.Empty;
 
