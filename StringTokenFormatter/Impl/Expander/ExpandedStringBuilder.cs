@@ -30,18 +30,20 @@ public sealed class ExpandedStringBuilder
         bool isFormatStringEmpty = formatString == string.Empty;
         if (valueFormatter.TryFormat(value, tokenName, formatString, out string formattedValue))
         {
-            if (isAlignmentEmpty) { alignment = "0"; }
-            sb.AppendFormat(formatProvider, $"{{0,{alignment}}}", formattedValue);
-            return;
+        }
+        else if (isFormatStringEmpty)
+        {
+            formattedValue = Convert.ToString(value, formatProvider) ?? string.Empty;
+        }
+        else
+        {
+            formattedValue = string.Format(formatProvider, $"{{0:{formatString}}}", value);
         }
 
-        if (isAlignmentEmpty && isFormatStringEmpty) {
-            sb.Append(Convert.ToString(value, formatProvider));
-            return;
-        }
-        if (isAlignmentEmpty) { alignment = "0"; }
-        if (isFormatStringEmpty) { formatString = "G"; }
-        sb.AppendFormat(formatProvider, $"{{0,{alignment}:{formatString}}}", value);
+        int requiredAlignment = isAlignmentEmpty ? 0 : int.Parse(alignment);
+        string paddingValue = requiredAlignment > 0 ? formattedValue.PadLeft(requiredAlignment) : formattedValue.PadRight(Math.Abs(requiredAlignment));
+
+        sb.Append(paddingValue);
     }
 
     public string ExpandedString() => sb.ToString();

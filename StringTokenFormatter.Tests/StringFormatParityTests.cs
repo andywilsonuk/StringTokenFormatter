@@ -6,6 +6,7 @@ public class StringFormatParityTests
     private readonly BasicContainer valuesContainer = new();
 
     [Theory]
+    [InlineData("", 2)]
     [InlineData(":N", 2)]
     [InlineData(",6:P", 2)]
     [InlineData(",-6:P", 2)]
