@@ -136,4 +136,22 @@ public class InterpolatedStringExpanderConditionalBlockTests
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
+
+    [Fact]
+    public void Expand_NegatedCondition_StringWithoutLiteralValue()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringLiteralSegment("one "),
+            new InterpolatedStringBlockSegment("{:if,!IsValid}", "if", "!IsValid", string.Empty),
+            new InterpolatedStringLiteralSegment("two"),
+            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("IsValid", true);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("one ", actual);
+    }
 }

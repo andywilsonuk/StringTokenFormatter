@@ -29,7 +29,7 @@ public class ConditionalBlockCommand : IBlockCommand
         context.SkipRemainingBlockCommands = disabledCount > 0;
     }
 
-    public void Start(ExpanderContext context, InterpolatedStringBlockSegment blockSegment)
+    private static void Start(ExpanderContext context, InterpolatedStringBlockSegment blockSegment)
     {
         SetNestedCount(context, GetNestedCount(context) + 1);
         int disabledCount = GetDisabledCount(context);
@@ -39,18 +39,23 @@ public class ConditionalBlockCommand : IBlockCommand
             SetDisabledCount(context, disabledCount + 1);
             return;
         }
+
+        string tokenName = blockSegment.Token;
+        bool isNegated = tokenName[0] == '!';
+
+        string actualTokenName = isNegated ? tokenName.Substring(1) : tokenName;
         
-        if (!context.TryGetTokenValue(blockSegment.Token, out object? tokenValue) || tokenValue is not bool conditionEnabled)
+        if (!context.TryGetTokenValue(actualTokenName, out object? tokenValue) || tokenValue is not bool conditionEnabled)
         {
-            throw new ExpanderException($"Conditional token value '{blockSegment.Token}' is not a boolean");
+            throw new ExpanderException($"Conditional token value '{actualTokenName}' is not a boolean");
         }
-        if (!conditionEnabled)
+        if (!conditionEnabled || isNegated)
         {
             SetDisabledCount(context, disabledCount + 1);
         }
     }
 
-    public void End(ExpanderContext context)
+    private static void End(ExpanderContext context)
     {
         SetNestedCount(context, GetNestedCount(context) - 1);
         SetDisabledCount(context, GetDisabledCount(context) - 1);

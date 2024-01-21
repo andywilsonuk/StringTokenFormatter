@@ -25,14 +25,14 @@ public sealed class LoopBlockCommand : IBlockCommand
         }
     }
     
-    public void Start(ExpanderContext context, InterpolatedStringBlockSegment blockSegment)
+    private static void Start(ExpanderContext context, InterpolatedStringBlockSegment blockSegment)
     {
         int currentSegmentIndex = context.SegmentIterator.CurrentIndex;
         int iterations = GetRequiredIterations(context, blockSegment);
         PushStack(context, new IterationData(currentSegmentIndex, iterations));
     }
 
-    public void End(ExpanderContext context)
+    private static void End(ExpanderContext context)
     {
          if (!TryGetStack(context, out var stack) || stack!.Count == 0)
         {
@@ -85,13 +85,13 @@ public sealed class LoopBlockCommand : IBlockCommand
 
     private const string storeBucketName = nameof(LoopBlockCommand);
     private const string nestingStackStoreKey = "NestingStack";
-    private void PushStack(ExpanderContext context, IterationData iterationData)
+    private static void PushStack(ExpanderContext context, IterationData iterationData)
     {
         var stack = context.DataStore.Get(storeBucketName, nestingStackStoreKey, () => new Stack<IterationData>());
         stack.Push(iterationData);
         context.DataStore.Set(storeBucketName, nestingStackStoreKey, stack);
     }
-    private bool TryGetStack(ExpanderContext context, out Stack<IterationData>? stack)
+    private static bool TryGetStack(ExpanderContext context, out Stack<IterationData>? stack)
     {
         stack = context.DataStore.Exists(storeBucketName, nestingStackStoreKey)
             ? context.DataStore.Get<Stack<IterationData>>(storeBucketName, nestingStackStoreKey, () => throw new ExpanderException("Cannot get loop stack when it has not been created"))
