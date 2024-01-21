@@ -16,7 +16,7 @@ public class InterpolatedStringTests
         
         var actual = interpolatedString.Tokens();
 
-        var expected = new HashSet<string> { "a", "A", "b" };
+        var expected = new HashSet<string> { "a", "b" };
         Assert.Equal(expected, actual);
     }
 
@@ -51,6 +51,25 @@ public class InterpolatedStringTests
         var actual = interpolatedString.Tokens();
 
         var expected = new HashSet<string> { "a", "b" };
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Tokens_ParsedTokensCaseSensitive_ReturnsTokenHashset()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringTokenSegment("{a}", "a", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{A}", "A", string.Empty, string.Empty),
+        };
+        var settings = StringTokenFormatterSettings.Default with {
+            NameComparer = StringComparer.Ordinal,
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        
+        var actual = interpolatedString.Tokens();
+
+        var expected = new HashSet<string> { "a", "A" };
         Assert.Equal(expected, actual);
     }
 }

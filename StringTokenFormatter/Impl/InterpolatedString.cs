@@ -4,11 +4,10 @@ public record InterpolatedString(IReadOnlyCollection<InterpolatedStringSegment> 
 
 public static class InterpolatedStringExtensions {
     /// <summary>
-    /// Returns the distinct tokens present within the `InterpolatedString`.
-    /// Note: this is faithful to the original casing of the token and does not take into account the `NameComparer`.
+    /// Returns the distinct tokens present within the `InterpolatedString`
     /// </summary>
     public static HashSet<string> Tokens(this InterpolatedString interpolatedString) =>
-        new(interpolatedString.Segments.OfType<InterpolatedStringTokenOnlySegment>().Select(x => x.Token).Where(x => x != string.Empty));
+        new(interpolatedString.Segments.OfType<InterpolatedStringTokenOnlySegment>().Select(x => x.Token).Where(x => x != string.Empty), interpolatedString.Settings.NameComparer);
 }
 
 public abstract record InterpolatedStringSegment(string Raw);
