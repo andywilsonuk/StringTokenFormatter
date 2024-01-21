@@ -67,6 +67,14 @@ public interface IInterpolatedStringSettings
     /// Gets the collection of Block Commands.
     /// </summary>
     public IReadOnlyCollection<IBlockCommand> BlockCommands { get; }
+    /// <summary>
+    /// Gets the comparer for matching token names. Default: `StringComparer.OrdinalIgnoreCase`
+    /// </summary>
+    public StringComparer NameComparer { get; }
+    /// <summary>
+    /// Gets the collection of Block Commands.
+    /// </summary>
+    public IReadOnlyCollection<FormatterDefinition> FormatterDefinitions { get; }
 }
 public interface ITokenValueContainerSettings
 {
@@ -109,6 +117,11 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
 
     public string HierarchicalDelimiter { get; init; } = ".";
 
+    public IReadOnlyCollection<FormatterDefinition> FormatterDefinitions {
+        get { return formatterDefinitions ?? defaultFormatterDefinitions; }
+        init { formatterDefinitions = value; }
+    }
+
     private IReadOnlyCollection<TokenValueConverter> valueConverters = defaultValueConverters;
     private static readonly IReadOnlyCollection<TokenValueConverter> defaultValueConverters = new List<TokenValueConverter>
     {
@@ -128,4 +141,7 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
         BlockCommandFactory.Conditional,
         BlockCommandFactory.Loop,
     }.AsReadOnly();
+
+    private static readonly IReadOnlyCollection<FormatterDefinition> defaultFormatterDefinitions = Array.Empty<FormatterDefinition>();
+    private IReadOnlyCollection<FormatterDefinition> formatterDefinitions = defaultFormatterDefinitions;
 }

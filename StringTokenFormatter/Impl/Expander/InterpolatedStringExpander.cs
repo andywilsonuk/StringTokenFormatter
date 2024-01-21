@@ -9,7 +9,7 @@ public static class InterpolatedStringExpander
 
         var settings = interpolatedString.Settings;
         var iterator = new ExpandedStringIterator(interpolatedString.Segments);
-        var formatter = new ExpanderValueFormatter(Array.Empty<FormatterDefinition>(), StringComparer.Ordinal); // TODO: pass token name comparer
+        var formatter = new ExpanderValueFormatter(settings.FormatterDefinitions, settings.NameComparer);
         var builder = new ExpandedStringBuilder(formatter, settings.FormatProvider);
         var context = new ExpanderContext(iterator, builder, container, settings, settings.BlockCommands);
         IterateSegments(context);

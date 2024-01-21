@@ -23,15 +23,4 @@ public sealed class FormatterDefinition
     public static FormatterDefinition ForTokenNameAndFormatString<T>(string tokenName, string formatString, FormatterFunction<T> formatFunction) where T : notnull => new(typeof(T), tokenName, formatString, formatFunction);
 
     public override string ToString() => $"Type:{RequiredType.Name},TokenName:{RequiredTokenName},FormatString:{RequiredFormatString}";
-
-    internal static int GenerateHashCode(StringComparer tokenNameComparer, Type requiredType, string tokenName, string formatString)
-    {
-        int typeHash = requiredType.GetHashCode();
-        int tokenNameHash = tokenNameComparer.GetHashCode(tokenName);
-        int formatStringHash = StringComparer.OrdinalIgnoreCase.GetHashCode(formatString);
-        return (typeHash, tokenNameHash, formatStringHash).GetHashCode();
-    }
-
-    internal static int GenerateHashCode(StringComparer tokenNameComparer, FormatterDefinition definition) => 
-        GenerateHashCode(tokenNameComparer, definition.RequiredType, definition.RequiredTokenName, definition.RequiredFormatString);
 }

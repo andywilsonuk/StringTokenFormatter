@@ -26,14 +26,14 @@ public sealed class ExpandedStringBuilder
 
     public void AppendFormat(object value, string tokenName, string alignment, string formatString)
     {
+        bool isAlignmentEmpty = alignment == string.Empty;
+        bool isFormatStringEmpty = formatString == string.Empty;
         if (valueFormatter.TryFormat(value, tokenName, formatString, out string formattedValue))
         {
+            if (isAlignmentEmpty) { alignment = "0"; }
             sb.AppendFormat(formatProvider, $"{{0,{alignment}}}", formattedValue);
             return;
         }
-
-        bool isAlignmentEmpty = alignment == string.Empty;
-        bool isFormatStringEmpty = formatString == string.Empty;
 
         if (isAlignmentEmpty && isFormatStringEmpty) {
             sb.Append(Convert.ToString(value, formatProvider));
