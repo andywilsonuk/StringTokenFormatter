@@ -8,6 +8,7 @@ public class StringFormatParityTests
     [Theory]
     [InlineData("", 2)]
     [InlineData(":N", 2)]
+    [InlineData(":n", 2)]
     [InlineData(",6:P", 2)]
     [InlineData(",-6:P", 2)]
     [InlineData(",-2:D", 123456)]
@@ -27,7 +28,11 @@ public class StringFormatParityTests
     }
 
     [Theory]
+    [InlineData("")]
     [InlineData(":HH:mm")]
+    [InlineData(",5")]
+    [InlineData(",-5")]
+    [InlineData(":d")]
     public void DateTimePatternParsing_EqualsStringFormat(string pattern)
     {
         string source = $"{{num{pattern}}}";

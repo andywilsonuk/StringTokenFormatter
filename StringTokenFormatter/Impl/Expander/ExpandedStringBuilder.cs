@@ -26,24 +26,28 @@ public sealed class ExpandedStringBuilder
 
     public void AppendFormat(object value, string tokenName, string alignment, string formatString)
     {
-        bool isAlignmentEmpty = alignment == string.Empty;
-        bool isFormatStringEmpty = formatString == string.Empty;
-        if (valueFormatter.TryFormat(value, tokenName, formatString, out string formattedValue))
+        if (!valueFormatter.TryFormat(value, tokenName, formatString, out string formattedValue))
         {
-        }
-        else if (isFormatStringEmpty)
-        {
-            formattedValue = Convert.ToString(value, formatProvider) ?? string.Empty;
-        }
-        else
-        {
-            formattedValue = string.Format(formatProvider, $"{{0:{formatString}}}", value);
+            formattedValue = FormatUsingProvider(value, formatString == string.Empty ? null : formatString);
         }
 
-        int requiredAlignment = isAlignmentEmpty ? 0 : int.Parse(alignment);
-        string paddingValue = requiredAlignment > 0 ? formattedValue.PadLeft(requiredAlignment) : formattedValue.PadRight(Math.Abs(requiredAlignment));
-
+        int requestedAlignment = alignment == string.Empty ? 0 : int.Parse(alignment);
+        string paddingValue = requestedAlignment > 0 ? formattedValue.PadLeft(requestedAlignment) : formattedValue.PadRight(Math.Abs(requestedAlignment));
         sb.Append(paddingValue);
+    }
+
+    private string FormatUsingProvider(object value, string? formatString)
+    {
+        if (formatProvider.GetFormat(typeof(ICustomFormatter)) is ICustomFormatter customFormatter)
+        {
+            string? result = customFormatter.Format(formatString, value, formatProvider);
+            if (result != null) { return result; }
+        }
+        if (value is IFormattable formattable)
+        {
+            return formattable.ToString(formatString, formatProvider);
+        }
+        return value.ToString() ?? string.Empty;
     }
 
     public string ExpandedString() => sb.ToString();
