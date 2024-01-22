@@ -183,4 +183,19 @@ public class InterpolatedStringExpanderLoopBlockTests
 
         Assert.Equal("ab", actual);
     }
+
+    [Fact]
+    public void Expand_EmptyLoopInner_EmptyString()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
+            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal(string.Empty, actual);
+    }
 }

@@ -15,16 +15,4 @@ public class ScenarioTests
 
         Assert.Equal("litlitlit", actual);
     }
-
-    [Fact]
-    public void ConditionalPreventsInnerTokenMatching_StringWithoutSuppressedValue()
-    {
-        string source = "{:if,IsValid}{Suppressed}{:ifend}";
-        valuesContainer.Add("IsValid", false);
-        valuesContainer.Add("Suppressed", () => Assert.Fail("This value should not be called"));
-
-        string actual = resolver.FromContainer(source, valuesContainer);
-
-        Assert.Equal(string.Empty, actual);
-    }
 }

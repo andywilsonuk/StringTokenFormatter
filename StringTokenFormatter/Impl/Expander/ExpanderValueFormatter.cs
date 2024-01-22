@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace StringTokenFormatter.Impl;
 
 public sealed class ExpanderValueFormatter
@@ -17,13 +19,20 @@ public sealed class ExpanderValueFormatter
 
     private bool TryFormat(Type valueType, string tokenName, string formatString, object value, out string formattedValue)
     {
-        if (TryGetBestDefinition(valueType, tokenName, formatString, out FormatterDefinition? definition))
+        try
         {
-            formattedValue = definition!.Formatter.DynamicInvoke(value, formatString) as string ?? string.Empty;
-            return true;
+            if (TryGetBestDefinition(valueType, tokenName, formatString, out FormatterDefinition? definition))
+            {
+                formattedValue = definition!.Formatter.DynamicInvoke(value, formatString) as string ?? string.Empty;
+                return true;
+            }
+            formattedValue = string.Empty;
+            return false;
         }
-        formattedValue = string.Empty;
-        return false;
+        catch (TargetInvocationException ex)
+        {
+            throw new FormatException($"Formatter failed for value '{value}' with formatString '{formatString}'", ex.InnerException ?? ex);
+        }
     }
 
     private bool TryGetBestDefinition(Type valueType, string actualTokenName, string actualFormatString, out FormatterDefinition? definition)
@@ -66,6 +75,10 @@ public sealed class ExpanderValueFormatter
             {
                 matchScore = candidateScore;
                 matchDefinition = candidate;
+            }
+            else if (candidateScore == matchScore)
+            {
+                throw new FormatException($"Duplicate formatter defined '{candidate}'");
             }
         }
         definition = matchDefinition;

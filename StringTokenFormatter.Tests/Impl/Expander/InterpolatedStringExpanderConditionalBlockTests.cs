@@ -138,6 +138,22 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
+    public void Expand_ConditionWithEmptyInner_EmptyString()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
+            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("IsValid", true);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal(string.Empty, actual);
+    }
+
+    [Fact]
     public void Expand_NegatedCondition_StringWithoutLiteralValue()
     {
         var segments = new List<InterpolatedStringSegment>
@@ -153,5 +169,25 @@ public class InterpolatedStringExpanderConditionalBlockTests
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("one ", actual);
+    }
+
+    
+    [Fact]
+    public void Expand_ConditionalPreventsInnerTokenMatching_StringWithoutSuppressedValue()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:if,!IsValid}", "if", "!IsValid", string.Empty),
+            new InterpolatedStringTokenSegment("{Suppressed}", "Suppressed", string.Empty, string.Empty),
+            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+
+        valuesContainer.Add("IsValid", false);
+        valuesContainer.Add("Suppressed", () => Assert.Fail("This value should not be called"));
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal(string.Empty, actual);
     }
 }

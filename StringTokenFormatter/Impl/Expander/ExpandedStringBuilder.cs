@@ -30,25 +30,42 @@ public sealed class ExpandedStringBuilder
         {
             formattedValue = FormatUsingProvider(value, formatString == string.Empty ? null : formatString);
         }
-
-        int requestedAlignment = alignment == string.Empty ? 0 : int.Parse(alignment);
-        string paddingValue = requestedAlignment > 0 ? formattedValue.PadLeft(requestedAlignment) : formattedValue.PadRight(Math.Abs(requestedAlignment));
+        string paddingValue = Pad(ParseAlignment(alignment), formattedValue);
         sb.Append(paddingValue);
     }
 
     private string FormatUsingProvider(object value, string? formatString)
     {
-        if (formatProvider.GetFormat(typeof(ICustomFormatter)) is ICustomFormatter customFormatter)
+        try
         {
-            string? result = customFormatter.Format(formatString, value, formatProvider);
-            if (result != null) { return result; }
+            if (formatProvider.GetFormat(typeof(ICustomFormatter)) is ICustomFormatter customFormatter)
+            {
+                string? result = customFormatter.Format(formatString, value, formatProvider);
+                if (result != null) { return result; }
+            }
+            if (value is IFormattable formattable)
+            {
+                return formattable.ToString(formatString, formatProvider);
+            }
+            return value.ToString() ?? string.Empty;
         }
-        if (value is IFormattable formattable)
+        catch (Exception ex)
         {
-            return formattable.ToString(formatString, formatProvider);
+            throw new FormatException($"IFormatProvider failed to format value '{value}' with formatString '{formatString}'", ex);
         }
-        return value.ToString() ?? string.Empty;
     }
+
+    private static int ParseAlignment(string alignment) =>
+        alignment == string.Empty ? 0
+         : int.TryParse(alignment, out int requestedAlignment) ? requestedAlignment
+         : throw new FormatException($"Cannot convert alignment '{alignment}' to int");
+
+    private static string Pad(int requestedAlignment, string formattedValue) => requestedAlignment switch
+    {
+        > 0 => formattedValue.PadLeft(requestedAlignment),
+        < 0 => formattedValue.PadRight(Math.Abs(requestedAlignment)),
+        _ => formattedValue,
+    };
 
     public string ExpandedString() => sb.ToString();
 }
