@@ -16,7 +16,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_ConditionLiteralValue_StringWithLiteralValue()
+    public void ConditionLiteralValue_StringWithLiteralValue()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -34,7 +34,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_ConditionTokenValue_StringWithTokenValue()
+    public void ConditionTokenValue_StringWithTokenValue()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -53,7 +53,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_FalseCondition_StringWithoutValue()
+    public void FalseCondition_StringWithoutValue()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -71,7 +71,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_NestedConditions_StringWithNestedValue()
+    public void NestedConditions_StringWithNestedValue()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -97,7 +97,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_ConditionMissingEndIfCommand_Throws()
+    public void ConditionMissingEndIfCommand_Throws()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -111,7 +111,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_ConditionMissingIfCommand_Throws()
+    public void ConditionMissingIfCommand_Throws()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -123,7 +123,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_ConditionInvalidTokenValue_Throws()
+    public void ConditionInvalidTokenValue_Throws()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -138,7 +138,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_ConditionWithEmptyInner_EmptyString()
+    public void ConditionWithEmptyInner_EmptyString()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -154,7 +154,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_NegatedCondition_StringWithoutLiteralValue()
+    public void NegatedCondition_StringWithoutLiteralValue()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -173,7 +173,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
 
     
     [Fact]
-    public void Expand_ConditionalPreventsInnerTokenMatching_StringWithoutSuppressedValue()
+    public void ConditionalPreventsInnerTokenMatching_StringWithoutSuppressedValue()
     {
         var segments = new List<InterpolatedStringSegment>
         {

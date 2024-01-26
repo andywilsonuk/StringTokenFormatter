@@ -11,7 +11,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void Expand_WithTypeOnlyFormatter_ReturnsXTwice()
+    public void WithTypeOnlyFormatter_ReturnsXTwice()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -33,7 +33,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void Expand_WithTokenNameFormatter_ReturnsXTwice()
+    public void WithTokenNameFormatter_ReturnsXTwice()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -54,7 +54,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void Expand_WithFormatStringFormatter_ReturnsXTwice()
+    public void WithFormatStringFormatter_ReturnsXTwice()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -74,7 +74,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void Expand_WithtokenNameAndFormatStringFormatter_ReturnsXTwice()
+    public void WithtokenNameAndFormatStringFormatter_ReturnsXTwice()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -94,7 +94,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void Expand_OrderOfPrecedence_ReturnsABCD()
+    public void OrderOfPrecedence_ReturnsABCD()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -123,7 +123,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void Expand_DifferingTypes_ReturnsXTwice()
+    public void DifferingTypes_ReturnsXTwice()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -145,7 +145,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void Expand_WithAlignment_ReturnsPaddedXTwice()
+    public void WithAlignment_ReturnsPaddedXTwice()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -165,7 +165,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void Expand_WithInvalidAlignment_Throws()
+    public void WithInvalidAlignment_Throws()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -183,7 +183,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void Expand_WithThrowingFormatter_Throws()
+    public void WithThrowingFormatter_Throws()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -200,7 +200,7 @@ public class InterpolatedStringExpanderFormatterTests
         Assert.Throws<TokenValueFormatException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
     [Fact]
-    public void Expand_DuplicateDefinition_Throws()
+    public void DuplicateDefinition_Throws()
     {
         var segments = new List<InterpolatedStringSegment>
         {

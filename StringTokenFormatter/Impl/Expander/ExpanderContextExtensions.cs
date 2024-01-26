@@ -2,19 +2,21 @@ namespace StringTokenFormatter.Impl;
 
 public static class ExpanderContextExtensions
 {
-    public static bool TryGetTokenValue(this ExpanderContext context, string token, out object? value)
+    public static bool TryGetTokenValue(this ExpanderContext context, string token, out object? value) =>
+        TryGetTokenValue(context, context.Container, token, out value);
+
+    public static bool TryGetTokenValue(this ExpanderContext context, ITokenValueContainer container, string token, out object? value)
     {
-        var containerMatch = context.Container.TryMap(token);
+        var containerMatch = container.TryMap(token);
+        return ConvertOnSuccess(context, containerMatch, token, out value);
+    }
+
+    public static bool ConvertOnSuccess(this ExpanderContext context, TryGetResult containerMatch, string token, out object? value)
+    {
         if (containerMatch.IsSuccess)
         {
-            var containerValue = containerMatch.Value;
-            var converter = context.Settings.ValueConverters.Select(fn => fn(containerValue, token)).FirstOrDefault(x => x.IsSuccess);
-            if (converter != default)
-            {
-                value = converter.Value;
-                return true;
-            }
-            throw new MissingValueConverterException($"No matching value converter found for token '{token}' with container value {containerValue}");
+            value = ConvertValue(context, token, containerMatch.Value);
+            return true;
         }
         else if (context.Settings.UnresolvedTokenBehavior == UnresolvedTokenBehavior.Throw)
         {
@@ -22,6 +24,14 @@ public static class ExpanderContextExtensions
         }
         value = null;
         return false;
+    }
+
+    public static object? ConvertValue(this ExpanderContext context, string token, object? containerValue)
+    {
+        var converter = context.Settings.ValueConverters.Select(fn => fn(containerValue, token)).FirstOrDefault(x => x.IsSuccess);
+        return converter != default
+            ? converter.Value
+            : throw new MissingValueConverterException($"No matching value converter found for token '{token}' with container value {containerValue}");
     }
 
     public static void EvaluateCurrentSegment(this ExpanderContext context)

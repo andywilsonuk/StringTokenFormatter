@@ -5,7 +5,7 @@ public class InterpolatedStringExpanderTests
     private readonly BasicContainer valuesContainer = new();
 
     [Fact]
-    public void Expand_WithoutTokens_ReturnsOriginalString()
+    public void WithoutTokens_ReturnsOriginalString()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -19,7 +19,7 @@ public class InterpolatedStringExpanderTests
     }
 
     [Fact]
-    public void Expand_WithToken_ReturnsExpandedString()
+    public void WithToken_ReturnsExpandedString()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -38,7 +38,7 @@ public class InterpolatedStringExpanderTests
     [InlineData("{two,10:D4}", "two", "10", "D4", "      0002")]
     [InlineData("{two,D4}", "two", "", "D4", "0002")]
     [InlineData("{two,10}", "two", "10", "", "         2")]
-    public void Expand_FormattingAndAlignmentToken_ReturnsExpandedString(string raw, string token, string alignment, string format, string expected)
+    public void FormattingAndAlignmentToken_ReturnsExpandedString(string raw, string token, string alignment, string format, string expected)
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -53,7 +53,7 @@ public class InterpolatedStringExpanderTests
     }
 
     [Fact]
-    public void Expand_UnresolvedTokenBehaviorThrow_ThrowsException()
+    public void UnresolvedTokenBehaviorThrow_ThrowsException()
     {
         var settings = new StringTokenFormatterSettings
         {
@@ -71,7 +71,7 @@ public class InterpolatedStringExpanderTests
     }
 
     [Fact]
-    public void Expand_UnresolvedTokenBehaviorLeaveUnresolved_ThrowsException()
+    public void UnresolvedTokenBehaviorLeaveUnresolved_ThrowsException()
     {
         var settings = new StringTokenFormatterSettings
         {
@@ -93,7 +93,7 @@ public class InterpolatedStringExpanderTests
     [Theory]
     [InlineData("en-GB", "-16325.62")]
     [InlineData("de-DE", "-16325,62")]
-    public void Expand_FormatProvider_ReturnsExpandedStringUsingProviderSettings(string cultureName, string expected)
+    public void FormatProvider_ReturnsExpandedStringUsingProviderSettings(string cultureName, string expected)
     {
         var settings = new StringTokenFormatterSettings
         {
@@ -115,7 +115,7 @@ public class InterpolatedStringExpanderTests
     [InlineData("{two,10:#.##}", "two", "10", "#.##", "      2,12")]
     [InlineData("{two,#.##}", "two", "", "#.##", "2,12")]
     [InlineData("{two,10}", "two", "10", "", "      2,12")]
-    public void Expand_FormatProviderFormattingAndAlignmentToken_ReturnsExpandedString(string raw, string token, string alignment, string format, string expected)
+    public void FormatProviderFormattingAndAlignmentToken_ReturnsExpandedString(string raw, string token, string alignment, string format, string expected)
     {
         var settings = new StringTokenFormatterSettings
         {
@@ -136,7 +136,7 @@ public class InterpolatedStringExpanderTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void Expand_BlankValue_ReturnsEmptyString(string? tokenValue)
+    public void BlankValue_ReturnsEmptyString(string? tokenValue)
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -151,7 +151,7 @@ public class InterpolatedStringExpanderTests
     }
 
     [Fact]
-    public void Expand_ValueConverters_ConvertsContainerValueToBinary()
+    public void ValueConverters_ConvertsContainerValueToBinary()
     {
         TokenValueConverter base2Converter = (v, _n) => v is int base10 ? TryGetResult.Success(Convert.ToString(base10, 2)) : default;
         var segments = new List<InterpolatedStringSegment>
@@ -170,7 +170,7 @@ public class InterpolatedStringExpanderTests
     }
 
     [Fact]
-    public void Expand_PrimativeTypeMatchesBeforeFunc_ValueConvertersStopOnceMatched()
+    public void PrimativeTypeMatchesBeforeFunc_ValueConvertersStopOnceMatched()
     {
         static TryGetResult converter(object? _v, string _n)
         {
@@ -195,7 +195,7 @@ public class InterpolatedStringExpanderTests
     }
 
     [Fact]
-    public void Expand_UnmatchedValueConverters_Throws()
+    public void UnmatchedValueConverters_Throws()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -211,7 +211,7 @@ public class InterpolatedStringExpanderTests
     }
 
     [Fact]
-    public void Expand_ObjectTypeTokenValueWithoutValueConverter_Throws()
+    public void ObjectTypeTokenValueWithoutValueConverter_Throws()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -224,7 +224,7 @@ public class InterpolatedStringExpanderTests
     }
 
     [Fact]
-    public void Expand_TokenFuncGivenTokenName_ConvertsContainerValue()
+    public void TokenFuncGivenTokenName_ConvertsContainerValue()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -240,7 +240,7 @@ public class InterpolatedStringExpanderTests
     }
 
     [Fact]
-    public void Expand_FormatError_Throws()
+    public void FormatError_Throws()
     {
         var settings = new StringTokenFormatterSettings
         {
@@ -257,7 +257,7 @@ public class InterpolatedStringExpanderTests
     }
 
     [Fact]
-    public void Expand_FormatErrorLeaveUnformatted_StringWithTokenValue()
+    public void FormatErrorLeaveUnformatted_StringWithTokenValue()
     {
         var settings = new StringTokenFormatterSettings
         {
@@ -276,7 +276,7 @@ public class InterpolatedStringExpanderTests
     }
 
     [Fact]
-    public void Expand_FormatErrorLeaveToken_StringWithTokenValue()
+    public void FormatErrorLeaveToken_StringWithTokenValue()
     {
          var settings = new StringTokenFormatterSettings
         {

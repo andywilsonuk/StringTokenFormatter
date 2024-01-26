@@ -67,7 +67,7 @@ public class ConditionalBlockCommand : IBlockCommand
         if (nestedCount != 0) { throw new ExpanderException("Mismatch of conditional commands start and end counts"); }
     }
 
-    private const string storeBucketName = nameof(ConditionalBlockCommand);
+    private const string storeBucketName = startCommandName;
     private const string disableCountStoreKey = "DisabledCount";
     private const string nestCountStoreKey = "NestedCount";
     private static int GetDisabledCount(ExpanderContext context) => context.DataStore.Get(storeBucketName, disableCountStoreKey, () => 0);

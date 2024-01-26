@@ -57,8 +57,8 @@ public sealed class ExpandedStringBuilder
 
     private static int ParseAlignment(string alignment) =>
         alignment == string.Empty ? 0
-         : int.TryParse(alignment, out int requestedAlignment) ? requestedAlignment
-         : throw new FormatException($"Cannot convert alignment '{alignment}' to int");
+        : int.TryParse(alignment, out int requestedAlignment) ? requestedAlignment
+        : throw new FormatException($"Cannot convert alignment '{alignment}' to int");
 
     private static string Pad(int requestedAlignment, string formattedValue) => requestedAlignment switch
     {
