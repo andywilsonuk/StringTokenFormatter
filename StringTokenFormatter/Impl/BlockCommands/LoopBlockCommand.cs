@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace StringTokenFormatter.Impl;
 
 public sealed class LoopBlockCommand : IBlockCommand
@@ -7,6 +9,11 @@ public sealed class LoopBlockCommand : IBlockCommand
     private const string startCommandName = "loop";
     private const string endCommandName = "loopend";
     private const string currentIterationCommandName = "::loopiteration";
+
+    public void Init(ExpanderContext context)
+    {
+        CreateStack(context);
+    }
 
     public void Evaluate(ExpanderContext context)
     {
@@ -26,41 +33,18 @@ public sealed class LoopBlockCommand : IBlockCommand
                 return;
             }
         }
-        bool hasStack = TryGetStack(context, out var stack) && stack!.Count > 0;
-     
-        if (hasStack && stack!.Peek().TotalIterations == 0)
+        var stack = GetStack(context);     
+        if (stack.Count > 0 && stack.Peek().TotalIterations == 0)
         {
             context.SkipRemainingBlockCommands = true;
             return;
         }
-
         if (segment is InterpolatedStringTokenSegment tokenSegment)
         {
-            string tokenName = tokenSegment.Token;
-            if (context.Settings.NameComparer.Equals(currentIterationCommandName, tokenName))
-            {
-                context.StringBuilder.AppendTokenValue(context, tokenSegment, stack!.Peek().CurrentIteration);
-                context.SkipRemainingBlockCommands = true;
-                return;
-            }
-            bool isList = TryGetTokenList(context, tokenName, out var sequence);
-            if (isList)
-            {
-                var data = (stack?.FirstOrDefault(x => x.Sequence == sequence)) ?? throw new ExpanderException($"No current loop for {tokenName}");
-                var result = sequence!.TryMapForIndex(tokenName, data.CurrentIteration - 1);
-                if (context.ConvertOnSuccess(result, tokenName, out object? convertValue))
-                {
-                    context.StringBuilder.AppendTokenValue(context, tokenSegment, convertValue);
-                }
-                else
-                {
-                    context.StringBuilder.AppendLiteral(tokenSegment.Raw);
-                }
-                context.SkipRemainingBlockCommands = true;
-            }
+            EvaluateTokenSegment(context, stack, tokenSegment);
         }
     }
-    
+
     private static void Start(ExpanderContext context, InterpolatedStringBlockSegment blockSegment)
     {
         int currentSegmentIndex = context.SegmentIterator.CurrentIndex;
@@ -101,7 +85,7 @@ public sealed class LoopBlockCommand : IBlockCommand
         var containerMatch = context.Container.TryMap(token);
         if (containerMatch.IsSuccess && containerMatch.Value is not ISequenceTokenValueContainer)
         {
-            if (context.ConvertOnSuccess(containerMatch, token, out object? tokenValue) && tokenValue is int iterationsFromTokenValue)
+            if (context.ConvertValueIfMatched(containerMatch, token, out object? tokenValue) && tokenValue is int iterationsFromTokenValue)
             {
                 iterations = iterationsFromTokenValue;
                 return true;
@@ -127,9 +111,38 @@ public sealed class LoopBlockCommand : IBlockCommand
         throw new ExpanderException($"Loop data '{data}' is not an int");
     }
 
+    private static void EvaluateTokenSegment(ExpanderContext context, Stack<LoopData> stack, InterpolatedStringTokenSegment tokenSegment)
+    {
+        string tokenName = tokenSegment.Token;
+        if (context.Settings.NameComparer.Equals(currentIterationCommandName, tokenName))
+        {
+            context.StringBuilder.AppendTokenValue(context, tokenSegment, stack.Peek().CurrentIteration);
+            context.SkipRemainingBlockCommands = true;
+            return;
+        }
+        bool isList = TryGetTokenList(context, tokenName, out var sequence);
+        if (isList)
+        {
+            var data = stack.FirstOrDefault(x => x.Sequence == sequence);
+            if (data == null) { throw new ExpanderException($"No current loop for {tokenName}"); }
+
+            var result = sequence!.TryMapForIndex(tokenName, data.CurrentIteration - 1);
+            if (context.ConvertValueIfMatched(result, tokenName, out object? convertValue))
+            {
+                context.StringBuilder.AppendTokenValue(context, tokenSegment, convertValue);
+            }
+            else
+            {
+                context.StringBuilder.AppendLiteral(tokenSegment.Raw);
+            }
+            context.SkipRemainingBlockCommands = true;
+        }
+    }
+
     private static void End(ExpanderContext context)
     {
-        if (!TryGetStack(context, out var stack) || stack!.Count == 0)
+        var stack = GetStack(context);
+        if (stack.Count == 0)
         {
             throw new ExpanderException("Loop end block command without start");
         }
@@ -144,7 +157,7 @@ public sealed class LoopBlockCommand : IBlockCommand
 
     public void Finished(ExpanderContext context)
     {
-        if (TryGetStack(context, out var stack) && stack!.Count > 0)
+        if (GetStack(context).Count > 0)
         {
             throw new ExpanderException("Missing loop end block command");
         }
@@ -152,19 +165,9 @@ public sealed class LoopBlockCommand : IBlockCommand
 
     private const string storeBucketName = startCommandName;
     private const string nestingStackStoreKey = "NestingStack";
-    private static void PushStack(ExpanderContext context, LoopData iterationData)
-    {
-        var stack = context.DataStore.Get(storeBucketName, nestingStackStoreKey, () => new Stack<LoopData>());
-        stack.Push(iterationData);
-        context.DataStore.Set(storeBucketName, nestingStackStoreKey, stack);
-    }
-    private static bool TryGetStack(ExpanderContext context, out Stack<LoopData>? stack)
-    {
-        stack = context.DataStore.Exists(storeBucketName, nestingStackStoreKey)
-            ? context.DataStore.Get<Stack<LoopData>>(storeBucketName, nestingStackStoreKey, () => throw new ExpanderException("Cannot get loop stack when it has not been created"))
-            : null;
-        return stack is not null;
-    }
+    private static void CreateStack(ExpanderContext context) => context.DataStore.Set(storeBucketName, nestingStackStoreKey, new Stack<LoopData>());
+    private static void PushStack(ExpanderContext context, LoopData iterationData) => GetStack(context).Push(iterationData);
+    private static Stack<LoopData> GetStack(ExpanderContext context) => context.DataStore.Get<Stack<LoopData>>(storeBucketName, nestingStackStoreKey);
 
     record struct LoopData(int SegmentIndex, int CurrentIteration, int TotalIterations, ISequenceTokenValueContainer? Sequence);
 }

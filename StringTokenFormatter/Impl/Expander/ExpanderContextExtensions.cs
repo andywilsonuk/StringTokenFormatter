@@ -8,10 +8,10 @@ public static class ExpanderContextExtensions
     public static bool TryGetTokenValue(this ExpanderContext context, ITokenValueContainer container, string token, out object? value)
     {
         var containerMatch = container.TryMap(token);
-        return ConvertOnSuccess(context, containerMatch, token, out value);
+        return ConvertValueIfMatched(context, containerMatch, token, out value);
     }
 
-    public static bool ConvertOnSuccess(this ExpanderContext context, TryGetResult containerMatch, string token, out object? value)
+    public static bool ConvertValueIfMatched(this ExpanderContext context, TryGetResult containerMatch, string token, out object? value)
     {
         if (containerMatch.IsSuccess)
         {

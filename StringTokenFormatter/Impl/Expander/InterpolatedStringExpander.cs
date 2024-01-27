@@ -12,8 +12,18 @@ public static class InterpolatedStringExpander
         var formatter = new ExpanderValueFormatter(settings.FormatterDefinitions, settings.NameComparer);
         var builder = new ExpandedStringBuilder(formatter, settings.FormatProvider);
         var context = new ExpanderContext(iterator, builder, container, settings, settings.BlockCommands);
+        BlockCommandsInit(context);
         IterateSegments(context);
+        BlockCommandsFinished(context);
         return builder.ExpandedString();
+    }
+
+    private static void BlockCommandsInit(ExpanderContext context)
+    {
+        foreach (var command in context.Commands)
+        {
+            command.Init(context);
+        }
     }
 
     private static void IterateSegments(ExpanderContext context)
@@ -33,6 +43,10 @@ public static class InterpolatedStringExpander
                 context.EvaluateCurrentSegment();
             }
         }
+    }
+
+    private static void BlockCommandsFinished(ExpanderContext context)
+    {
         foreach (var command in context.Commands)
         {
             command.Finished(context);
