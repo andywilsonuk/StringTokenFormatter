@@ -7,10 +7,10 @@ public static partial class InterpolatedStringParser
     private const string blockCommandPrefix = ":";
     private const string paddingSeparator = ",";
     private const string formattingSeparator = ":";
-    private const string tokenComponentsPattern = $"^({blockCommandPrefix})?([^{paddingSeparator}{formattingSeparator}]*){paddingSeparator}?([^{formattingSeparator}]*){formattingSeparator}?(.*)$";
+    private const string tokenComponentsPattern = $"^({blockCommandPrefix}{{0,2}})?([^{paddingSeparator}{formattingSeparator}]*){paddingSeparator}?([^{formattingSeparator}]*){formattingSeparator}?(.*)$";
     private static readonly RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant;
 
-#if NET7_0_OR_GREATER
+#if NET8_0_OR_GREATER
     [GeneratedRegex(tokenComponentsPattern, RegexOptions.Singleline | RegexOptions.CultureInvariant)]
     private static partial Regex GetTokenComponentsRegex();
 # else
@@ -84,13 +84,13 @@ public static partial class InterpolatedStringParser
 
                 if (isBlockCommand)
                 {
-                    if (split[2].Length == 0) { throw new ParserException($"Blank token marker matched: {segment}"); }
+                    if (split[2].Length == 0) { throw new ParserException($"Blank token marker in Block Command matched: {segment}"); }
                     yield return new InterpolatedStringBlockSegment(segment, split[2], split[3], split[4]);
                 }
                 else 
                 {
-                    if (split[1].Length == 0) { throw new ParserException($"Blank token marker matched: {segment}"); }
-                    yield return new InterpolatedStringTokenSegment(segment, split[1], split[2], split[3]);
+                    if (split[2].Length == 0) { throw new ParserException($"Blank token marker matched: {segment}"); }
+                    yield return new InterpolatedStringTokenSegment(segment, split[1] + split[2], split[3], split[4]);
                 }
             }
             index = captureIndex + captureLength;
