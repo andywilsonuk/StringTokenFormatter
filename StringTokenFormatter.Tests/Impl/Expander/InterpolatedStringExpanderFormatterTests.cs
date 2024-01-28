@@ -11,7 +11,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void WithTypeOnlyFormatter_ReturnsXTwice()
+    public void WithTypeOnlyFormatter_OutputXTwice()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -33,7 +33,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void WithTokenNameFormatter_ReturnsXTwice()
+    public void WithTokenNameFormatter_OutputXTwice()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -54,7 +54,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void WithFormatStringFormatter_ReturnsXTwice()
+    public void WithFormatStringFormatter_OutputXTwice()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -74,7 +74,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void WithtokenNameAndFormatStringFormatter_ReturnsXTwice()
+    public void WithtokenNameAndFormatStringFormatter_OutputXTwice()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -94,7 +94,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void OrderOfPrecedence_ReturnsABCD()
+    public void OrderOfPrecedence_OutputABCD()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -123,7 +123,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void DifferingTypes_ReturnsXTwice()
+    public void DifferingTypes_OutputXTwice()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -145,7 +145,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void WithAlignment_ReturnsPaddedXTwice()
+    public void WithAlignment_OutputPaddedXTwice()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -199,6 +199,7 @@ public class InterpolatedStringExpanderFormatterTests
 
         Assert.Throws<TokenValueFormatException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
+
     [Fact]
     public void DuplicateDefinition_Throws()
     {
@@ -216,5 +217,27 @@ public class InterpolatedStringExpanderFormatterTests
         var interpolatedString = new InterpolatedString(segments, settings);
 
         Assert.Throws<TokenValueFormatException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
+    }
+
+    [Fact]
+    public void SpecificTypeNotObject_OutputXTwice()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, "x"),
+        };
+        var settings = StringTokenFormatterSettings.Default with {
+            FormatterDefinitions = new List<FormatterDefinition>
+            {
+                FormatterDefinition.ForTypeOnly((object value, string formatString) => "wrong"),
+                FormatterDefinition.ForTypeOnly((int value, string formatString) => new string(formatString[0], value)),
+            }
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("two", 2);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("xx", actual);
     }
 }
