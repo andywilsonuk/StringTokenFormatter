@@ -2,11 +2,14 @@
 
 public class InterpolatedStringResolver
 {
+    private readonly ExpanderValueFormatter formatter;
+
     public StringTokenFormatterSettings Settings { get; }
 
     public InterpolatedStringResolver(StringTokenFormatterSettings settings)
     {
         Settings = Guard.NotNull(settings, nameof(settings));
+        formatter = new ExpanderValueFormatter(settings.FormatterDefinitions, settings.NameComparer);
     }
 
     public string FromSingle<T>(string interpolatedString, string token, T value) where T : notnull =>
@@ -46,7 +49,7 @@ public class InterpolatedStringResolver
         FromContainer(interpolatedString, TokenValueContainerFactory.FromFunc(Settings, func));
         
     public string FromContainer(string interpolatedString, ITokenValueContainer tokenValueContainer) =>
-        InterpolatedStringExpander.Expand(InterpolatedStringParser.Parse(interpolatedString, Settings), tokenValueContainer);
+       FromContainer(InterpolatedStringParser.Parse(interpolatedString, Settings), tokenValueContainer);
     public string FromContainer(InterpolatedString segments, ITokenValueContainer tokenValueContainer) =>
-        InterpolatedStringExpander.Expand(segments, tokenValueContainer);
+        InterpolatedStringExpander.Expand(segments, tokenValueContainer, formatter);
 }

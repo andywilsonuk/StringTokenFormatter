@@ -2,14 +2,16 @@
 
 public static class InterpolatedStringExpander
 {
-    public static string Expand(InterpolatedString interpolatedString, ITokenValueContainer container)
+    public static string Expand(InterpolatedString interpolatedString, ITokenValueContainer container) =>
+        Expand(interpolatedString, container, new ExpanderValueFormatter(interpolatedString.Settings.FormatterDefinitions, interpolatedString.Settings.NameComparer));
+
+    internal static string Expand(InterpolatedString interpolatedString, ITokenValueContainer container, ExpanderValueFormatter formatter)
     {
         Guard.NotNull(interpolatedString, nameof(interpolatedString));
         Guard.NotNull(container, nameof(container));
 
         var settings = interpolatedString.Settings;
         var iterator = new ExpandedStringIterator(interpolatedString.Segments);
-        var formatter = new ExpanderValueFormatter(settings.FormatterDefinitions, settings.NameComparer);
         var builder = new ExpandedStringBuilder(formatter, settings.FormatProvider);
         var context = new ExpanderContext(iterator, builder, container, settings, settings.BlockCommands);
         BlockCommandsInit(context);
