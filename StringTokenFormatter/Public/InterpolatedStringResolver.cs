@@ -49,7 +49,9 @@ public class InterpolatedStringResolver
         FromContainer(interpolatedString, TokenValueContainerFactory.FromFunc(Settings, func));
         
     public string FromContainer(string interpolatedString, ITokenValueContainer tokenValueContainer) =>
-       FromContainer(InterpolatedStringParser.Parse(interpolatedString, Settings), tokenValueContainer);
+       FromContainer(Interpolate(interpolatedString), tokenValueContainer);
     public string FromContainer(InterpolatedString segments, ITokenValueContainer tokenValueContainer) =>
         InterpolatedStringExpander.Expand(segments, tokenValueContainer, formatter);
+
+    public InterpolatedString Interpolate(string interpolatedString) => InterpolatedStringParser.Parse(interpolatedString, Settings);
 }
