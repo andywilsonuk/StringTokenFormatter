@@ -18,9 +18,9 @@ public sealed class HierarchicalTokenValueContainer : ITokenValueContainer
     {
         int prefixIndex = token.IndexOf(settings.HierarchicalDelimiter, StringComparison.Ordinal);
         if (prefixIndex == -1) { return default; }
-        if (!settings.NameComparer.Equals(prefix, token.Substring(0, prefixIndex))) { return default; }
+        if (!settings.NameComparer.Equals(prefix, token[..prefixIndex])) { return default; }
 
-        string remainingToken = token.Substring(prefixIndex + settings.HierarchicalDelimiter.Length);
+        string remainingToken = token[(prefixIndex + settings.HierarchicalDelimiter.Length)..];
         return container.TryMap(remainingToken);
     }
 }

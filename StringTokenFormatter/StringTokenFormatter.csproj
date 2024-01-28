@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net8.0;netstandard2.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
 		<LangVersion>10</LangVersion>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
@@ -9,6 +9,7 @@
 		<!--These are essentially implicit usings that are safe for .NET 4.8 (System.Net.Http is omitted)-->
 		<Using Include="System" />
 		<Using Include="System.Collections.Generic" />
+		<Using Include="System.Diagnostics.CodeAnalysis" />
 		<Using Include="System.Globalization" />
 		<Using Include="System.Linq" />
 		<Using Include="System.Threading.Tasks" />

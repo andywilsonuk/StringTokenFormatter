@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace StringTokenFormatter.Impl;
 
 public sealed class LoopBlockCommand : IBlockCommand
@@ -41,7 +39,11 @@ public sealed class LoopBlockCommand : IBlockCommand
         }
         if (segment is InterpolatedStringTokenSegment tokenSegment)
         {
-            EvaluateTokenSegment(context, stack, tokenSegment);
+            if (EvaluateTokenSegment(context, stack, tokenSegment))
+            {
+                context.SkipRemainingBlockCommands = true;
+                return;
+            }
         }
     }
 
@@ -52,11 +54,11 @@ public sealed class LoopBlockCommand : IBlockCommand
         string tokenName = blockSegment.Token;
         if (TryGetTokenList(context, tokenName, out var sequence))
         {
-            requestIterations = sequence!.Count;
+            requestIterations = sequence.Count;
         }
         else if (TryGetTokenIterations(context, tokenName, out int? tokenIterations))
         {
-            requestIterations = tokenIterations!.Value;
+            requestIterations = tokenIterations.Value;
         }
 
         if (TryGetDataIterations(blockSegment.Data, out int? dataIterations))
@@ -65,7 +67,7 @@ public sealed class LoopBlockCommand : IBlockCommand
             {
                 throw new ExpanderException($"Loop iterations cannot be greater than list count");
             }
-            requestIterations = dataIterations!.Value;
+            requestIterations = dataIterations.Value;
         }
 
         if (requestIterations < 0) { throw new ExpanderException($"Loop iterations cannot be less than zero"); }
@@ -73,14 +75,14 @@ public sealed class LoopBlockCommand : IBlockCommand
         PushStack(context, new LoopData(currentSegmentIndex, 1, requestIterations, sequence));
     }
 
-    private static bool TryGetTokenList(ExpanderContext context, string token, out ISequenceTokenValueContainer? list)
+    private static bool TryGetTokenList(ExpanderContext context, string token, [NotNullWhen(true)] out ISequenceTokenValueContainer? list)
     {
         var containerMatch = context.Container.TryMap(token);
         list = containerMatch.IsSuccess && containerMatch.Value is ISequenceTokenValueContainer listValue ? listValue : null;
         return list != null;
     }
 
-    private static bool TryGetTokenIterations(ExpanderContext context, string token, out int? iterations)
+    private static bool TryGetTokenIterations(ExpanderContext context, string token, [NotNullWhen(true)]out int? iterations)
     {
         var containerMatch = context.Container.TryMap(token);
         if (containerMatch.IsSuccess && containerMatch.Value is not ISequenceTokenValueContainer)
@@ -96,7 +98,7 @@ public sealed class LoopBlockCommand : IBlockCommand
         return false;
     }
 
-    private static bool TryGetDataIterations(string data, out int? iterations)
+    private static bool TryGetDataIterations(string data, [NotNullWhen(true)] out int? iterations)
     {
         if (data == string.Empty)
         {
@@ -111,22 +113,24 @@ public sealed class LoopBlockCommand : IBlockCommand
         throw new ExpanderException($"Loop data '{data}' is not an int");
     }
 
-    private static void EvaluateTokenSegment(ExpanderContext context, Stack<LoopData> stack, InterpolatedStringTokenSegment tokenSegment)
+    private static bool EvaluateTokenSegment(ExpanderContext context, Stack<LoopData> stack, InterpolatedStringTokenSegment tokenSegment)
     {
         string tokenName = tokenSegment.Token;
         if (context.Settings.NameComparer.Equals(currentIterationCommandName, tokenName))
         {
+            if (stack.Count == 0)
+            {
+                throw new ExpanderException($"No current loop to get {currentIterationCommandName}");
+            }
             context.StringBuilder.AppendTokenValue(context, tokenSegment, stack.Peek().CurrentIteration);
-            context.SkipRemainingBlockCommands = true;
-            return;
+            return true;
         }
-        bool isList = TryGetTokenList(context, tokenName, out var sequence);
-        if (isList)
+        if (TryGetTokenList(context, tokenName, out var sequence))
         {
             var data = stack.FirstOrDefault(x => x.Sequence == sequence);
-            if (data == null) { throw new ExpanderException($"No current loop for {tokenName}"); }
+            if (data == default) { throw new ExpanderException($"No current loop for {tokenName}"); }
 
-            var result = sequence!.TryMapForIndex(tokenName, data.CurrentIteration - 1);
+            var result = sequence.TryMap(tokenName, data.CurrentIteration);
             if (context.ConvertValueIfMatched(result, tokenName, out object? convertValue))
             {
                 context.StringBuilder.AppendTokenValue(context, tokenSegment, convertValue);
@@ -135,8 +139,9 @@ public sealed class LoopBlockCommand : IBlockCommand
             {
                 context.StringBuilder.AppendLiteral(tokenSegment.Raw);
             }
-            context.SkipRemainingBlockCommands = true;
+            return true;
         }
+        return false;
     }
 
     private static void End(ExpanderContext context)

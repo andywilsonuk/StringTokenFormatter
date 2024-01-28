@@ -2,12 +2,9 @@ namespace StringTokenFormatter.Impl;
 
 public static class ExpanderContextExtensions
 {
-    public static bool TryGetTokenValue(this ExpanderContext context, string token, out object? value) =>
-        TryGetTokenValue(context, context.Container, token, out value);
-
-    public static bool TryGetTokenValue(this ExpanderContext context, ITokenValueContainer container, string token, out object? value)
+    public static bool TryGetTokenValue(this ExpanderContext context, string token, out object? value)
     {
-        var containerMatch = container.TryMap(token);
+        var containerMatch = context.Container.TryMap(token);
         return ConvertValueIfMatched(context, containerMatch, token, out value);
     }
 
@@ -26,7 +23,7 @@ public static class ExpanderContextExtensions
         return false;
     }
 
-    public static object? ConvertValue(this ExpanderContext context, string token, object? containerValue)
+    private static object? ConvertValue(ExpanderContext context, string token, object? containerValue)
     {
         var converter = context.Settings.ValueConverters.Select(fn => fn(containerValue, token)).FirstOrDefault(x => x.IsSuccess);
         return converter != default
@@ -34,19 +31,20 @@ public static class ExpanderContextExtensions
             : throw new MissingValueConverterException($"No matching value converter found for token '{token}' with container value {containerValue}");
     }
 
-    public static void EvaluateCurrentSegment(this ExpanderContext context)
+    public static void EvaluateSegment(this ExpanderContext context, InterpolatedStringSegment segment)
     {
-        var segment = context.SegmentIterator.Current;
-        if (segment is InterpolatedStringTokenSegment tokenSegment)
+        switch (segment)
         {
-            context.StringBuilder.AppendTokenValue(context, tokenSegment);
-            return;
+            case InterpolatedStringTokenSegment tokenSegment:
+                context.StringBuilder.AppendTokenValue(context, tokenSegment);
+                return;
+            case InterpolatedStringBlockSegment:
+                // blocks are already handled by commands
+                return;
+            case InterpolatedStringLiteralSegment rawSegment:
+                context.StringBuilder.AppendLiteral(rawSegment.Raw);
+                return;
+            default: throw new ExpanderException($"Unknown segment type {segment}");
         }
-        if (segment is InterpolatedStringBlockSegment)
-        {
-            // blocks are already handled by commands
-            return;
-        }
-        context.StringBuilder.AppendLiteral(segment.Raw);
     }
 }

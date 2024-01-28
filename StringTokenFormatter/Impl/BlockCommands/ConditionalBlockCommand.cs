@@ -49,7 +49,7 @@ public class ConditionalBlockCommand : IBlockCommand
         string tokenName = blockSegment.Token;
         bool isNegated = tokenName[0] == '!';
 
-        string actualTokenName = isNegated ? tokenName.Substring(1) : tokenName;
+        string actualTokenName = isNegated ? tokenName[1..] : tokenName;
         
         if (!context.TryGetTokenValue(actualTokenName, out object? tokenValue) || tokenValue is not bool conditionEnabled)
         {

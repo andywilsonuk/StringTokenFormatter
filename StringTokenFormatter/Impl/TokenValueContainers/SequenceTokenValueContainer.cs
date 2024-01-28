@@ -6,7 +6,7 @@ public sealed class SequenceTokenValueContainer : ITokenValueContainer, ISequenc
     private readonly string prefix;
     private readonly List<object> values;
 
-    public SequenceTokenValueContainer(IHierarchicalTokenValueContainerSettings settings, string prefix, IEnumerable<object> values)
+    internal SequenceTokenValueContainer(IHierarchicalTokenValueContainerSettings settings, string prefix, IEnumerable<object> values)
     {
         this.settings = Guard.NotNull(settings, nameof(settings));
         this.prefix = Guard.NotEmpty(prefix, nameof(prefix));
@@ -17,26 +17,26 @@ public sealed class SequenceTokenValueContainer : ITokenValueContainer, ISequenc
     public TryGetResult TryMap(string token)
     {
         int prefixIndex = token.IndexOf(settings.HierarchicalDelimiter, StringComparison.Ordinal);
-        string tokenPrefix = prefixIndex == -1 ? token : token.Substring(0, prefixIndex); 
+        string tokenPrefix = prefixIndex == -1 ? token : token[..prefixIndex]; 
         return settings.NameComparer.Equals(prefix, tokenPrefix) ? TryGetResult.Success(this) : default;
     }
 
-    public int Count => values.Count;
-
-    public TryGetResult TryMapForIndex(string token, int index)
+    public TryGetResult TryMap(string token, int position)
     {
-        int prefixIndex = token.IndexOf(settings.HierarchicalDelimiter, StringComparison.Ordinal);
+        int prefixStringIndex = token.IndexOf(settings.HierarchicalDelimiter, StringComparison.Ordinal);
 
-        object? value = values[index];
+        object? value = values[position - 1];
         if (value is ITokenValueContainer childContainer)
         {
-            string remainingToken = prefixIndex == -1 ? string.Empty : token.Substring(prefixIndex + settings.HierarchicalDelimiter.Length);
+            string remainingToken = prefixStringIndex == -1 ? string.Empty : token[(prefixStringIndex + settings.HierarchicalDelimiter.Length)..];
             return childContainer.TryMap(remainingToken);
         }
-        else if (prefixIndex == -1)
+        else if (prefixStringIndex == -1)
         {
             return TryGetResult.Success(value);
         }
         return default;
     }
+
+    public int Count => values.Count;
 }

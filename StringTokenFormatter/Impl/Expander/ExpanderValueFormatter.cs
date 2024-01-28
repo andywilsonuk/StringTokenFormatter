@@ -23,7 +23,7 @@ public sealed class ExpanderValueFormatter
         {
             if (TryGetBestDefinition(valueType, tokenName, formatString, out FormatterDefinition? definition))
             {
-                formattedValue = definition!.Formatter.DynamicInvoke(value, formatString) as string ?? string.Empty;
+                formattedValue = definition.Formatter.DynamicInvoke(value, formatString) as string ?? string.Empty;
                 return true;
             }
             formattedValue = string.Empty;
@@ -35,7 +35,7 @@ public sealed class ExpanderValueFormatter
         }
     }
 
-    private bool TryGetBestDefinition(Type valueType, string actualTokenName, string actualFormatString, out FormatterDefinition? definition)
+    private bool TryGetBestDefinition(Type valueType, string actualTokenName, string actualFormatString, [NotNullWhen(true)] out FormatterDefinition? definition)
     {
         if (!definitions.Contains(valueType))
         {

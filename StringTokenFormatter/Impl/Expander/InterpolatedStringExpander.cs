@@ -40,7 +40,7 @@ public static class InterpolatedStringExpander
             }
             if (!context.SkipRemainingBlockCommands)
             {
-                context.EvaluateCurrentSegment();
+                context.EvaluateSegment(context.SegmentIterator.Current);
             }
         }
     }
