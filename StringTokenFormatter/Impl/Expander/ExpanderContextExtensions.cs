@@ -28,7 +28,7 @@ public static class ExpanderContextExtensions
         var converter = context.Settings.ValueConverters.Select(fn => fn(containerValue, token)).FirstOrDefault(x => x.IsSuccess);
         return converter != default
             ? converter.Value
-            : throw new MissingValueConverterException($"No matching value converter found for token '{token}' with container value {containerValue}");
+            : throw new MissingValueConverterException($"No matching value converter found for token '{token}'");
     }
 
     public static void EvaluateSegment(this ExpanderContext context, InterpolatedStringSegment segment)

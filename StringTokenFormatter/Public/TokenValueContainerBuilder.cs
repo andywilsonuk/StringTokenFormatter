@@ -36,24 +36,6 @@ public class TokenValueContainerBuilder
     public void AddContainers(IEnumerable<ITokenValueContainer> containers) =>
         innerList.AddRange(containers);
 
-    public void AddPrimativesSequence<T>(string token, IEnumerable<T> values) where T : struct =>
-        innerList.Add(TokenValueContainerFactory.FromSequence(Settings, token, values));
-
-    public void AddObjectsSequence<T>(string token, IEnumerable<T> values) where T : class
-    {
-        var containers = values.Select(v => TokenValueContainerFactory.FromObject(Settings, v));
-        innerList.Add(TokenValueContainerFactory.FromSequence(Settings, token, containers));
-    }
-
-    public void AddContainerSequence<T>(string token, IEnumerable<ITokenValueContainer> containers) where T : notnull =>
-        innerList.Add(TokenValueContainerFactory.FromSequence(Settings, token, containers));
-
-    public void AddContainerSequence<T>(string token, params T[] containers) where T : notnull =>
-        innerList.Add(TokenValueContainerFactory.FromSequence(Settings, token, containers));
-    
-    public void AddSequence<T>(string token, params ITokenValueContainer[] containers) where T : notnull =>
-        innerList.Add(TokenValueContainerFactory.FromSequence(Settings, token, containers));
-
     public void AddNestedSingle<T>(string prefix, string token, T value) where T : notnull =>
         AddNestedContainer(prefix, TokenValueContainerFactory.FromSingle(Settings, token, value));
 
@@ -71,21 +53,6 @@ public class TokenValueContainerBuilder
 
     public void AddNestedContainer(string prefix, ITokenValueContainer tokenValueContainer) =>
         innerList.Add(TokenValueContainerFactory.FromHierarchical(Settings, prefix, tokenValueContainer));
-
-    public void AddNestedPrimativesSequence<T>(string prefix, string token, IEnumerable<T> values) where T : struct =>
-        AddNestedContainer(prefix, TokenValueContainerFactory.FromSequence(Settings, token, values));
-
-    public void AddNestedObjectsSequence<T>(string prefix, string token, IEnumerable<T> values) where T : class
-    {
-        var containers = values.Select(v => TokenValueContainerFactory.FromObject(Settings, v));
-        AddNestedContainer(prefix, TokenValueContainerFactory.FromSequence(Settings, token, containers));
-    }
-
-    public void AddNestedContainerSequence<T>(string prefix, string token, IEnumerable<ITokenValueContainer> containers) where T : notnull =>
-        AddNestedContainer(prefix, TokenValueContainerFactory.FromSequence(Settings, token, containers));
-
-    public void AddNestedContainerSequence<T>(string prefix, string token, params T[] containers) where T : notnull =>
-        AddNestedContainer(prefix, TokenValueContainerFactory.FromSequence(Settings, token, containers));
 
     public ITokenValueContainer CombinedResult() => TokenValueContainerFactory.FromCombination(Settings, innerList);
 }

@@ -26,14 +26,14 @@ public sealed class SequenceTokenValueContainer : ITokenValueContainer, ISequenc
         int prefixStringIndex = token.IndexOf(settings.HierarchicalDelimiter, StringComparison.Ordinal);
 
         object? value = values[position - 1];
-        if (value is ITokenValueContainer childContainer)
+        if (prefixStringIndex == -1)
+        {
+            return TryGetResult.Success(value);
+        }
+        else if (value is ITokenValueContainer childContainer)
         {
             string remainingToken = prefixStringIndex == -1 ? string.Empty : token[(prefixStringIndex + settings.HierarchicalDelimiter.Length)..];
             return childContainer.TryMap(remainingToken);
-        }
-        else if (prefixStringIndex == -1)
-        {
-            return TryGetResult.Success(value);
         }
         return default;
     }
