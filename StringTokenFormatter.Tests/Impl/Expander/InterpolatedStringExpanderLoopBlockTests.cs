@@ -449,6 +449,28 @@ public class InterpolatedStringExpanderLoopBlockTests
     }
 
     [Fact]
+    public void NestedLoopWithTwoSequences_OutputValuesFromEitherSequence()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:loop}", "loop", "S1", string.Empty),
+            new InterpolatedStringBlockSegment("{:loop}", "loop", "S2", string.Empty),
+            new InterpolatedStringTokenSegment("{S1}", "S1", string.Empty, string.Empty),
+            new InterpolatedStringTokenSegment("{S2}", "S2", string.Empty, string.Empty),
+            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        var sequence1 = TokenValueContainerFactory.FromSequence(settings, "S1", new [] { "a", "b" });
+        var sequence2 = TokenValueContainerFactory.FromSequence(settings, "S2", new [] { "c" });
+        var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence1, sequence2);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
+
+        Assert.Equal("acbc", actual);
+    }
+
+    [Fact]
     public void IfConditionUsingSequenceValue_SecondNameOutput()
     {
         var segments = new List<InterpolatedStringSegment>
