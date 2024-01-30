@@ -48,10 +48,20 @@ public class ConditionalBlockCommand : IBlockCommand
 
         string tokenName = blockSegment.Token;
         bool isNegated = tokenName[0] == '!';
-
         string actualTokenName = isNegated ? tokenName[1..] : tokenName;
+
+        TryGetResult containerMatch;
+        if (context.TryGetSequence(actualTokenName, out var sequence))
+        {
+            int currentIteration = context.GetLoopIteration(sequence);
+            containerMatch = sequence.TryMap(actualTokenName, currentIteration);
+        }
+        else
+        {
+            containerMatch = context.Container.TryMap(actualTokenName);
+        }
         
-        if (!context.TryGetTokenValue(actualTokenName, out object? tokenValue) || tokenValue is not bool conditionEnabled)
+        if (!context.ConvertValueIfMatched(containerMatch, actualTokenName, out object? tokenValue) || tokenValue is not bool conditionEnabled)
         {
             throw new ExpanderException($"Conditional token value '{actualTokenName}' is not a boolean");
         }
@@ -73,7 +83,7 @@ public class ConditionalBlockCommand : IBlockCommand
         if (nestedCount != 0) { throw new ExpanderException("Mismatch of conditional commands start and end counts"); }
     }
 
-    private const string storeBucketName = startCommandName;
+    private const string storeBucketName = nameof(ConditionalBlockCommand);
     private const string disableCountStoreKey = "DisabledCount";
     private const string nestCountStoreKey = "NestedCount";
     private static int GetDisabledCount(ExpanderContext context) => context.DataStore.Get<int>(storeBucketName, disableCountStoreKey);

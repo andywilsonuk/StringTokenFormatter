@@ -447,4 +447,33 @@ public class InterpolatedStringExpanderLoopBlockTests
 
         Assert.Equal("a12b1a12b2a12b3", actual);
     }
+
+    [Fact]
+    public void IfConditionUsingSequenceValue_SecondNameOutput()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterator", string.Empty),
+            new InterpolatedStringBlockSegment("{:if}", "if", "Iterator.IsValue", string.Empty),
+            new InterpolatedStringTokenSegment("{Iterator.Name}", "Iterator.Name", string.Empty, string.Empty),
+            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
+            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var customSettings = StringTokenFormatterSettings.Default with {
+            BlockCommands = new List<IBlockCommand>
+            {
+                BlockCommandFactory.Conditional,
+                BlockCommandFactory.Loop,
+            }
+        };
+        var interpolatedString = new InterpolatedString(segments, customSettings);
+        var o1 = TokenValueContainerFactory.FromObject(customSettings, new { IsValue = false, Name = "a" });
+        var o2 = TokenValueContainerFactory.FromObject(customSettings, new { IsValue = true, Name = "b" });
+        var sequence = TokenValueContainerFactory.FromSequence(customSettings, "Iterator", new [] { o1, o2 });
+        var wrapperContainer = TokenValueContainerFactory.FromCombination(customSettings, sequence);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
+
+        Assert.Equal("b", actual);
+    }
 }
