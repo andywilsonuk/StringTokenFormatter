@@ -23,4 +23,6 @@ public sealed class FormatterDefinition
     public static FormatterDefinition ForTokenNameAndFormatString<T>(string tokenName, string formatString, FormatterFunction<T> formatFunction) where T : notnull => new(typeof(T), tokenName, formatString, formatFunction);
 
     public override string ToString() => $"Type:{RequiredType.Name},TokenName:{RequiredTokenName},FormatString:{RequiredFormatString}";
+
+    public override int GetHashCode() => ToString().GetHashCode();
 }

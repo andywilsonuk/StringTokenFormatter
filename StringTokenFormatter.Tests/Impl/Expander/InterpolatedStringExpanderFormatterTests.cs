@@ -201,25 +201,6 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void DuplicateDefinition_Throws()
-    {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
-        };
-        var settings = StringTokenFormatterSettings.Default with {
-            FormatterDefinitions = new List<FormatterDefinition>
-            {
-                FormatterDefinition.ForTypeOnly((int value, string formatString) => new string(formatString[0], value)),
-                FormatterDefinition.ForTypeOnly((int value, string formatString) => new string(formatString[0], value)),
-            }
-        };
-        var interpolatedString = new InterpolatedString(segments, settings);
-
-        Assert.Throws<TokenValueFormatException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
-    }
-
-    [Fact]
     public void SpecificTypeNotObject_OutputXTwice()
     {
         var segments = new List<InterpolatedStringSegment>

@@ -16,6 +16,7 @@ public static class StringTokenFormatterSettingsExtensions
         Guard.NotNull(settings.BlockCommands, nameof(settings.BlockCommands));
         Guard.NotNull(settings.NameComparer, nameof(settings.NameComparer));
         Guard.NotNull(settings.FormatterDefinitions, nameof(settings.FormatterDefinitions));
+        if (new HashSet<int>(settings.FormatterDefinitions.Select(x => x.GetHashCode())).Count != settings.FormatterDefinitions.Count) { throw new ArgumentException($"Duplicate Formatter Definition detected"); }
         return settings;
     }
 

@@ -72,4 +72,18 @@ public class StringTokenFormatterSettingsValidationTests
 
         Assert.Throws<ArgumentException>(() => settings.Validate());
     }
+
+    [Fact]
+    public void DuplicateFormatDefinition_Throws()
+    {
+        var settings = StringTokenFormatterSettings.Default with
+        {
+            FormatterDefinitions = new [] {
+                FormatterDefinition.ForTypeOnly<int>((_1, _2) => "1"),
+                FormatterDefinition.ForTypeOnly<int>((_1, _2) => "2"),
+            },
+        };
+
+        Assert.Throws<ArgumentException>(() => settings.Validate());
+    }
 }
