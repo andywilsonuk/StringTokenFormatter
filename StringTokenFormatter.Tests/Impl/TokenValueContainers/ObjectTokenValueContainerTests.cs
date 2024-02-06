@@ -2,7 +2,11 @@ namespace StringTokenFormatter.Tests;
 
 public class ObjectTokenValueContainerTests
 {
-    private record TestObject(int? A);
+    private class TestObject
+    {
+        public TestObject(int? A) => this.A = A;
+        public int? A { get; }
+    }
 
     [Fact]
     public void TryMap_MatchingTokenCaseInsensitive_ReturnsSuccess()

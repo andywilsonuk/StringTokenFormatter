@@ -60,7 +60,11 @@ public class TokenValueContainerBuilderTests
         Assert.Equal("1 2 ", actual);
     }
 
-    private record TestRecord(string Value);
+    private class TestRecord
+    {
+        public TestRecord(string Value) => this.Value = Value;
+        public string Value { get; }
+    }
 
     [Fact]
     public void RecordSequence_PrimativeValueOutput()
