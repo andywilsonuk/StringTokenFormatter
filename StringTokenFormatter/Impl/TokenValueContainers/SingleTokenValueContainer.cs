@@ -8,7 +8,7 @@ public sealed class SingleTokenValueContainer<T> : ITokenValueContainer where T 
 
     internal SingleTokenValueContainer(ITokenValueContainerSettings settings, string tokenName, T value)
     {
-        this.settings = Guard.NotNull(settings, nameof(settings));
+        this.settings = Guard.NotNull(settings, nameof(settings)).Validate();
         this.tokenName = Guard.NotEmpty(tokenName, nameof(tokenName));
         this.value = value;
     }

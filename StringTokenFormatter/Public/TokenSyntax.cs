@@ -36,4 +36,17 @@ public static class TokenSyntaxExtensions
     /// Returns the token name wrapped within the start and end syntax.
     /// </summary>
     public static string Tokenize(this TokenSyntax syntax, string tokenName) => $"{syntax.Start}{tokenName}{syntax.End}";
+
+    /// <summary>
+    /// Asserts that the syntax is properly configured
+    /// </summary>
+    public static TokenSyntax Validate(this TokenSyntax syntax)
+    {
+        var (start, end, escapedStart) = syntax;
+        Guard.NotEmpty(start, nameof(start));
+        Guard.NotEmpty(end, nameof(end));
+        Guard.NotEmpty(escapedStart, nameof(escapedStart));
+        if (new HashSet<string> { start, syntax.End, escapedStart }.Count != 3) { throw new ArgumentException($"Duplicate token marker detected for syntax {syntax}"); }
+        return syntax;
+    }
 }

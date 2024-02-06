@@ -8,7 +8,7 @@ public sealed class SequenceTokenValueContainer : ITokenValueContainer, ISequenc
 
     internal SequenceTokenValueContainer(IHierarchicalTokenValueContainerSettings settings, string prefix, IEnumerable<object> values)
     {
-        this.settings = Guard.NotNull(settings, nameof(settings));
+        this.settings = Guard.NotNull(settings, nameof(settings)).Validate();
         this.prefix = Guard.NotEmpty(prefix, nameof(prefix));
         this.values = Guard.NotNull(values, nameof(values)).ToList();
         Guard.NotEmpty(settings.HierarchicalDelimiter, nameof(settings.HierarchicalDelimiter));

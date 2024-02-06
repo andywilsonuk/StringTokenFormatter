@@ -20,7 +20,7 @@ public static partial class InterpolatedStringParser
 
     public static InterpolatedString Parse(string source, IInterpolatedStringSettings settings)
     {
-        ValidateSettings(settings);
+        Guard.NotNull(settings, nameof(settings)).Validate();
         if (string.IsNullOrEmpty(source))
         {
             return new InterpolatedString(Array.Empty<InterpolatedStringSegment>(), settings);
@@ -28,15 +28,6 @@ public static partial class InterpolatedStringParser
         var matches = GetRegexMatches(source, settings.Syntax);
         var segments = ConvertToSegments(source, matches, settings.Syntax);
         return new InterpolatedString(segments.ToList().AsReadOnly(), settings);
-    }
-
-    private static void ValidateSettings(IInterpolatedStringSettings settings)
-    {
-        Guard.NotNull(settings, nameof(settings));
-        var syntax = settings.Syntax;
-        Guard.NotEmpty(syntax.Start, nameof(syntax.Start));
-        Guard.NotEmpty(syntax.End, nameof(syntax.End));
-        Guard.NotEmpty(syntax.EscapedStart, nameof(syntax.EscapedStart));
     }
 
     private static IEnumerable<Match> GetRegexMatches(string source, TokenSyntax syntax)

@@ -9,7 +9,7 @@ public class TokenValueContainerBuilder
 
     public TokenValueContainerBuilder(StringTokenFormatterSettings settings)
     {
-        Settings = Guard.NotNull(settings, nameof(settings));
+        Settings = Guard.NotNull(settings, nameof(settings)).Validate();
     }
 
     public void AddSingle<T>(string token, T value) where T : notnull =>

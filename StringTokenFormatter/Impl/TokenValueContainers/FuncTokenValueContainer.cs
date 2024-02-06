@@ -7,7 +7,7 @@ public sealed class FuncTokenValueContainer<T> : ITokenValueContainer
 
     internal FuncTokenValueContainer(ITokenValueContainerSettings settings, Func<string, T> func)
     {
-        this.settings = Guard.NotNull(settings, nameof(settings));
+        this.settings = Guard.NotNull(settings, nameof(settings)).Validate();
         this.func = Guard.NotNull(func, nameof(func));
     }
 

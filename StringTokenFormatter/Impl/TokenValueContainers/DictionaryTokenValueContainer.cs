@@ -11,7 +11,7 @@ public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
 
     internal DictionaryTokenValueContainer(ITokenValueContainerSettings settings, IEnumerable<(string TokenName, T Value)> source)
     {
-        this.settings = Guard.NotNull(settings, nameof(settings));
+        this.settings = Guard.NotNull(settings, nameof(settings)).Validate();
         this.pairs = CreateDictionary(Guard.NotNull(source, nameof(source)));
     }
 

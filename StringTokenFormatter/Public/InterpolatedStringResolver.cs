@@ -8,7 +8,7 @@ public class InterpolatedStringResolver
 
     public InterpolatedStringResolver(StringTokenFormatterSettings settings)
     {
-        Settings = Guard.NotNull(settings, nameof(settings));
+        Settings = Guard.NotNull(settings, nameof(settings)).Validate();
         formatter = new ExpanderValueFormatter(settings.FormatterDefinitions, settings.NameComparer);
     }
 

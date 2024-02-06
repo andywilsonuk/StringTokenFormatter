@@ -96,7 +96,13 @@ public interface IHierarchicalTokenValueContainerSettings : ITokenValueContainer
 }
 public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInterpolatedStringSettings, IHierarchicalTokenValueContainerSettings
 {
+    /// <summary>
+    /// Initial settings from which custom settings can be derived.
+    /// </summary>
     public static StringTokenFormatterSettings Default { get; } = new();
+    /// <summary>
+    /// Used when settings are not explicitly passed to StringTokenFormatter methods.
+    /// </summary>
     public static StringTokenFormatterSettings Global { get; set; } = Default;
 
     public StringComparer NameComparer { get; init; } = StringComparer.OrdinalIgnoreCase;

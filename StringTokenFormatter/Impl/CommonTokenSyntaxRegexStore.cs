@@ -31,7 +31,11 @@ public static partial class CommonTokenSyntaxRegexStore
     }.ToFrozenDictionary();
 
     private static LinkedList<(TokenSyntax Syntax, Regex Regex)> customStore = new();
-    public static void AddCustom(TokenSyntax syntax, Regex regex) => customStore.AddLast((syntax, regex));
+    public static void AddCustom(TokenSyntax syntax, Regex regex) {
+        Guard.NotNull(syntax, nameof(syntax)).Validate();
+        Guard.NotNull(regex, nameof(regex));
+        customStore.AddLast((syntax, regex));
+    }
 
     public static Regex? GetRegex(TokenSyntax syntax)
     {

@@ -6,10 +6,10 @@ public sealed class FormatterDefinition
 {
     private FormatterDefinition(Type requiredType, string requiredTokenName, string requiredFormatString, Delegate formatter)
     {
-        RequiredType = requiredType;
-        RequiredTokenName = requiredTokenName;
-        RequiredFormatString = requiredFormatString;
-        Formatter = formatter;
+        RequiredType = Guard.NotNull(requiredType, nameof(requiredType));
+        RequiredTokenName = Guard.NotNull(requiredTokenName, nameof(requiredTokenName));
+        RequiredFormatString = Guard.NotNull(requiredFormatString, nameof(requiredFormatString));
+        Formatter = Guard.NotNull(formatter, nameof(formatter));
     }
 
     public Type RequiredType { get; init; }
