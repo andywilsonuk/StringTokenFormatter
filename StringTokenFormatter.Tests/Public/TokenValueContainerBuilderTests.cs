@@ -1,14 +1,21 @@
 namespace StringTokenFormatter.Tests;
 
-public class TokenValueContainerBuilderTests
+public partial class TokenValueContainerBuilderTests
 {
+    private readonly StringTokenFormatterSettings settings;
+    private readonly InterpolatedStringResolver resolver;
+    private readonly TokenValueContainerBuilder builder;
+
+    public TokenValueContainerBuilderTests()
+    {
+        settings = StringTokenFormatterSettings.Default;
+        resolver = new(settings);
+        builder = new TokenValueContainerBuilder(settings);
+    }
+
     [Fact]
     public void MultipleContainerCombinations_AllUsed()
     {
-        var settings = StringTokenFormatterSettings.Default;
-        var resolver = new InterpolatedStringResolver(settings);
-        var builder = new TokenValueContainerBuilder(settings);
-
         var account = new {
             Id = 2,
         };
@@ -29,70 +36,62 @@ public class TokenValueContainerBuilderTests
     }
 
     [Fact]
-    public void StringSequence_PrimativeValueOutput()
+    public void StringSequence_PrimativeValuesMaintained()
     {
-        var settings = StringTokenFormatterSettings.Default;
-        var resolver = new InterpolatedStringResolver(settings);
-        var builder = new TokenValueContainerBuilder(settings);
-
-        builder.AddSequence("Iterator", "first", "second");
+        builder.AddSequence("Seq", new string[] { "first", "second" });
         var combinedContainer = builder.CombinedResult();
 
-        string interpolatedString = "{:loop,Iterator}{Iterator} {:loopend}";
+        var container = Assert.IsAssignableFrom<SequenceTokenValueContainer>(combinedContainer.TryMap("Seq").Value);
+        var actual = container.TryMap("Seq", 1);
+
+        Assert.True(actual.IsSuccess);
+        Assert.IsAssignableFrom<string>(actual.Value);
+    }
+
+    [Fact]
+    public void IntSequence_PrimativeValuesMaintained()
+    {
+        builder.AddSequence("Seq", new int[] { 1, 2 });
+        var combinedContainer = builder.CombinedResult();
+
+        var container = Assert.IsAssignableFrom<SequenceTokenValueContainer>(combinedContainer.TryMap("Seq").Value);
+        var actual = container.TryMap("Seq", 1);
+
+        Assert.True(actual.IsSuccess);
+        Assert.IsAssignableFrom<int>(actual.Value);
+    }
+
+    [Fact]
+    public void ClassSequence_ObjectValueOutput()
+    {
+        builder.AddSequence("Seq", new [] { new ComplexClass("first"), new ComplexClass("second") });
+        var combinedContainer = builder.CombinedResult();
+
+        string interpolatedString = "{:loop,Seq}{Seq.Value} {:loopend}";
+        string actual = resolver.FromContainer(interpolatedString, combinedContainer);
+
+        Assert.Equal("first second ", actual);
+    }
+    
+    [Fact]
+    public void StructSequence_ObjectValueOutput()
+    {
+        builder.AddSequence("Seq", new[] { new ComplexStruct("first"), new ComplexStruct("second") });
+        var combinedContainer = builder.CombinedResult();
+
+        string interpolatedString = "{:loop,Seq}{Seq.Value} {:loopend}";
         string actual = resolver.FromContainer(interpolatedString, combinedContainer);
 
         Assert.Equal("first second ", actual);
     }
 
     [Fact]
-    public void IntSequence_PrimativeValueOutput()
+    public void AnonymousSequence_ObjectValueOutput()
     {
-        var settings = StringTokenFormatterSettings.Default;
-        var resolver = new InterpolatedStringResolver(settings);
-        var builder = new TokenValueContainerBuilder(settings);
-
-        builder.AddSequence("Iterator", 1, 2);
+        builder.AddSequence("Seq", new[] { new { Value = "first" }, new { Value = "second" } });
         var combinedContainer = builder.CombinedResult();
 
-        string interpolatedString = "{:loop,Iterator}{Iterator} {:loopend}";
-        string actual = resolver.FromContainer(interpolatedString, combinedContainer);
-
-        Assert.Equal("1 2 ", actual);
-    }
-
-    private class TestRecord
-    {
-        public TestRecord(string Value) => this.Value = Value;
-        public string Value { get; }
-    }
-
-    [Fact]
-    public void RecordSequence_PrimativeValueOutput()
-    {
-        var settings = StringTokenFormatterSettings.Default;
-        var resolver = new InterpolatedStringResolver(settings);
-        var builder = new TokenValueContainerBuilder(settings);
-
-        builder.AddSequence("Iterator", new TestRecord("first"), new TestRecord("second"));
-        var combinedContainer = builder.CombinedResult();
-
-        string interpolatedString = "{:loop,Iterator}{Iterator.Value} {:loopend}";
-        string actual = resolver.FromContainer(interpolatedString, combinedContainer);
-
-        Assert.Equal("first second ", actual);
-    }
-
-    [Fact]
-    public void AnonymousSequence_PrimativeValueOutput()
-    {
-        var settings = StringTokenFormatterSettings.Default;
-        var resolver = new InterpolatedStringResolver(settings);
-        var builder = new TokenValueContainerBuilder(settings);
-
-        builder.AddSequence("Iterator", new { Value = "first" }, new { Value = "second" });
-        var combinedContainer = builder.CombinedResult();
-
-        string interpolatedString = "{:loop,Iterator}{Iterator.Value} {:loopend}";
+        string interpolatedString = "{:loop,Seq}{Seq.Value} {:loopend}";
         string actual = resolver.FromContainer(interpolatedString, combinedContainer);
 
         Assert.Equal("first second ", actual);

@@ -74,7 +74,7 @@ public class InterpolatedStringExpanderFormatterTests
     }
 
     [Fact]
-    public void WithtokenNameAndFormatStringFormatter_OutputXTwice()
+    public void WithTokenNameAndFormatStringFormatter_OutputXTwice()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -220,5 +220,28 @@ public class InterpolatedStringExpanderFormatterTests
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("xx", actual);
+    }
+
+    [Fact]
+    public void NoMatchingDefinition_FormatsWithProvider()
+    {
+        var settings = new StringTokenFormatterSettings
+        {
+            FormatProvider = CultureInfo.CreateSpecificCulture("en-GB"),
+            FormatterDefinitions = new List<FormatterDefinition>
+            {
+                FormatterDefinition.ForTypeOnly((int value, string formatString) => "wrong"),
+            }
+        };
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("two", -16325.62m);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("-16325.62", actual);
     }
 }

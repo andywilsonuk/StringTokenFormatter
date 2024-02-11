@@ -4,9 +4,8 @@ using System.Collections.Frozen;
 
 namespace StringTokenFormatter.Impl;
 
-public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T : class
+public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T : notnull
 {
-    private static readonly PropertyCache<T> propertyCache = new();
     private readonly ITokenValueContainerSettings settings;
     private IDictionary<string, NonLockingLazy> pairs;
 
@@ -19,7 +18,7 @@ public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T 
     private Dictionary<string, NonLockingLazy> CreateDictionary(T source)
     {
         var d = new Dictionary<string, NonLockingLazy>(settings.NameComparer);
-        foreach (var (propertyName, getValue) in propertyCache.GetPairs())
+        foreach (var (propertyName, getValue) in PropertyCache<T>.Properties)
         {
             d.Add(propertyName, new NonLockingLazy(() => getValue(source)));
         }

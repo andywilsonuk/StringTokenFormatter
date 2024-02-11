@@ -13,7 +13,7 @@ public static class TokenValueContainerFactory
     /// <summary>
     /// Token matching provided by properties exposed by {T} (but not any members on derived classes).
     /// </summary>
-    public static ObjectTokenValueContainer<T> FromObject<T>(ITokenValueContainerSettings settings, T source) where T : class => new(settings, source);
+    public static ObjectTokenValueContainer<T> FromObject<T>(ITokenValueContainerSettings settings, T source) where T : notnull => new(settings, source);
     /// <summary>
     /// Where a single token name and value is required.
     /// </summary>
