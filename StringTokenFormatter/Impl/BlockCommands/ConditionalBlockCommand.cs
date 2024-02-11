@@ -35,7 +35,7 @@ public class ConditionalBlockCommand : IBlockCommand
         context.SkipRemainingBlockCommands = disabledCount > 0;
     }
 
-    private static void Start(ExpanderContext context, InterpolatedStringBlockSegment blockSegment)
+    private static void Start(ExpanderContext context, InterpolatedStringBlockSegment segment)
     {
         SetNestedCount(context, GetNestedCount(context) + 1);
         int disabledCount = GetDisabledCount(context);
@@ -46,22 +46,12 @@ public class ConditionalBlockCommand : IBlockCommand
             return;
         }
 
-        string tokenName = blockSegment.Token;
+        string tokenName = segment.Token;
         bool isNegated = tokenName[0] == '!';
         string actualTokenName = isNegated ? tokenName[1..] : tokenName;
 
-        TryGetResult containerMatch;
-        if (context.TryGetSequence(actualTokenName, out var sequence))
-        {
-            int currentIteration = context.GetLoopIteration(sequence);
-            containerMatch = sequence.TryMap(actualTokenName, currentIteration);
-        }
-        else
-        {
-            containerMatch = context.Container.TryMap(actualTokenName);
-        }
-        
-        if (!context.ConvertValueIfMatched(containerMatch, actualTokenName, out object? tokenValue) || tokenValue is not bool conditionEnabled)
+        var tokenValueResult = context.TryMap(actualTokenName);
+        if (!context.ConvertValueIfMatched(tokenValueResult, actualTokenName, out object? tokenValue) || tokenValue is not bool conditionEnabled)
         {
             throw new ExpanderException($"Conditional token value '{actualTokenName}' is not a boolean");
         }

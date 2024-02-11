@@ -146,6 +146,7 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
     {
         BlockCommandFactory.Conditional,
         BlockCommandFactory.Loop,
+        BlockCommandFactory.Map,
     }.AsReadOnly();
 
     private static readonly IReadOnlyCollection<FormatterDefinition> defaultFormatterDefinitions = Array.Empty<FormatterDefinition>();

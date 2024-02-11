@@ -2,12 +2,6 @@ namespace StringTokenFormatter.Impl;
 
 public static class ExpanderContextExtensions
 {
-    public static bool TryGetTokenValue(this ExpanderContext context, string token, out object? value)
-    {
-        var containerMatch = context.Container.TryMap(token);
-        return ConvertValueIfMatched(context, containerMatch, token, out value);
-    }
-
     public static bool ConvertValueIfMatched(this ExpanderContext context, TryGetResult containerMatch, string token, out object? value)
     {
         if (containerMatch.IsSuccess)
@@ -39,6 +33,11 @@ public static class ExpanderContextExtensions
         return list != null;
     }
 
+    public static TryGetResult TryMap(this ExpanderContext context, string tokenName) =>
+        context.TryGetSequence(tokenName, out var sequence)
+            ? sequence.TryMap(tokenName, context.GetLoopIteration(sequence))
+            : context.Container.TryMap(tokenName);
+
     public static int GetLoopIteration(this ExpanderContext context, ISequenceTokenValueContainer sequence)
     {
         if (!context.Settings.BlockCommands.OfType<LoopBlockCommand>().Any())
@@ -53,7 +52,14 @@ public static class ExpanderContextExtensions
         switch (segment)
         {
             case InterpolatedStringTokenSegment tokenSegment:
-                context.StringBuilder.AppendTokenValue(context, tokenSegment);
+                string tokenName = tokenSegment.Token;
+                var containerMatch = context.TryMap(tokenName);
+                if (!ConvertValueIfMatched(context, containerMatch, tokenName, out object? tokenValue))
+                {
+                    context.StringBuilder.AppendLiteral(tokenSegment.Raw);
+                    return;
+                }
+                context.StringBuilder.AppendTokenValue(context, tokenSegment, tokenValue);
                 return;
             case InterpolatedStringBlockSegment:
                 // blocks are already handled by commands

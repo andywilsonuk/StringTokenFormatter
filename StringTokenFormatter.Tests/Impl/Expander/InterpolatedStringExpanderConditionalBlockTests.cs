@@ -190,4 +190,22 @@ public class InterpolatedStringExpanderConditionalBlockTests
 
         Assert.Equal(string.Empty, actual);
     }
+
+    [Fact]
+    public void ConditionalFromFunc_StringWithoutSuppressedValue()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
+            new InterpolatedStringLiteralSegment("Included"),
+            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+
+        valuesContainer.Add("IsValid", () => (object)true);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("Included", actual);
+    }
 }

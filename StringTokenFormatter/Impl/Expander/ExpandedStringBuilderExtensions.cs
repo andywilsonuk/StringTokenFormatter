@@ -2,18 +2,7 @@ namespace StringTokenFormatter.Impl;
 
 public static class ExpandedStringBuilderExtensions
 {
-    public static void AppendTokenValue(this ExpandedStringBuilder builder, ExpanderContext context, InterpolatedStringTokenSegment tokenSegment)
-    {
-        string tokenName = tokenSegment.Token;
-        if (!context.TryGetTokenValue(tokenName, out object? tokenValue))
-        {
-            builder.AppendLiteral(tokenSegment.Raw);
-            return;
-        }
-        AppendTokenValue(builder, context, tokenSegment, tokenValue);
-    }
-
-    public  static void AppendTokenValue(this ExpandedStringBuilder builder, ExpanderContext context, InterpolatedStringTokenSegment tokenSegment, object? tokenValue)
+    public static void AppendTokenValue(this ExpandedStringBuilder builder, ExpanderContext context, InterpolatedStringTokenSegment tokenSegment, object? tokenValue)
     {
         if (tokenValue == null) { return; }
         try

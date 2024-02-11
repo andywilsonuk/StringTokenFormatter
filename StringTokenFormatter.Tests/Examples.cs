@@ -102,6 +102,17 @@ public class Examples
 
         Assert.Equal("Ref: 002, The second account. It has come to our attention that...", actual);
     }
+
+    private enum OrderType { Unknown = 0, Bike = 1, Car = 2, Bus = 3, }
+    [Fact]
+    public void ValueSelectionUsingMap()
+    {        
+        string interpolatedString = "{:map,OrderType:Unknown=Not set,Bike=Self propelled,Car=Combustion engine,Bus=Electric}";
+
+        string actual = interpolatedString.FormatFromSingle("OrderType", OrderType.Bike);
+
+        Assert.Equal("Self propelled", actual);
+    }
     /*
 
 
