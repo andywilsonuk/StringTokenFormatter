@@ -158,9 +158,9 @@ public class InterpolatedStringExpanderConditionalBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringLiteralSegment("one "),
+            new InterpolatedStringLiteralSegment("one"),
             new InterpolatedStringBlockSegment("{:if,!IsValid}", "if", "!IsValid", string.Empty),
-            new InterpolatedStringLiteralSegment("two"),
+            new InterpolatedStringLiteralSegment(" two"),
             new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
@@ -168,7 +168,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
-        Assert.Equal("one ", actual);
+        Assert.Equal("one", actual);
     }
 
     
@@ -183,7 +183,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
-        valuesContainer.Add("IsValid", false);
+        valuesContainer.Add("IsValid", true);
         valuesContainer.Add("Suppressed", () => Assert.Fail("This value should not be called"));
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);

@@ -21,7 +21,7 @@ public class InterpolatedStringExpanderFormatterTests
         var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
-                FormatterDefinition.ForTypeOnly((decimal value, string formatString) => new string(formatString[0], (int)value)),
+                FormatterDefinition.ForType((decimal value, string formatString) => new string(formatString[0], (int)value)),
             }
         };
         var interpolatedString = new InterpolatedString(segments, settings);
@@ -106,7 +106,7 @@ public class InterpolatedStringExpanderFormatterTests
         var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
-                FormatterDefinition.ForTypeOnly((int value, string formatString) => "a"),
+                FormatterDefinition.ForType((int value, string formatString) => "a"),
                 FormatterDefinition.ForTokenName("tok1", (int value, string formatString) => "b"),
                 FormatterDefinition.ForFormatString("x", (int value, string formatString) => "c"),
                 FormatterDefinition.ForTokenNameAndFormatString("tok2", "x", (int value, string formatString) => "d"),
@@ -132,8 +132,8 @@ public class InterpolatedStringExpanderFormatterTests
         var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
-                FormatterDefinition.ForTypeOnly((int value, string formatString) => "wrong"),
-                FormatterDefinition.ForTypeOnly((decimal value, string formatString) => new string(formatString[0], (int)value)),
+                FormatterDefinition.ForType((int value, string formatString) => "wrong"),
+                FormatterDefinition.ForType((decimal value, string formatString) => new string(formatString[0], (int)value)),
             }
         };
         var interpolatedString = new InterpolatedString(segments, settings);
@@ -174,7 +174,7 @@ public class InterpolatedStringExpanderFormatterTests
         var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
-                FormatterDefinition.ForTypeOnly((int value, string formatString) => "a"),
+                FormatterDefinition.ForType((int value, string formatString) => "a"),
             }
         };
         var interpolatedString = new InterpolatedString(segments, settings);
@@ -192,7 +192,7 @@ public class InterpolatedStringExpanderFormatterTests
         var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
-                FormatterDefinition.ForTypeOnly((int value, string formatString) => throw new Exception()),
+                FormatterDefinition.ForType((int value, string formatString) => throw new Exception()),
             }
         };
         var interpolatedString = new InterpolatedString(segments, settings);
@@ -210,8 +210,8 @@ public class InterpolatedStringExpanderFormatterTests
         var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
-                FormatterDefinition.ForTypeOnly((object value, string formatString) => "wrong"),
-                FormatterDefinition.ForTypeOnly((int value, string formatString) => new string(formatString[0], value)),
+                FormatterDefinition.ForType((object value, string formatString) => "wrong"),
+                FormatterDefinition.ForType((int value, string formatString) => new string(formatString[0], value)),
             }
         };
         var interpolatedString = new InterpolatedString(segments, settings);
@@ -230,7 +230,7 @@ public class InterpolatedStringExpanderFormatterTests
             FormatProvider = CultureInfo.CreateSpecificCulture("en-GB"),
             FormatterDefinitions = new List<FormatterDefinition>
             {
-                FormatterDefinition.ForTypeOnly((int value, string formatString) => "wrong"),
+                FormatterDefinition.ForType((int value, string formatString) => "wrong"),
             }
         };
         var segments = new List<InterpolatedStringSegment>

@@ -1,6 +1,4 @@
-namespace StringTokenFormatter.Impl;
-
-public delegate string FormatterFunction<T>(T value, string formatString);
+namespace StringTokenFormatter;
 
 public sealed class FormatterDefinition
 {
@@ -17,10 +15,10 @@ public sealed class FormatterDefinition
     public string RequiredFormatString { get; init; }
     public Delegate Formatter { get; init; }
 
-    public static FormatterDefinition ForTypeOnly<T>(FormatterFunction<T> formatFunction) where T : notnull => new(typeof(T), string.Empty, string.Empty, formatFunction);
-    public static FormatterDefinition ForTokenName<T>(string tokenName, FormatterFunction<T> formatFunction) where T : notnull => new(typeof(T), tokenName, string.Empty, formatFunction);
-    public static FormatterDefinition ForFormatString<T>(string formatString, FormatterFunction<T> formatFunction) where T : notnull => new(typeof(T), string.Empty, formatString, formatFunction);
-    public static FormatterDefinition ForTokenNameAndFormatString<T>(string tokenName, string formatString, FormatterFunction<T> formatFunction) where T : notnull => new(typeof(T), tokenName, formatString, formatFunction);
+    public static FormatterDefinition ForType<T>(Func<T, string, string> formatFunction) where T : notnull => new(typeof(T), string.Empty, string.Empty, formatFunction);
+    public static FormatterDefinition ForTokenName<T>(string tokenName, Func<T, string, string> formatFunction) where T : notnull => new(typeof(T), tokenName, string.Empty, formatFunction);
+    public static FormatterDefinition ForFormatString<T>(string formatString, Func<T, string, string> formatFunction) where T : notnull => new(typeof(T), string.Empty, formatString, formatFunction);
+    public static FormatterDefinition ForTokenNameAndFormatString<T>(string tokenName, string formatString, Func<T, string, string> formatFunction) where T : notnull => new(typeof(T), tokenName, formatString, formatFunction);
 
     public override string ToString() => $"Type:{RequiredType.Name},TokenName:{RequiredTokenName},FormatString:{RequiredFormatString}";
 

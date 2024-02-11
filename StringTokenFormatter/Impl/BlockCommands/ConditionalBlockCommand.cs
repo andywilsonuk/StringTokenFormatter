@@ -65,10 +65,9 @@ public class ConditionalBlockCommand : IBlockCommand
         {
             throw new ExpanderException($"Conditional token value '{actualTokenName}' is not a boolean");
         }
-        if (!conditionEnabled || isNegated)
-        {
-            SetDisabledCount(context, disabledCount + 1);
-        }
+
+        if (conditionEnabled != isNegated) { return; }
+        SetDisabledCount(context, disabledCount + 1);
     }
 
     private static void End(ExpanderContext context)

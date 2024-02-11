@@ -79,8 +79,8 @@ public class StringTokenFormatterSettingsValidationTests
         var settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions = new [] {
-                FormatterDefinition.ForTypeOnly<int>((_1, _2) => "1"),
-                FormatterDefinition.ForTypeOnly<int>((_1, _2) => "2"),
+                FormatterDefinition.ForType<int>((_1, _2) => "1"),
+                FormatterDefinition.ForType<int>((_1, _2) => "2"),
             },
         };
 

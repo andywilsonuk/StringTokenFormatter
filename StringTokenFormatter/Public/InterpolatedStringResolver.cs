@@ -54,4 +54,5 @@ public class InterpolatedStringResolver
         InterpolatedStringExpander.Expand(segments, tokenValueContainer, formatter);
 
     public InterpolatedString Interpolate(string interpolatedString) => InterpolatedStringParser.Parse(interpolatedString, Settings);
+    public TokenValueContainerBuilder Builder() => new(Settings);
 }

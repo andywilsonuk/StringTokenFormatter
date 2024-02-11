@@ -61,45 +61,53 @@ public class Examples
         Assert.Equal(expected, actual);
     }
 
-    // [Fact]
-    // public void ObjectContainerFromAnonymousType()
-    // {
-    //     string original = "start {:if,IsValid}{middle}{:ifend,IsValid} end";
-    //     var tokenValues = new { Middle = "center", IsValid = true };
-    //     string result = original.FormatFromObject(tokenValues);
-    //     Assert.Equal("start center end", result);
-    // }
+    [Fact]
+    public void ConditionalLogic()
+    {
+        string original = "{:if,formalSalutation}Dear{:ifend}{:if,!formalSalutation}Hi{:ifend} {name}";
+        var combinedContainer = new TokenValueContainerBuilder(StringTokenFormatterSettings.Default)
+            .AddSingle("formalSalutation", false)
+            .AddSingle("name", "Sally")
+            .CombinedResult();
 
-    // [Fact]
-    // public void ObjectContainerFromAnonymousType()
-    // {
-    //     var account = new {
-    //         Id = 2,
-    //         Name = "The second account",
-    //     };
+        string result = original.FormatFromContainer(combinedContainer);
+        Assert.Equal("Hi Sally", result);
+    }
 
-    //     var builder = new TokenValueContainerBuilder(StringTokenFormatterSettings.Default);
-    //     builder.AddSingle("text", "Message text");
-    //     builder.AddNestedObject("Account", account);
-    //     var combinedContainer = builder.CombinedResult();
+    [Fact]
+    public void CustomFormatDefinitions()
+    {
+        static string intFormatter(int value, string formatString) => value.ToString("D3");
+        static string nameFormatter(string value, string formatString) => formatString == "titleCase" ? $"{value.Substring(0, 1).ToUpper()}{value.Substring(1).ToLower()}" : value;
+        var settings = StringTokenFormatterSettings.Default with
+        {
+            FormatterDefinitions = new [] {
+                FormatterDefinition.ForType<int>(intFormatter),
+                FormatterDefinition.ForTokenName<string>("Account.Name", nameFormatter)
+            },
+        };
+        var resolver = new InterpolatedStringResolver(settings);
+        var account = new {
+            Id = 2,
+            Name = "The Second Account",
+        };
+        var combinedContainer = resolver.Builder()
+            .AddSingle("text", "It has come to our attention that...")
+            .AddNestedObject("Account", account)
+            .CombinedResult();
 
-    //     string interpolatedString = "Ref: {Account.Id}. {text}.";
-    //     string actual = interpolatedString.FormatFromContainer(combinedContainer);
+        var interpolatedString = resolver.Interpolate("Ref: {Account.Id}, {Account.Name:titleCase}. {text}");
 
-    //     Assert.Equal("Ref: 2. Message text.", actual);
-    // }
+        string actual = resolver.FromContainer(interpolatedString, combinedContainer);
+
+        Assert.Equal("Ref: 002, The second account. It has come to our attention that...", actual);
+    }
     /*
-loop with Func can be used for stripes
 
-building an html document example
 
 we don't want to handle +M30 as this isn't about formatting. We need an example though of how to do this though! Custom container which accepts the token name+M30
 
 nesting
-
-Also Func T value converter to provide template phrases such as token firstname converter to "Hi Sally". Need a better example
-
-toupper example either as value converter or new format provider. The latter is best when the same token name or type might need different formatting such as upper, lower etc
 
 more examples including loop, enum conversion (new ToString converter? Also custom).
     */
