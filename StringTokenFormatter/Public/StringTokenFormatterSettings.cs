@@ -1,20 +1,5 @@
 ﻿namespace StringTokenFormatter;
 
-public enum TokenResolutionPolicy
-{
-    /// <summary>
-    /// Null or empty string are valid container returns.
-    /// </summary>
-    ResolveAll = 0,
-    /// <summary>
-    /// Null is invalid but empty string are valid container returns.
-    /// </summary>
-    IgnoreNull = 1,
-    /// <summary>
-    /// Null and empty string are invalid container returns.
-    /// </summary>
-    IgnoreNullOrEmpty = 2,
-}
 public enum UnresolvedTokenBehavior
 {
     /// <summary>
@@ -40,6 +25,21 @@ public enum InvalidFormatBehavior
     /// Formatting issues result in the token marker being used.
     /// </summary>
     LeaveToken = 2,
+}
+public enum TokenResolutionPolicy
+{
+    /// <summary>
+    /// Null or empty string are valid container returns.
+    /// </summary>
+    ResolveAll = 0,
+    /// <summary>
+    /// Null is invalid but empty string are valid container returns.
+    /// </summary>
+    IgnoreNull = 1,
+    /// <summary>
+    /// Null and empty string are invalid container returns.
+    /// </summary>
+    IgnoreNullOrEmpty = 2,
 }
 public interface IInterpolatedStringSettings
 {
@@ -82,6 +82,9 @@ public interface ITokenValueContainerSettings
     /// Gets the comparer for matching token names. Default: `StringComparer.OrdinalIgnoreCase`
     /// </summary>
     public StringComparer NameComparer { get; }
+}
+public interface ICompositeTokenValueContainerSettings
+{
     /// <summary>
     /// Gets the policy to use when container values are null or empty string. Default: `TokenResolutionPolicy.ResolveAll`
     /// </summary>
@@ -94,7 +97,8 @@ public interface IHierarchicalTokenValueContainerSettings : ITokenValueContainer
     /// </summary>
     public string HierarchicalDelimiter { get; }
 }
-public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInterpolatedStringSettings, IHierarchicalTokenValueContainerSettings
+public record StringTokenFormatterSettings
+    : ITokenValueContainerSettings, IInterpolatedStringSettings, ICompositeTokenValueContainerSettings, IHierarchicalTokenValueContainerSettings
 {
     /// <summary>
     /// Initial settings from which custom settings can be derived.

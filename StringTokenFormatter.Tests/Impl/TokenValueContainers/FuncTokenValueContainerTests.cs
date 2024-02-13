@@ -31,19 +31,4 @@ public class FuncTokenValueContainerTests
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = null }, actual);
     }
-
-    [Fact]
-    public void TryMap_FuncReturnsNullPolicyViolation_ReturnsDefault()
-    {
-        static int? func(string token) => null;
-        var settings = new StringTokenFormatterSettings
-        {
-            TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNull,
-        };
-        var container = TokenValueContainerFactory.FromFunc(settings, func);
-
-        var actual = container.TryMap("a");
-
-        Assert.Equal(default, actual);
-    }
 }

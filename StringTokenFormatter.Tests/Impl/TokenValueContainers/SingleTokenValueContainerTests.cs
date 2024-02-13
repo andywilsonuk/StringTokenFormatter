@@ -35,21 +35,4 @@ public class SingleTokenValueContainerTests
 
         Assert.Equal(default, actual);
     }
-
-    [Fact]
-    public void TryMap_MatchingTokenPolicyViolation_ReturnsDefault()
-    {
-        string tokenName = "a";
-        string value = string.Empty;
-        var settings = new StringTokenFormatterSettings
-        {
-            NameComparer = StringComparer.OrdinalIgnoreCase,
-            TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNullOrEmpty,
-        };
-        var container = TokenValueContainerFactory.FromSingle(settings, tokenName, value);
-
-        var actual = container.TryMap("a");
-
-        Assert.Equal(default, actual);
-    }
 }

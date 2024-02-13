@@ -25,11 +25,11 @@ public static class TokenValueContainerFactory
     /// <summary>
     /// Searches child containers in order added for the first valid token value. 
     /// </summary>
-    public static CompositeTokenValueContainer FromCombination(ITokenValueContainerSettings settings, IEnumerable<ITokenValueContainer> containers) => new(settings, containers);
+    public static CompositeTokenValueContainer FromCombination(ICompositeTokenValueContainerSettings settings, IEnumerable<ITokenValueContainer> containers) => new(settings, containers);
     /// <summary>
     /// Searches child containers in order added for the first valid token value. 
     /// </summary>
-    public static CompositeTokenValueContainer FromCombination(ITokenValueContainerSettings settings, params ITokenValueContainer[] containers) => new(settings, containers);
+    public static CompositeTokenValueContainer FromCombination(ICompositeTokenValueContainerSettings settings, params ITokenValueContainer[] containers) => new(settings, containers);
     /// <summary>
     /// Attempts to match the prefix to the supplied token and passes the remaining token name to the inner container for matching. 
     /// </summary>

@@ -34,8 +34,7 @@ public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
         return d;
     }
 
-    public TryGetResult TryMap(string token) =>
-        pairs.TryGetValue(token, out var value) && settings.TokenResolutionPolicy.Satisfies(value) ? TryGetResult.Success(value) : default;
+    public TryGetResult TryMap(string token) => pairs.TryGetValue(token, out var value) ? TryGetResult.Success(value) : default;
 
 #if NET8_0_OR_GREATER
     /// <summary>

@@ -2,10 +2,10 @@
 
 public sealed class CompositeTokenValueContainer : ITokenValueContainer
 {
-    private readonly ITokenValueContainerSettings settings;
+    private readonly ICompositeTokenValueContainerSettings settings;
     private readonly ITokenValueContainer[] containers;
 
-    internal CompositeTokenValueContainer(ITokenValueContainerSettings settings, IEnumerable<ITokenValueContainer> containers)
+    internal CompositeTokenValueContainer(ICompositeTokenValueContainerSettings settings, IEnumerable<ITokenValueContainer> containers)
     {
         this.settings = Guard.NotNull(settings, nameof(settings)).Validate();
         Guard.NotNull(containers, nameof(containers));

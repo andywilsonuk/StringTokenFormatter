@@ -27,6 +27,14 @@ public static class StringTokenFormatterSettingsExtensions
     {
         Guard.NotNull(settings, nameof(settings));
         Guard.NotNull(settings.NameComparer, nameof(settings.NameComparer));
+        return settings;
+    }
+
+    /// <summary>
+    /// Asserts that the settings are properly configured
+    /// </summary>
+    public static ICompositeTokenValueContainerSettings Validate(this ICompositeTokenValueContainerSettings settings)
+    {
         Guard.IsDefined(settings.TokenResolutionPolicy, nameof(settings.TokenResolutionPolicy));
         return settings;
     }
@@ -48,6 +56,7 @@ public static class StringTokenFormatterSettingsExtensions
     {
         Validate((IInterpolatedStringSettings)settings);
         Validate((ITokenValueContainerSettings)settings);
+        Validate((ICompositeTokenValueContainerSettings)settings);
         Validate((IHierarchicalTokenValueContainerSettings)settings);
         return settings;
     }

@@ -13,6 +13,5 @@ public sealed class SingleTokenValueContainer<T> : ITokenValueContainer where T 
         this.value = value;
     }
 
-    public TryGetResult TryMap(string token) =>
-        settings.NameComparer.Equals(token, tokenName) && settings.TokenResolutionPolicy.Satisfies(value) ? TryGetResult.Success(value) : default;
+    public TryGetResult TryMap(string token) => settings.NameComparer.Equals(token, tokenName) ? TryGetResult.Success(value) : default;
 }
