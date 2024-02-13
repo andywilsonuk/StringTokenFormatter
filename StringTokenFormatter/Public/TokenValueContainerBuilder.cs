@@ -15,7 +15,7 @@ public class TokenValueContainerBuilder
     public TokenValueContainerBuilder AddSingle<T>(string token, T value) where T : notnull =>
         FluentAdd(TokenValueContainerFactory.FromSingle(Settings, token, value));
 
-    public TokenValueContainerBuilder AddPairs<T>(IEnumerable<KeyValuePair<string, T>> pairs) =>
+    public TokenValueContainerBuilder AddKeyValues<T>(IEnumerable<KeyValuePair<string, T>> pairs) =>
         FluentAdd(TokenValueContainerFactory.FromPairs(Settings, pairs));
 
     public TokenValueContainerBuilder AddTuples<T>(IEnumerable<(string, T)> pairs) =>
@@ -39,7 +39,7 @@ public class TokenValueContainerBuilder
     public TokenValueContainerBuilder AddNestedSingle<T>(string prefix, string token, T value) where T : notnull =>
         AddNestedContainer(prefix, TokenValueContainerFactory.FromSingle(Settings, token, value));
 
-    public TokenValueContainerBuilder AddNestedPairs<T>(string prefix, IEnumerable<KeyValuePair<string, T>> pairs) =>
+    public TokenValueContainerBuilder AddNestedKeyValues<T>(string prefix, IEnumerable<KeyValuePair<string, T>> pairs) =>
         AddNestedContainer(prefix, TokenValueContainerFactory.FromPairs(Settings, pairs));
 
     public TokenValueContainerBuilder AddNestedTuples<T>(string prefix, IEnumerable<(string, T)> tuples) =>

@@ -83,7 +83,7 @@ public class InterpolatedStringExpanderMapCommandTests
             new InterpolatedStringBlockSegment("{:map,TestCase:1=a,2=b}", "map", "TestCase", "1=a,2=b"),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        valuesContainer.Add("TestCase", () => (object)2);
+        valuesContainer.Add("TestCase", () => 2);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 

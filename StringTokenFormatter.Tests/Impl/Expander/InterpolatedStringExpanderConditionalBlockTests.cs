@@ -202,10 +202,36 @@ public class InterpolatedStringExpanderConditionalBlockTests
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
-        valuesContainer.Add("IsValid", () => (object)true);
+        valuesContainer.Add("IsValid", () => true);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("Included", actual);
+    }
+
+    [Fact]
+    public void MultipleConditionsIncludingNegation_LiteralsOneAndFourOutput()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
+            new InterpolatedStringLiteralSegment("one"),
+            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
+            new InterpolatedStringBlockSegment("{:if,!IsValid}", "if", "!IsValid", string.Empty),
+            new InterpolatedStringLiteralSegment("two"),
+            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
+            new InterpolatedStringBlockSegment("{:if,!IsValid}", "if", "!IsValid", string.Empty),
+            new InterpolatedStringLiteralSegment("three"),
+            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
+            new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
+            new InterpolatedStringLiteralSegment("four"),
+            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("IsValid", true);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("onefour", actual);
     }
 }

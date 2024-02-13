@@ -21,18 +21,18 @@ public partial class TokenValueContainerBuilderTests
         };
         var person = new Dictionary<string, string>()
         {
-            { "Name", "Human" },
+            { "Name", "Eric" },
         };
 
         builder.AddSingle("text", "message text");
         builder.AddNestedObject("Account", account);
-        builder.AddNestedPairs("Person", person);
+        builder.AddNestedKeyValues("Person", person);
         var combinedContainer = builder.CombinedResult();
 
         string interpolatedString = "Hi {Person.Name}, {text}. Ref: {Account.Id}";
         string actual = resolver.FromContainer(interpolatedString, combinedContainer);
 
-        Assert.Equal("Hi Human, message text. Ref: 2", actual);
+        Assert.Equal("Hi Eric, message text. Ref: 2", actual);
     }
 
     [Fact]

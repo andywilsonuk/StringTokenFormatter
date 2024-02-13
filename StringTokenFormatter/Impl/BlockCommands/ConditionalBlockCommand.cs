@@ -63,7 +63,7 @@ public class ConditionalBlockCommand : IBlockCommand
     private static void End(ExpanderContext context)
     {
         SetNestedCount(context, GetNestedCount(context) - 1);
-        SetDisabledCount(context, GetDisabledCount(context) - 1);
+        SetDisabledCount(context, Math.Max(0, GetDisabledCount(context) - 1));
     }
     
     public void Finished(ExpanderContext context)

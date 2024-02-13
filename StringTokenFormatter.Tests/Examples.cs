@@ -31,9 +31,16 @@ public class Examples
     }
 
     [Fact]
-    public void LoopWithPrimativeValues()
+    public void LoopWithPrimativeValuesList()
     {
-        string original = "<table>{:loop,ListValue}<tr class=\"{StripeClass}\"><td>{::loopiteration:D2}/{RowCount:D2}</td><td>{ListValue}</td></tr>{:loopend}</table>";
+        string interpolatedString = new StringBuilder()
+            .Append("<table>")
+            .Append("{:loop,ListValue}<tr class=\"{StripeClass}\">")
+            .Append("<td>{::loopiteration:D2}/{RowCount:D2}</td>")
+            .Append("<td>{ListValue}</td>")
+            .Append("</tr>{:loopend}")
+            .Append("</table>")
+            .ToString();
         int rowIndex = 0;
         var listValues = new List<string> { "Apple", "Banana", "Cherry", "Dragon Fruit", "Elderberry" };
         var tokenValues = new Dictionary<string, object>()
@@ -43,11 +50,11 @@ public class Examples
         };
 
         var combinedContainer = new TokenValueContainerBuilder(StringTokenFormatterSettings.Default)
-            .AddPairs(tokenValues)
+            .AddKeyValues(tokenValues)
             .AddSequence("ListValue", listValues)
             .CombinedResult();
 
-        string actual = original.FormatFromContainer(combinedContainer);
+        string actual = interpolatedString.FormatFromContainer(combinedContainer);
 
         string expected = new StringBuilder()
             .Append("<table>")
@@ -59,19 +66,6 @@ public class Examples
             .Append("</table>")
             .ToString();
         Assert.Equal(expected, actual);
-    }
-
-    [Fact]
-    public void ConditionalLogic()
-    {
-        string original = "{:if,formalSalutation}Dear{:ifend}{:if,!formalSalutation}Hi{:ifend} {name}";
-        var combinedContainer = new TokenValueContainerBuilder(StringTokenFormatterSettings.Default)
-            .AddSingle("formalSalutation", false)
-            .AddSingle("name", "Sally")
-            .CombinedResult();
-
-        string result = original.FormatFromContainer(combinedContainer);
-        Assert.Equal("Hi Sally", result);
     }
 
     [Fact]
@@ -89,37 +83,41 @@ public class Examples
         var resolver = new InterpolatedStringResolver(settings);
         var account = new {
             Id = 2,
-            Name = "The Second Account",
+            Name = "Savings Account",
         };
         var combinedContainer = resolver.Builder()
-            .AddSingle("text", "It has come to our attention that...")
             .AddNestedObject("Account", account)
+            .AddSingle("text", "It has come to our attention that...")
             .CombinedResult();
-
         var interpolatedString = resolver.Interpolate("Ref: {Account.Id}, {Account.Name:titleCase}. {text}");
 
         string actual = resolver.FromContainer(interpolatedString, combinedContainer);
 
-        Assert.Equal("Ref: 002, The second account. It has come to our attention that...", actual);
+        Assert.Equal("Ref: 002, Savings account. It has come to our attention that...", actual);
     }
 
-    private enum OrderType { Unknown = 0, Bike = 1, Car = 2, Bus = 3, }
+    private enum ModeOfTransport { Unknown = 0, Bike = 1, Car = 2, Bus = 3, }
     [Fact]
-    public void ValueSelectionUsingMap()
-    {        
-        string interpolatedString = "{:map,OrderType:Unknown=Not set,Bike=Self propelled,Car=Combustion engine,Bus=Electric}";
+    public void ConditionalWithMap()
+    {  
+        var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default);      
+        string interpolatedString = new StringBuilder()
+            .Append("{:if,travelledToWork}{:map,mode:Unknown=Not set,Bike=Self propelled,Car=Combustion engine,Bus=Electric}{:ifend}")
+            .Append("{:if,!travelledToWork}Did not travel{:ifend}")
+            .ToString();
+        var combinedContainer = resolver.Builder()
+            .AddSingle("travelledToWork", true)
+            .AddSingle("mode", ModeOfTransport.Bike)
+            .CombinedResult();
 
-        string actual = interpolatedString.FormatFromSingle("OrderType", OrderType.Bike);
+        string actual = resolver.FromContainer(interpolatedString, combinedContainer);
 
         Assert.Equal("Self propelled", actual);
     }
+    
     /*
 
 
 we don't want to handle +M30 as this isn't about formatting. We need an example though of how to do this though! Custom container which accepts the token name+M30
-
-nesting
-
-more examples including loop, enum conversion (new ToString converter? Also custom).
     */
 }
