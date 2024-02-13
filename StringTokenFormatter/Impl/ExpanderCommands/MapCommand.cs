@@ -2,9 +2,9 @@ using System.Text.RegularExpressions;
 
 namespace StringTokenFormatter.Impl;
 
-public class MapCommand : IBlockCommand
+public class MapCommand : IExpanderCommand
 {
-    private const string commandName  = "map";
+    private const string commandName = "map";
     private const string KeyValuePairsPattern = "([^=,]+)=([^,]*)";
 
     public void Init(ExpanderContext context)
@@ -14,14 +14,14 @@ public class MapCommand : IBlockCommand
     public void Evaluate(ExpanderContext context)
     {
         var segment = context.SegmentIterator.Current;
-        if (segment is not InterpolatedStringBlockSegment blockSegment || !blockSegment.IsCommand(commandName))
+        if (segment is not InterpolatedStringCommandSegment commandSegment || !commandSegment.IsCommand(commandName))
         {
             return;
         }
-        MapValue(context, blockSegment);
+        MapValue(context, commandSegment);
     }
 
-    private static void MapValue(ExpanderContext context, InterpolatedStringBlockSegment segment)
+    private static void MapValue(ExpanderContext context, InterpolatedStringCommandSegment segment)
     {
         var tokenValueResult = context.TryMap(segment.Token);
         if (!context.ConvertValueIfMatched(tokenValueResult, segment.Token, out object? tokenValue))
@@ -29,7 +29,7 @@ public class MapCommand : IBlockCommand
             context.StringBuilder.AppendLiteral(segment.Raw);
             return;
         }
-        
+
         string tokenValueString = tokenValue?.ToString() ?? string.Empty;
 
         var matchingPairs = Regex.Matches(segment.Data, KeyValuePairsPattern).Cast<Match>();
@@ -41,7 +41,7 @@ public class MapCommand : IBlockCommand
         }
 
         context.StringBuilder.AppendLiteral(match.Groups[2].Value);
-        context.SkipRemainingBlockCommands = true;
+        context.SkipRemainingCommands = true;
         return;
     }
 

@@ -1,6 +1,6 @@
 namespace StringTokenFormatter.Impl;
 
-public interface IBlockCommand
+public interface IExpanderCommand
 {
     public void Init(ExpanderContext context);
     public void Evaluate(ExpanderContext context);

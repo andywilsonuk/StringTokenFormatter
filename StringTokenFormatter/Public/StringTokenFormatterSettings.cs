@@ -64,15 +64,15 @@ public interface IInterpolatedStringSettings
     /// </summary>
     public InvalidFormatBehavior InvalidFormatBehavior { get; }
     /// <summary>
-    /// Gets the collection of Block Commands.
+    /// Gets the collection of Commands.
     /// </summary>
-    public IReadOnlyCollection<IBlockCommand> BlockCommands { get; }
+    public IReadOnlyCollection<IExpanderCommand> Commands { get; }
     /// <summary>
     /// Gets the comparer for matching token names. Default: `StringComparer.OrdinalIgnoreCase`
     /// </summary>
     public StringComparer NameComparer { get; }
     /// <summary>
-    /// Gets the collection of Block Commands.
+    /// Gets the collection of Formatter Definitions.
     /// </summary>
     public IReadOnlyCollection<FormatterDefinition> FormatterDefinitions { get; }
 }
@@ -114,20 +114,23 @@ public record StringTokenFormatterSettings
 
     public TokenSyntax Syntax { get; init; } = CommonTokenSyntax.Curly;
     public UnresolvedTokenBehavior UnresolvedTokenBehavior { get; init; } = UnresolvedTokenBehavior.Throw;
-    public IReadOnlyCollection<TokenValueConverter> ValueConverters {
+    public IReadOnlyCollection<TokenValueConverter> ValueConverters
+    {
         get { return valueConverters ?? defaultValueConverters; }
         init { valueConverters = value; }
     }
     public IFormatProvider FormatProvider { get; init; } = CultureInfo.CurrentUICulture;
     public InvalidFormatBehavior InvalidFormatBehavior { get; init; } = InvalidFormatBehavior.Throw;
-    public IReadOnlyCollection<IBlockCommand> BlockCommands {
-        get { return blockCommands ?? defaultBlockCommands; }
-        init { blockCommands = value; }
+    public IReadOnlyCollection<IExpanderCommand> Commands
+    {
+        get { return commands ?? defaultCommands; }
+        init { commands = value; }
     }
 
     public string HierarchicalDelimiter { get; init; } = ".";
 
-    public IReadOnlyCollection<FormatterDefinition> FormatterDefinitions {
+    public IReadOnlyCollection<FormatterDefinition> FormatterDefinitions
+    {
         get { return formatterDefinitions ?? defaultFormatterDefinitions; }
         init { formatterDefinitions = value; }
     }
@@ -147,12 +150,12 @@ public record StringTokenFormatterSettings
         TokenValueConverterFactory.TokenFuncConverterNonGeneric(),
     }.AsReadOnly();
 
-    private IReadOnlyCollection<IBlockCommand> blockCommands = defaultBlockCommands;
-    private static readonly IReadOnlyCollection<IBlockCommand> defaultBlockCommands = new List<IBlockCommand>
+    private IReadOnlyCollection<IExpanderCommand> commands = defaultCommands;
+    private static readonly IReadOnlyCollection<IExpanderCommand> defaultCommands = new List<IExpanderCommand>
     {
-        BlockCommandFactory.Conditional,
-        BlockCommandFactory.Loop,
-        BlockCommandFactory.Map,
+        ExpanderCommandFactory.Conditional,
+        ExpanderCommandFactory.Loop,
+        ExpanderCommandFactory.Map,
     }.AsReadOnly();
 
     private static readonly IReadOnlyCollection<FormatterDefinition> defaultFormatterDefinitions = Array.Empty<FormatterDefinition>();

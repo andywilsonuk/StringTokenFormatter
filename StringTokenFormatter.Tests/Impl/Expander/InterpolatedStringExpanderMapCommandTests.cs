@@ -8,10 +8,11 @@ public class InterpolatedStringExpanderMapCommandTests
 
     public InterpolatedStringExpanderMapCommandTests()
     {
-        settings = StringTokenFormatterSettings.Default with {
-            BlockCommands = new List<IBlockCommand>
+        settings = StringTokenFormatterSettings.Default with
+        {
+            Commands = new List<IExpanderCommand>
             {
-                BlockCommandFactory.Map,
+                ExpanderCommandFactory.Map,
             }
         };
     }
@@ -22,7 +23,7 @@ public class InterpolatedStringExpanderMapCommandTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:map,TestCase:First=a,Second=b}", "map", "TestCase", "First=a,Second=b"),
+            new InterpolatedStringCommandSegment("{:map,TestCase:First=a,Second=b}", "map", "TestCase", "First=a,Second=b"),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", TestEnum.Second);
@@ -37,7 +38,7 @@ public class InterpolatedStringExpanderMapCommandTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:map,TestCase:true=a,false=b}", "map", "TestCase", "true=a,false=b"),
+            new InterpolatedStringCommandSegment("{:map,TestCase:true=a,false=b}", "map", "TestCase", "true=a,false=b"),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", false);
@@ -52,7 +53,7 @@ public class InterpolatedStringExpanderMapCommandTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:map,TestCase:1=a,2=b,3=c}", "map", "TestCase", "1=a,2=b,3=c"),
+            new InterpolatedStringCommandSegment("{:map,TestCase:1=a,2=b,3=c}", "map", "TestCase", "1=a,2=b,3=c"),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", 3);
@@ -67,7 +68,7 @@ public class InterpolatedStringExpanderMapCommandTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:map,TestCase:1=a}", "map", "TestCase", "1=a"),
+            new InterpolatedStringCommandSegment("{:map,TestCase:1=a}", "map", "TestCase", "1=a"),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", 0);
@@ -80,7 +81,7 @@ public class InterpolatedStringExpanderMapCommandTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:map,TestCase:1=a,2=b}", "map", "TestCase", "1=a,2=b"),
+            new InterpolatedStringCommandSegment("{:map,TestCase:1=a,2=b}", "map", "TestCase", "1=a,2=b"),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", () => 2);
@@ -95,7 +96,7 @@ public class InterpolatedStringExpanderMapCommandTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:map,TestCase:1=,2=b}", "map", "TestCase", "1=,2=b"),
+            new InterpolatedStringCommandSegment("{:map,TestCase:1=,2=b}", "map", "TestCase", "1=,2=b"),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", 1);
@@ -114,7 +115,7 @@ public class InterpolatedStringExpanderMapCommandTests
         };
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:map,TestCase:1=a}", "map", "TestCase", "1=a"),
+            new InterpolatedStringCommandSegment("{:map,TestCase:1=a}", "map", "TestCase", "1=a"),
         };
         var interpolatedString = new InterpolatedString(segments, customSettings);
 

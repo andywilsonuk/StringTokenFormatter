@@ -2,7 +2,8 @@
 
 public record InterpolatedString(IReadOnlyCollection<InterpolatedStringSegment> Segments, IInterpolatedStringSettings Settings);
 
-public static class InterpolatedStringExtensions {
+public static class InterpolatedStringExtensions
+{
     /// <summary>
     /// Returns the distinct tokens present within the `InterpolatedString`
     /// </summary>
@@ -15,13 +16,13 @@ public record InterpolatedStringLiteralSegment(string Raw) : InterpolatedStringS
 
 public abstract record InterpolatedStringTokenOnlySegment(string Raw, string Token) : InterpolatedStringSegment(Raw);
 public record InterpolatedStringTokenSegment(string Raw, string Token, string Alignment, string Format) : InterpolatedStringTokenOnlySegment(Raw, Token);
-public record InterpolatedStringBlockSegment(string Raw, string Command, string Token, string Data) : InterpolatedStringTokenOnlySegment(Raw, Token)
+public record InterpolatedStringCommandSegment(string Raw, string Command, string Token, string Data) : InterpolatedStringTokenOnlySegment(Raw, Token)
 {
     public static StringComparer CommandComparer => StringComparer.Ordinal;
 }
 
-public static class InterpolatedStringBlockSegmentExtensions
+public static class InterpolatedStringCommandSegmentExtensions
 {
-    public static bool IsCommand(this InterpolatedStringBlockSegment block, string command) => InterpolatedStringBlockSegment.CommandComparer.Equals(block.Command, command);
-    
+    public static bool IsCommand(this InterpolatedStringCommandSegment segment, string command) => InterpolatedStringCommandSegment.CommandComparer.Equals(segment.Command, command);
+
 }

@@ -1,10 +1,10 @@
 namespace StringTokenFormatter.Impl;
 
-public class ConditionalBlockCommand : IBlockCommand
+public class ConditionalBlockCommand : IExpanderCommand
 {
-    internal ConditionalBlockCommand() {}
-    
-    private const string startCommandName  = "if";
+    internal ConditionalBlockCommand() { }
+
+    private const string startCommandName = "if";
     private const string endCommandName = "ifend";
 
     public void Init(ExpanderContext context)
@@ -16,30 +16,30 @@ public class ConditionalBlockCommand : IBlockCommand
     public void Evaluate(ExpanderContext context)
     {
         var segment = context.SegmentIterator.Current;
-        if (segment is InterpolatedStringBlockSegment blockSegment)
+        if (segment is InterpolatedStringCommandSegment CommandSegment)
         {
-            if (blockSegment.IsCommand(startCommandName))
+            if (CommandSegment.IsCommand(startCommandName))
             {
-                Start(context, blockSegment);
-                context.SkipRemainingBlockCommands = true;
+                Start(context, CommandSegment);
+                context.SkipRemainingCommands = true;
                 return;
             }
-            else if (blockSegment.IsCommand(endCommandName))
+            else if (CommandSegment.IsCommand(endCommandName))
             {
                 End(context);
-                context.SkipRemainingBlockCommands = true;
+                context.SkipRemainingCommands = true;
                 return;
             }
         }
         int disabledCount = GetDisabledCount(context);
-        context.SkipRemainingBlockCommands = disabledCount > 0;
+        context.SkipRemainingCommands = disabledCount > 0;
     }
 
-    private static void Start(ExpanderContext context, InterpolatedStringBlockSegment segment)
+    private static void Start(ExpanderContext context, InterpolatedStringCommandSegment segment)
     {
         SetNestedCount(context, GetNestedCount(context) + 1);
         int disabledCount = GetDisabledCount(context);
-        
+
         if (disabledCount > 0)
         {
             SetDisabledCount(context, disabledCount + 1);
@@ -65,7 +65,7 @@ public class ConditionalBlockCommand : IBlockCommand
         SetNestedCount(context, GetNestedCount(context) - 1);
         SetDisabledCount(context, Math.Max(0, GetDisabledCount(context) - 1));
     }
-    
+
     public void Finished(ExpanderContext context)
     {
         int nestedCount = GetNestedCount(context);

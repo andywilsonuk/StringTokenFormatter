@@ -4,10 +4,10 @@ namespace StringTokenFormatter.Impl;
 
 public static partial class InterpolatedStringParser
 {
-    private const string blockCommandPrefix = ":";
+    private const string commandPrefix = ":";
     private const string paddingSeparator = ",";
     private const string formattingSeparator = ":";
-    private const string tokenComponentsPattern = $"^({blockCommandPrefix}{{0,2}})?([^{paddingSeparator}{formattingSeparator}]*){paddingSeparator}?([^{formattingSeparator}]*){formattingSeparator}?(.*)$";
+    private const string tokenComponentsPattern = $"^({commandPrefix}{{0,2}})?([^{paddingSeparator}{formattingSeparator}]*){paddingSeparator}?([^{formattingSeparator}]*){formattingSeparator}?(.*)$";
     private static readonly RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant;
 
 #if NET8_0_OR_GREATER
@@ -71,14 +71,14 @@ public static partial class InterpolatedStringParser
                 int middleLength = segment.Length - startToken.Length - endToken.Length;
                 string componentPartsString = segment.Substring(startToken.Length, middleLength);
                 var split = GetTokenComponentsRegex().Split(componentPartsString);
-                bool isBlockCommand = blockCommandPrefix.Equals(split[1], StringComparison.Ordinal);
+                bool isCommand = commandPrefix.Equals(split[1], StringComparison.Ordinal);
 
-                if (isBlockCommand)
+                if (isCommand)
                 {
-                    if (split[2].Length == 0) { throw new ParserException($"Blank token marker in Block Command matched: {segment}"); }
-                    yield return new InterpolatedStringBlockSegment(segment, split[2], split[3], split[4]);
+                    if (split[2].Length == 0) { throw new ParserException($"Blank token marker in command matched: {segment}"); }
+                    yield return new InterpolatedStringCommandSegment(segment, split[2], split[3], split[4]);
                 }
-                else 
+                else
                 {
                     if (split[2].Length == 0) { throw new ParserException($"Blank token marker matched: {segment}"); }
                     yield return new InterpolatedStringTokenSegment(segment, split[1] + split[2], split[3], split[4]);

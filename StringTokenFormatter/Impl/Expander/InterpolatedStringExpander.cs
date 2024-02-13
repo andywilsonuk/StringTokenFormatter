@@ -8,20 +8,20 @@ public static class InterpolatedStringExpander
     {
         Guard.NotNull(interpolatedString, nameof(interpolatedString));
         Guard.NotNull(container, nameof(container));
-    
+
         var settings = Guard.NotNull(interpolatedString.Settings, nameof(interpolatedString.Settings)).Validate();
         formatter ??= new ExpanderValueFormatter(interpolatedString.Settings.FormatterDefinitions, interpolatedString.Settings.NameComparer);
 
         var iterator = new ExpandedStringIterator(interpolatedString.Segments);
         var builder = new ExpandedStringBuilder(formatter, settings.FormatProvider);
-        var context = new ExpanderContext(iterator, builder, container, settings, settings.BlockCommands);
-        BlockCommandsInit(context);
+        var context = new ExpanderContext(iterator, builder, container, settings, settings.Commands);
+        InitCommands(context);
         IterateSegments(context);
-        BlockCommandsFinished(context);
+        FinishCommands(context);
         return builder.ExpandedString();
     }
 
-    private static void BlockCommandsInit(ExpanderContext context)
+    private static void InitCommands(ExpanderContext context)
     {
         foreach (var command in context.Commands)
         {
@@ -34,21 +34,21 @@ public static class InterpolatedStringExpander
         var iterator = context.SegmentIterator;
         while (iterator.MoveNext())
         {
-            context.SkipRemainingBlockCommands = false;
+            context.SkipRemainingCommands = false;
 
             foreach (var command in context.Commands)
             {
                 command.Evaluate(context);
-                if (context.SkipRemainingBlockCommands) { break; }
+                if (context.SkipRemainingCommands) { break; }
             }
-            if (!context.SkipRemainingBlockCommands)
+            if (!context.SkipRemainingCommands)
             {
                 context.EvaluateSegment(context.SegmentIterator.Current);
             }
         }
     }
 
-    private static void BlockCommandsFinished(ExpanderContext context)
+    private static void FinishCommands(ExpanderContext context)
     {
         foreach (var command in context.Commands)
         {

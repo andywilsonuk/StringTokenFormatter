@@ -1,8 +1,8 @@
 namespace StringTokenFormatter.Impl;
 
-public sealed class LoopBlockCommand : IBlockCommand
+public sealed class LoopBlockCommand : IExpanderCommand
 {
-    internal LoopBlockCommand() {}
+    internal LoopBlockCommand() { }
 
     private const string startCommandName = "loop";
     private const string endCommandName = "loopend";
@@ -16,42 +16,42 @@ public sealed class LoopBlockCommand : IBlockCommand
     public void Evaluate(ExpanderContext context)
     {
         var segment = context.SegmentIterator.Current;
-        if (segment is InterpolatedStringBlockSegment blockSegment)
+        if (segment is InterpolatedStringCommandSegment commandSegment)
         {
-            if (blockSegment.IsCommand(startCommandName))
+            if (commandSegment.IsCommand(startCommandName))
             {
-                Start(context, blockSegment);
-                context.SkipRemainingBlockCommands = true;
+                Start(context, commandSegment);
+                context.SkipRemainingCommands = true;
                 return;
             }
-            else if (blockSegment.IsCommand(endCommandName))
+            else if (commandSegment.IsCommand(endCommandName))
             {
                 End(context);
-                context.SkipRemainingBlockCommands = true;
+                context.SkipRemainingCommands = true;
                 return;
             }
         }
-        var stack = GetStack(context);     
+        var stack = GetStack(context);
         if (stack.Count > 0 && stack.Peek().TotalIterations == 0)
         {
-            context.SkipRemainingBlockCommands = true;
+            context.SkipRemainingCommands = true;
             return;
         }
         if (segment is InterpolatedStringTokenSegment tokenSegment)
         {
             if (EvaluateTokenSegment(context, stack, tokenSegment))
             {
-                context.SkipRemainingBlockCommands = true;
+                context.SkipRemainingCommands = true;
                 return;
             }
         }
     }
 
-    private static void Start(ExpanderContext context, InterpolatedStringBlockSegment blockSegment)
+    private static void Start(ExpanderContext context, InterpolatedStringCommandSegment commandSegment)
     {
         int currentSegmentIndex = context.SegmentIterator.CurrentIndex;
         int requestIterations = 0;
-        string tokenName = blockSegment.Token;
+        string tokenName = commandSegment.Token;
         if (context.TryGetSequence(tokenName, out var sequence))
         {
             requestIterations = sequence.Count;
@@ -61,7 +61,7 @@ public sealed class LoopBlockCommand : IBlockCommand
             requestIterations = tokenIterations.Value;
         }
 
-        if (TryGetDataIterations(blockSegment.Data, out int? dataIterations))
+        if (TryGetDataIterations(commandSegment.Data, out int? dataIterations))
         {
             if (sequence != null && dataIterations > sequence.Count)
             {
@@ -75,7 +75,7 @@ public sealed class LoopBlockCommand : IBlockCommand
         PushStack(context, new LoopData(currentSegmentIndex, 1, requestIterations, sequence));
     }
 
-    private static bool TryGetTokenIterations(ExpanderContext context, string token, [NotNullWhen(true)]out int? iterations)
+    private static bool TryGetTokenIterations(ExpanderContext context, string token, [NotNullWhen(true)] out int? iterations)
     {
         var containerMatch = context.Container.TryMap(token);
         if (containerMatch.IsSuccess && containerMatch.Value is not ISequenceTokenValueContainer)
@@ -140,7 +140,7 @@ public sealed class LoopBlockCommand : IBlockCommand
         var stack = GetStack(context);
         if (stack.Count == 0)
         {
-            throw new ExpanderException("Loop end block command without start");
+            throw new ExpanderException("Loop end command without start");
         }
 
         var data = stack.Pop();
@@ -155,7 +155,7 @@ public sealed class LoopBlockCommand : IBlockCommand
     {
         if (GetStack(context).Count > 0)
         {
-            throw new ExpanderException("Missing loop end block command");
+            throw new ExpanderException("Missing loop end command");
         }
     }
 

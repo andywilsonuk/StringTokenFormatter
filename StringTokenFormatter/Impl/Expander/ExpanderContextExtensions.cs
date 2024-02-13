@@ -25,7 +25,7 @@ public static class ExpanderContextExtensions
             : throw new MissingValueConverterException($"No matching value converter found for token '{token}'");
     }
 
-    
+
     public static bool TryGetSequence(this ExpanderContext context, string token, [NotNullWhen(true)] out ISequenceTokenValueContainer? list)
     {
         var containerMatch = context.Container.TryMap(token);
@@ -40,7 +40,7 @@ public static class ExpanderContextExtensions
 
     public static int GetLoopIteration(this ExpanderContext context, ISequenceTokenValueContainer sequence)
     {
-        if (!context.Settings.BlockCommands.OfType<LoopBlockCommand>().Any())
+        if (!context.Settings.Commands.OfType<LoopBlockCommand>().Any())
         {
             throw new ExpanderException($"Loop block command missing from settings");
         }
@@ -61,8 +61,8 @@ public static class ExpanderContextExtensions
                 }
                 context.StringBuilder.AppendTokenValue(context, tokenSegment, tokenValue);
                 return;
-            case InterpolatedStringBlockSegment:
-                // blocks are already handled by commands
+            case InterpolatedStringCommandSegment:
+                // commands are already handled
                 return;
             case InterpolatedStringLiteralSegment rawSegment:
                 context.StringBuilder.AppendLiteral(rawSegment.Raw);

@@ -35,11 +35,11 @@ public static class TokenValueContainerFactory
     /// </summary>
     public static HierarchicalTokenValueContainer FromHierarchical(IHierarchicalTokenValueContainerSettings settings, string prefix, ITokenValueContainer container) => new(settings, prefix, container);
     /// <summary>
-    /// Creates a container of values that can be used with `LoopBlockCommands`. 
+    /// Creates a container of values that can be used with `Loop Commands`. 
     /// </summary>
     public static SequenceTokenValueContainer FromSequence<T>(IHierarchicalTokenValueContainerSettings settings, string token, IEnumerable<T> values) where T : notnull => new(settings, token, values.Cast<object>());
     /// <summary>
-    /// Creates a container of containers that can be used with `LoopBlockCommands`. 
+    /// Creates a container of containers that can be used with `Loop Commands`. 
     /// </summary>
     public static SequenceTokenValueContainer FromSequence(IHierarchicalTokenValueContainerSettings settings, string token, IEnumerable<ITokenValueContainer> values) => new(settings, token, values);
 }

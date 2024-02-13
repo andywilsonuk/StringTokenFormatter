@@ -7,10 +7,11 @@ public class InterpolatedStringExpanderLoopBlockTests
 
     public InterpolatedStringExpanderLoopBlockTests()
     {
-        settings = StringTokenFormatterSettings.Default with {
-            BlockCommands = new List<IBlockCommand>
+        settings = StringTokenFormatterSettings.Default with
+        {
+            Commands = new List<IExpanderCommand>
             {
-                BlockCommandFactory.Loop,
+                ExpanderCommandFactory.Loop,
             }
         };
     }
@@ -20,9 +21,9 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "3"),
             new InterpolatedStringLiteralSegment("lit"),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -36,9 +37,9 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterations", string.Empty),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterations", string.Empty),
             new InterpolatedStringLiteralSegment("lit"),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("Iterations", 3);
@@ -53,9 +54,9 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterations", "2"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterations", "2"),
             new InterpolatedStringLiteralSegment("lit"),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("Iterations", 3);
@@ -70,9 +71,9 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "3"),
             new InterpolatedStringTokenSegment("{tok}", "tok", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("tok", 2);
@@ -87,13 +88,13 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "3"),
             new InterpolatedStringLiteralSegment("a"),
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "2"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "2"),
             new InterpolatedStringLiteralSegment("-"),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
             new InterpolatedStringLiteralSegment("b"),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -107,7 +108,7 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "3"),
             new InterpolatedStringLiteralSegment("lit"),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
@@ -121,7 +122,7 @@ public class InterpolatedStringExpanderLoopBlockTests
         var segments = new List<InterpolatedStringSegment>
         {
             new InterpolatedStringLiteralSegment("lit"),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -133,9 +134,9 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "a"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "a"),
             new InterpolatedStringLiteralSegment("lit"),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -147,9 +148,9 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "1"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "1"),
             new InterpolatedStringLiteralSegment("lit"),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -163,9 +164,9 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "0"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "0"),
             new InterpolatedStringLiteralSegment("lit"),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -179,18 +180,19 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "2"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "2"),
             new InterpolatedStringTokenSegment("{Val}", "Val", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
 
         int callCount = 0;
-        var calls = () => {
+        var calls = () =>
+        {
             callCount++;
             return callCount switch
             {
                 1 => "a",
-                2 => "b",                
+                2 => "b",
                 _ => throw new IndexOutOfRangeException("Too many calls"),
             };
         };
@@ -208,12 +210,12 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterator", string.Empty),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
             new InterpolatedStringTokenSegment("{Iterator}", "Iterator", "4", string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new [] { "a", "b" });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b" });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -226,14 +228,14 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterator", string.Empty),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
             new InterpolatedStringTokenSegment("{Iterator.Name}", "Iterator.Name", "4", string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { Name = "a" });
         var o2 = TokenValueContainerFactory.FromObject(settings, new { Name = "b" });
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new [] { o1, o2 });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { o1, o2 });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -246,9 +248,9 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterator", string.Empty),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
             new InterpolatedStringTokenSegment("{Iterator}", "Iterator", "4", string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", Array.Empty<string>());
@@ -264,12 +266,12 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterator", "1"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", "1"),
             new InterpolatedStringTokenSegment("{Iterator}", "Iterator", "4", string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new [] { "a", "b" });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b" });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -282,9 +284,9 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "3"),
             new InterpolatedStringTokenSegment("{::loopiteration}", "::loopiteration", "4", "D2"),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -298,8 +300,8 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "3"),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -313,9 +315,9 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterations", string.Empty),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterations", string.Empty),
             new InterpolatedStringTokenSegment("{Iterations}", "Iterations", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("Iterations", 3);
@@ -330,13 +332,13 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterator", string.Empty),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
             new InterpolatedStringTokenSegment("{Iterator.Name}", "Iterator.Name", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { NotName = "a" });
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new [] { o1 });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { o1 });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         Assert.Throws<UnresolvedTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer));
@@ -347,12 +349,12 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterator", string.Empty),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
             new InterpolatedStringTokenSegment("{Iterator}", "Iterator", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new [] { new object() });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { new object() });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         Assert.Throws<MissingValueConverterException>(() => InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer));
@@ -363,13 +365,13 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterator", string.Empty),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
             new InterpolatedStringTokenSegment("{Iterator.Name}", "Iterator.Name", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { Name = new object() });
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new [] { o1 });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { o1 });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         Assert.Throws<MissingValueConverterException>(() => InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer));
@@ -380,18 +382,18 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterator", string.Empty),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
             new InterpolatedStringTokenSegment("{Iterator.Name}", "Iterator.Name", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
-        var customSettings = settings with 
+        var customSettings = settings with
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
         };
         var interpolatedString = new InterpolatedString(segments, customSettings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { NotName = "a" });
         var o2 = TokenValueContainerFactory.FromObject(settings, new { NotName = "b" });
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new [] { o1, o2 });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { o1, o2 });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -407,7 +409,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             new InterpolatedStringTokenSegment("{Iterator}", "Iterator", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new [] { new object() });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { new object() });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer));
@@ -421,7 +423,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             new InterpolatedStringTokenSegment("{::loopiteration}", "::loopiteration", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new [] { new object() });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { new object() });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer));
@@ -432,14 +434,14 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "3"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "3"),
             new InterpolatedStringLiteralSegment("a"),
-            new InterpolatedStringBlockSegment("{:loop}", "loop", string.Empty, "2"),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "2"),
             new InterpolatedStringTokenSegment("{::loopiteration}", "::loopiteration", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
             new InterpolatedStringLiteralSegment("b"),
             new InterpolatedStringTokenSegment("{::loopiteration}", "::loopiteration", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -453,16 +455,16 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "S1", string.Empty),
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "S2", string.Empty),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "S1", string.Empty),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "S2", string.Empty),
             new InterpolatedStringTokenSegment("{S1}", "S1", string.Empty, string.Empty),
             new InterpolatedStringTokenSegment("{S2}", "S2", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence1 = TokenValueContainerFactory.FromSequence(settings, "S1", new [] { "a", "b" });
-        var sequence2 = TokenValueContainerFactory.FromSequence(settings, "S2", new [] { "c" });
+        var sequence1 = TokenValueContainerFactory.FromSequence(settings, "S1", new[] { "a", "b" });
+        var sequence2 = TokenValueContainerFactory.FromSequence(settings, "S2", new[] { "c" });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence1, sequence2);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -475,23 +477,24 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         var segments = new List<InterpolatedStringSegment>
         {
-            new InterpolatedStringBlockSegment("{:loop}", "loop", "Iterator", string.Empty),
-            new InterpolatedStringBlockSegment("{:if}", "if", "Iterator.IsValue", string.Empty),
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
+            new InterpolatedStringCommandSegment("{:if}", "if", "Iterator.IsValue", string.Empty),
             new InterpolatedStringTokenSegment("{Iterator.Name}", "Iterator.Name", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:ifend}", "ifend", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
         };
-        var customSettings = StringTokenFormatterSettings.Default with {
-            BlockCommands = new List<IBlockCommand>
+        var customSettings = StringTokenFormatterSettings.Default with
+        {
+            Commands = new List<IExpanderCommand>
             {
-                BlockCommandFactory.Conditional,
-                BlockCommandFactory.Loop,
+                ExpanderCommandFactory.Conditional,
+                ExpanderCommandFactory.Loop,
             }
         };
         var interpolatedString = new InterpolatedString(segments, customSettings);
         var o1 = TokenValueContainerFactory.FromObject(customSettings, new { IsValue = false, Name = "a" });
         var o2 = TokenValueContainerFactory.FromObject(customSettings, new { IsValue = true, Name = "b" });
-        var sequence = TokenValueContainerFactory.FromSequence(customSettings, "Iterator", new [] { o1, o2 });
+        var sequence = TokenValueContainerFactory.FromSequence(customSettings, "Iterator", new[] { o1, o2 });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(customSettings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
