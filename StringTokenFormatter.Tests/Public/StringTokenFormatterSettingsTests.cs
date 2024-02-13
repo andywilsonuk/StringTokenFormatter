@@ -11,7 +11,7 @@ public class StringTokenFormatterSettingsTests : IDisposable
         Assert.Equal(TokenResolutionPolicy.ResolveAll, actual.TokenResolutionPolicy);
         Assert.Equal(CommonTokenSyntax.Curly, actual.Syntax);
         Assert.Equal(UnresolvedTokenBehavior.Throw, actual.UnresolvedTokenBehavior);
-        Assert.Equal(9, actual.ValueConverters.Count);
+        Assert.Equal(10, actual.ValueConverters.Count);
         Assert.Equal(CultureInfo.CurrentUICulture, actual.FormatProvider);
     }
 

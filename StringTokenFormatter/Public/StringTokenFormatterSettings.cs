@@ -137,9 +137,10 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
         TokenValueConverterFactory.LazyConverter<object>(),
         TokenValueConverterFactory.FuncConverter<string>(),
         TokenValueConverterFactory.FuncConverter<object>(),
-        TokenValueConverterFactory.FuncConverterNonGeneric(),
         TokenValueConverterFactory.TokenFuncConverter<string>(),
         TokenValueConverterFactory.TokenFuncConverter<object>(),
+        TokenValueConverterFactory.FuncConverterNonGeneric(),
+        TokenValueConverterFactory.TokenFuncConverterNonGeneric(),
     }.AsReadOnly();
 
     private IReadOnlyCollection<IBlockCommand> blockCommands = defaultBlockCommands;
