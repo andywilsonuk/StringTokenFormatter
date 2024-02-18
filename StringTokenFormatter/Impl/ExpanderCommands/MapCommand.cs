@@ -29,20 +29,23 @@ public class MapCommand : IExpanderCommand
             context.StringBuilder.AppendLiteral(segment.Raw);
             return;
         }
-
         string tokenValueString = tokenValue?.ToString() ?? string.Empty;
 
-        var matchingPairs = Regex.Matches(segment.Data, KeyValuePairsPattern).Cast<Match>();
-
-        var match = matchingPairs.FirstOrDefault(match => string.Equals(match.Groups[1].Value, tokenValueString, StringComparison.InvariantCultureIgnoreCase));
-        if (match == default)
+        var matchingPairs = Regex.Matches(segment.Data, KeyValuePairsPattern).Cast<Match>().ToArray();
+        for (int i = 0; i < matchingPairs.Length; i++)
         {
-            throw new ExpanderException($"Token {segment.Token} does not have a matching map value for {tokenValue}");
+            var match = matchingPairs[i];
+            string matchValue = match.Groups[1].Value;
+            if (string.Equals(matchValue, tokenValueString, StringComparison.InvariantCultureIgnoreCase)
+            || (i == matchingPairs.Length - 1 && string.Equals(matchValue, "_", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                context.StringBuilder.AppendLiteral(match.Groups[2].Value);
+                context.SkipRemainingCommands = true;
+                return;
+            }
         }
 
-        context.StringBuilder.AppendLiteral(match.Groups[2].Value);
-        context.SkipRemainingCommands = true;
-        return;
+        throw new ExpanderException($"Token {segment.Token} does not have a matching map value for {tokenValue}");
     }
 
     public void Finished(ExpanderContext context)
