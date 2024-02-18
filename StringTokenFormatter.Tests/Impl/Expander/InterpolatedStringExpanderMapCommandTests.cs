@@ -36,7 +36,7 @@ public class InterpolatedStringExpanderMapCommandTests
     }
 
     [Fact]
-    public void MapBoolValueCaseInsensitive_FalseCaseValueOutput()
+    public void MapBoolValue_FalseCaseValueOutput()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -51,7 +51,22 @@ public class InterpolatedStringExpanderMapCommandTests
     }
 
     [Fact]
-    public void MapIntValueCaseInsensitive_Case3ValueOutput()
+    public void MapStringValueCaseInsensitive_MappedValueOutput()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringCommandSegment("{:map,TestCase:FIRST=a,SECOND=b}", "map", "TestCase", "FIRST=a,SECOND=b"),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("TestCase", "second");
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("b", actual);
+    }
+
+    [Fact]
+    public void MapIntValue_Case3ValueOutput()
     {
         var segments = new List<InterpolatedStringSegment>
         {
@@ -76,6 +91,44 @@ public class InterpolatedStringExpanderMapCommandTests
         valuesContainer.Add("TestCase", 0);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
+    }
+
+    [Fact]
+    public void NonMatchingMapValueWithLeaveUnformattedFlag_OutputsRaw()
+    {
+        var settings = StringTokenFormatterSettings.Default with
+        {
+            InvalidFormatBehavior = InvalidFormatBehavior.LeaveUnformatted,
+        };
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringCommandSegment("{:map,TestCase:1=a}", "map", "TestCase", "1=a"),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("TestCase", 2);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("2", actual);
+    }
+
+    [Fact]
+    public void NonMatchingMapValueWithLeaveTokenFlag_OutputsRaw()
+    {
+        var settings = StringTokenFormatterSettings.Default with
+        {
+            InvalidFormatBehavior = InvalidFormatBehavior.LeaveToken,
+        };
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringCommandSegment("{:map,TestCase:1=a}", "map", "TestCase", "1=a"),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("TestCase", 2);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("{:map,TestCase:1=a}", actual);
     }
 
     [Fact]
@@ -177,7 +230,7 @@ public class InterpolatedStringExpanderMapCommandTests
     }
 
     [Fact]
-    public void MapLoopComplexeValue_FirstThenSecondOutput()
+    public void MapLoopComplexValue_FirstThenSecondOutput()
     {
         var segments = new List<InterpolatedStringSegment>
         {

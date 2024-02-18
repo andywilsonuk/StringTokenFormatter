@@ -37,15 +37,23 @@ public class MapCommand : IExpanderCommand
             var match = matchingPairs[i];
             string matchValue = match.Groups[1].Value;
             if (string.Equals(matchValue, tokenValueString, StringComparison.InvariantCultureIgnoreCase)
-            || (i == matchingPairs.Length - 1 && string.Equals(matchValue, "_", StringComparison.InvariantCultureIgnoreCase)))
+            || (i == matchingPairs.Length - 1 && string.Equals(matchValue, "_", StringComparison.InvariantCulture)))
             {
-                context.StringBuilder.AppendLiteral(match.Groups[2].Value);
+                string mappedValue = match.Groups[2].Value;
+                context.StringBuilder.AppendLiteral(mappedValue);
                 context.SkipRemainingCommands = true;
                 return;
             }
         }
 
-        throw new ExpanderException($"Token {segment.Token} does not have a matching map value for {tokenValue}");
+        string outputValue = context.Settings.InvalidFormatBehavior switch
+        {
+            InvalidFormatBehavior.LeaveUnformatted => tokenValueString,
+            InvalidFormatBehavior.LeaveToken => segment.Raw,
+            _ => throw new ExpanderException($"Token {segment.Token} does not have a matching map value for {tokenValue}"),
+        };
+        context.StringBuilder.AppendLiteral(outputValue);
+        context.SkipRemainingCommands = true;
     }
 
     public void Finished(ExpanderContext context)
