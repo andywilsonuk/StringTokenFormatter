@@ -248,7 +248,4 @@ public class InterpolatedStringExpanderMapCommandTests
 
         Assert.Equal("ab", actual);
     }
-
-    // map loop iteration psuedo
-    // what about when UnresolvedTokenBehavior is LeaveUnresolved, this is a question for Conditional as well and actually loop as well
 }

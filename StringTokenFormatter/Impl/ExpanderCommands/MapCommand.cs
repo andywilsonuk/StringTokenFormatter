@@ -14,7 +14,7 @@ public class MapCommand : IExpanderCommand
     public void Evaluate(ExpanderContext context)
     {
         var segment = context.SegmentIterator.Current;
-        if (segment is not InterpolatedStringCommandSegment commandSegment || !commandSegment.IsCommand(commandName))
+        if (segment is not InterpolatedStringCommandSegment commandSegment || !commandSegment.IsCommandEqual(commandName))
         {
             return;
         }

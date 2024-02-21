@@ -8,7 +8,8 @@ public class Examples
     public void ObjectContainerFromAnonymousType()
     {
         string interpolatedString = "Hello {FirstName} {LastName}";
-        var client = new {
+        var client = new
+        {
             FirstName = "John",
             LastName = "Smith",
         };
@@ -36,7 +37,7 @@ public class Examples
         string interpolatedString = new StringBuilder()
             .Append("<table>")
             .Append("{:loop,ListValue}<tr class=\"{StripeClass}\">")
-            .Append("<td>{::loopiteration:D2}/{RowCount:D2}</td>")
+            .Append("<td>{::loopiteration:D2}/{::loopcount:D2}</td>")
             .Append("<td>{ListValue}</td>")
             .Append("</tr>{:loopend}")
             .Append("</table>")
@@ -45,7 +46,6 @@ public class Examples
         var listValues = new List<string> { "Apple", "Banana", "Cherry", "Dragon Fruit", "Elderberry" };
         var tokenValues = new Dictionary<string, object>()
         {
-            ["RowCount"] = listValues.Count,
             ["StripeClass"] = () => rowIndex++ % 2 == 0 ? "stripe" : "no-stripe",
         };
 
@@ -75,13 +75,14 @@ public class Examples
         static string nameFormatter(string value, string formatString) => formatString == "titleCase" ? $"{value.Substring(0, 1).ToUpper()}{value.Substring(1).ToLower()}" : value;
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new [] {
+            FormatterDefinitions = new[] {
                 FormatterDefinition.ForType<int>(intFormatter),
                 FormatterDefinition.ForTokenName<string>("Account.Name", nameFormatter)
             },
         };
         var resolver = new InterpolatedStringResolver(settings);
-        var account = new {
+        var account = new
+        {
             Id = 2,
             Name = "Savings Account",
         };
@@ -99,8 +100,8 @@ public class Examples
     private enum ModeOfTransport { Unknown = 0, Bike = 1, Car = 2, Bus = 3, }
     [Fact]
     public void ConditionalWithMap()
-    {  
-        var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default);      
+    {
+        var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default);
         string interpolatedString = new StringBuilder()
             .Append("{:if,travelledToWork}{:map,mode:Unknown=Not set,Bike=Self propelled,Car=Combustion engine,Bus=Electric}{:ifend}")
             .Append("{:if,!travelledToWork}Did not travel{:ifend}")
@@ -114,7 +115,7 @@ public class Examples
 
         Assert.Equal("Self propelled", actual);
     }
-    
+
     /*
 
 

@@ -18,13 +18,13 @@ public class ConditionalBlockCommand : IExpanderCommand
         var segment = context.SegmentIterator.Current;
         if (segment is InterpolatedStringCommandSegment CommandSegment)
         {
-            if (CommandSegment.IsCommand(startCommandName))
+            if (CommandSegment.IsCommandEqual(startCommandName))
             {
                 Start(context, CommandSegment);
                 context.SkipRemainingCommands = true;
                 return;
             }
-            else if (CommandSegment.IsCommand(endCommandName))
+            else if (CommandSegment.IsCommandEqual(endCommandName))
             {
                 End(context);
                 context.SkipRemainingCommands = true;

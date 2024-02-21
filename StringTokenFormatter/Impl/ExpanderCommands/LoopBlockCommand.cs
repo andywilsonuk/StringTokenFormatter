@@ -7,6 +7,7 @@ public sealed class LoopBlockCommand : IExpanderCommand
     private const string startCommandName = "loop";
     private const string endCommandName = "loopend";
     private const string currentIterationCommandName = "::loopiteration";
+    private const string countCommandName = "::loopcount";
 
     public void Init(ExpanderContext context)
     {
@@ -18,13 +19,13 @@ public sealed class LoopBlockCommand : IExpanderCommand
         var segment = context.SegmentIterator.Current;
         if (segment is InterpolatedStringCommandSegment commandSegment)
         {
-            if (commandSegment.IsCommand(startCommandName))
+            if (commandSegment.IsCommandEqual(startCommandName))
             {
                 Start(context, commandSegment);
                 context.SkipRemainingCommands = true;
                 return;
             }
-            else if (commandSegment.IsCommand(endCommandName))
+            else if (commandSegment.IsCommandEqual(endCommandName))
             {
                 End(context);
                 context.SkipRemainingCommands = true;
@@ -109,13 +110,17 @@ public sealed class LoopBlockCommand : IExpanderCommand
     private static bool EvaluateTokenSegment(ExpanderContext context, Stack<LoopData> stack, InterpolatedStringTokenSegment tokenSegment)
     {
         string tokenName = tokenSegment.Token;
-        if (context.Settings.NameComparer.Equals(currentIterationCommandName, tokenName))
+        bool isCurrentIterationPseudo = tokenSegment.IsPseudoEqual(currentIterationCommandName);
+        bool isTotalIterationsPseudo = tokenSegment.IsPseudoEqual(countCommandName);
+        if (isCurrentIterationPseudo || isTotalIterationsPseudo)
         {
             if (stack.Count == 0)
             {
                 throw new ExpanderException($"No current loop to get {currentIterationCommandName}");
             }
-            context.StringBuilder.AppendTokenValue(context, tokenSegment, stack.Peek().CurrentIteration);
+            var stackPeek = stack.Peek();
+            int value = isCurrentIterationPseudo ? stackPeek.CurrentIteration : stackPeek.TotalIterations;
+            context.StringBuilder.AppendTokenValue(context, tokenSegment, value);
             return true;
         }
         if (context.TryGetSequence(tokenName, out var sequence))

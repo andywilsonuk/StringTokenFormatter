@@ -501,4 +501,40 @@ public class InterpolatedStringExpanderLoopBlockTests
 
         Assert.Equal("b", actual);
     }
+
+    [Fact]
+    public void LoopCount_CountOf2OutputTwice()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
+            new InterpolatedStringTokenSegment("{::loopcount}", "::loopcount", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b" });
+        var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
+
+        Assert.Equal("22", actual);
+    }
+
+    [Fact]
+    public void LoopCountRespectsIterationsData_CountOf2OutputOnce()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", "1"),
+            new InterpolatedStringTokenSegment("{::loopcount}", "::loopcount", string.Empty, string.Empty),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b" });
+        var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
+
+        Assert.Equal("1", actual);
+    }
 }

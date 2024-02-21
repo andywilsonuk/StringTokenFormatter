@@ -21,8 +21,8 @@ public record InterpolatedStringCommandSegment(string Raw, string Command, strin
     public static StringComparer CommandComparer => StringComparer.Ordinal;
 }
 
-public static class InterpolatedStringCommandSegmentExtensions
+public static class InterpolatedStringSegmentExtensions
 {
-    public static bool IsCommand(this InterpolatedStringCommandSegment segment, string command) => InterpolatedStringCommandSegment.CommandComparer.Equals(segment.Command, command);
-
+    public static bool IsCommandEqual(this InterpolatedStringCommandSegment segment, string command) => InterpolatedStringCommandSegment.CommandComparer.Equals(segment.Command, command);
+    public static bool IsPseudoEqual(this InterpolatedStringTokenSegment segment, string pseudoTokenCommand) => InterpolatedStringCommandSegment.CommandComparer.Equals(segment.Token, pseudoTokenCommand);
 }
