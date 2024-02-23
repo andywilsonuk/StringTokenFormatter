@@ -22,27 +22,27 @@ public sealed class LoopBlockCommand : IExpanderCommand
             if (commandSegment.IsCommandEqual(startCommandName))
             {
                 Start(context, commandSegment);
-                context.SkipRemainingCommands = true;
+                context.SegmentHandled = true;
                 return;
             }
             else if (commandSegment.IsCommandEqual(endCommandName))
             {
                 End(context);
-                context.SkipRemainingCommands = true;
+                context.SegmentHandled = true;
                 return;
             }
         }
         var stack = GetStack(context);
         if (stack.Count > 0 && stack.Peek().TotalIterations == 0)
         {
-            context.SkipRemainingCommands = true;
+            context.SegmentHandled = true;
             return;
         }
         if (segment is InterpolatedStringTokenSegment tokenSegment)
         {
             if (EvaluateTokenSegment(context, stack, tokenSegment))
             {
-                context.SkipRemainingCommands = true;
+                context.SegmentHandled = true;
                 return;
             }
         }

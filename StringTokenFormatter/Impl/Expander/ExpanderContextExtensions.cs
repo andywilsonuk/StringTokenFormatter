@@ -46,28 +46,4 @@ public static class ExpanderContextExtensions
         }
         return LoopBlockCommand.GetCurrentIteration(context, sequence);
     }
-
-    public static void EvaluateSegment(this ExpanderContext context, InterpolatedStringSegment segment)
-    {
-        switch (segment)
-        {
-            case InterpolatedStringTokenSegment tokenSegment:
-                string tokenName = tokenSegment.Token;
-                var containerMatch = context.TryMap(tokenName);
-                if (!ConvertValueIfMatched(context, containerMatch, tokenName, out object? tokenValue))
-                {
-                    context.StringBuilder.AppendLiteral(tokenSegment.Raw);
-                    return;
-                }
-                context.StringBuilder.AppendTokenValue(context, tokenSegment, tokenValue);
-                return;
-            case InterpolatedStringCommandSegment:
-                // commands are already handled
-                return;
-            case InterpolatedStringLiteralSegment rawSegment:
-                context.StringBuilder.AppendLiteral(rawSegment.Raw);
-                return;
-            default: throw new ExpanderException($"Unknown segment type {segment}");
-        }
-    }
 }

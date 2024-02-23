@@ -248,4 +248,40 @@ public class InterpolatedStringExpanderMapCommandTests
 
         Assert.Equal("ab", actual);
     }
+
+    [Fact(Skip = "Not yet implemented")]
+    public void MapLoopCurrentIteration_OutputEachMapValueOnce()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
+            new InterpolatedStringCommandSegment("{:map,::loopiteration:1=first,2=second,_=other}", "map", "::loopiteration", "1=first,2=second,_=other"),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b", "c" });
+        var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
+
+        Assert.Equal("firstsecondother", actual);
+    }
+
+    [Fact(Skip = "Not yet implemented")]
+    public void MapLoopCount_OutputThird3TimesOnceForEachItem()
+    {
+        var segments = new List<InterpolatedStringSegment>
+        {
+            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
+            new InterpolatedStringCommandSegment("{:map,::loopcount:1=first,2=second,3=third}", "map", "::loopcount", "1=first,2=second,3=third"),
+            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
+        };
+        var interpolatedString = new InterpolatedString(segments, settings);
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b", "c" });
+        var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
+
+        Assert.Equal("thirdthirdthird", actual);
+    }
 }

@@ -18,5 +18,5 @@ public sealed class ExpanderContext
     public IReadOnlyCollection<IExpanderCommand> Commands { get; init; }
     public ExpanderDataStore DataStore { get; } = new();
 
-    public bool SkipRemainingCommands { get; set; } = false;
+    public bool SegmentHandled { get; set; } = false;
 }

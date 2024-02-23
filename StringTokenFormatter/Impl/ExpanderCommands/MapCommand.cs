@@ -27,6 +27,7 @@ public class MapCommand : IExpanderCommand
         if (!context.ConvertValueIfMatched(tokenValueResult, segment.Token, out object? tokenValue))
         {
             context.StringBuilder.AppendLiteral(segment.Raw);
+            context.SegmentHandled = true;
             return;
         }
         string tokenValueString = tokenValue?.ToString() ?? string.Empty;
@@ -41,7 +42,7 @@ public class MapCommand : IExpanderCommand
             {
                 string mappedValue = match.Groups[2].Value;
                 context.StringBuilder.AppendLiteral(mappedValue);
-                context.SkipRemainingCommands = true;
+                context.SegmentHandled = true;
                 return;
             }
         }
@@ -53,7 +54,7 @@ public class MapCommand : IExpanderCommand
             _ => throw new ExpanderException($"Token {segment.Token} does not have a matching map value for {tokenValue}"),
         };
         context.StringBuilder.AppendLiteral(outputValue);
-        context.SkipRemainingCommands = true;
+        context.SegmentHandled = true;
     }
 
     public void Finished(ExpanderContext context)

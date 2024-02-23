@@ -21,18 +21,18 @@ public class ConditionalBlockCommand : IExpanderCommand
             if (CommandSegment.IsCommandEqual(startCommandName))
             {
                 Start(context, CommandSegment);
-                context.SkipRemainingCommands = true;
+                context.SegmentHandled = true;
                 return;
             }
             else if (CommandSegment.IsCommandEqual(endCommandName))
             {
                 End(context);
-                context.SkipRemainingCommands = true;
+                context.SegmentHandled = true;
                 return;
             }
         }
         int disabledCount = GetDisabledCount(context);
-        context.SkipRemainingCommands = disabledCount > 0;
+        context.SegmentHandled = disabledCount > 0;
     }
 
     private static void Start(ExpanderContext context, InterpolatedStringCommandSegment segment)

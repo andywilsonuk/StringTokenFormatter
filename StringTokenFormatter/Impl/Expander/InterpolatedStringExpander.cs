@@ -2,6 +2,8 @@
 
 public static class InterpolatedStringExpander
 {
+    private static readonly IExpanderCommand[] standardCommands = new IExpanderCommand[] { ExpanderCommandFactory.StandardToken, ExpanderCommandFactory.StandardLiteral };
+
     public static string Expand(InterpolatedString interpolatedString, ITokenValueContainer container) => Expand(interpolatedString, container, null);
 
     internal static string Expand(InterpolatedString interpolatedString, ITokenValueContainer container, ExpanderValueFormatter? formatter = null)
@@ -14,7 +16,8 @@ public static class InterpolatedStringExpander
 
         var iterator = new ExpandedStringIterator(interpolatedString.Segments);
         var builder = new ExpandedStringBuilder(formatter, settings.FormatProvider);
-        var context = new ExpanderContext(iterator, builder, container, settings, settings.Commands);
+        var allCommands = settings.Commands.Concat(standardCommands).ToList();
+        var context = new ExpanderContext(iterator, builder, container, settings, allCommands);
         InitCommands(context);
         IterateSegments(context);
         FinishCommands(context);
@@ -34,17 +37,16 @@ public static class InterpolatedStringExpander
         var iterator = context.SegmentIterator;
         while (iterator.MoveNext())
         {
-            context.SkipRemainingCommands = false;
+            context.SegmentHandled = false;
 
             foreach (var command in context.Commands)
             {
                 command.Evaluate(context);
-                if (context.SkipRemainingCommands) { break; }
+                if (context.SegmentHandled) { break; }
             }
-            if (!context.SkipRemainingCommands)
-            {
-                context.EvaluateSegment(context.SegmentIterator.Current);
-            }
+            if (context.SegmentHandled) { continue; }
+
+            throw new ExpanderException($"Unhandled segment type {context.SegmentIterator.Current}");
         }
     }
 
