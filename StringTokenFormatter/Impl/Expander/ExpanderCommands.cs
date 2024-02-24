@@ -14,4 +14,11 @@ public class ExpanderCommands
     public void ExecuteUntil(Action<IExpanderCommand> action, Func<bool> predicate) => commands.ForEach(action, predicate);
 
     public void Finished(ExpanderContext context) => commands.ForEach(c => c.Finished(context));
+
+    public bool HasCommand<T>() where T : IExpanderCommand => commands.OfType<T>().Any();
+
+    // public static TryGetResult TryMapPseudo(string tokenName)
+    // {
+
+    // }
 }
