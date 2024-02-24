@@ -2,8 +2,6 @@
 
 public static class InterpolatedStringExpander
 {
-    private static readonly IExpanderCommand[] standardCommands = new IExpanderCommand[] { ExpanderCommandFactory.StandardToken, ExpanderCommandFactory.StandardLiteral };
-
     public static string Expand(InterpolatedString interpolatedString, ITokenValueContainer container) => Expand(interpolatedString, container, null);
 
     internal static string Expand(InterpolatedString interpolatedString, ITokenValueContainer container, ExpanderValueFormatter? formatter = null)
@@ -16,8 +14,7 @@ public static class InterpolatedStringExpander
 
         var iterator = new ExpandedStringIterator(interpolatedString.Segments);
         var builder = new ExpandedStringBuilder(formatter, settings.FormatProvider);
-        var allCommands = settings.Commands.Concat(standardCommands).ToList();
-        var context = new ExpanderContext(iterator, builder, container, settings, allCommands);
+        var context = new ExpanderContext(iterator, builder, container, settings, settings.Commands);
         InitCommands(context);
         IterateSegments(context);
         FinishCommands(context);

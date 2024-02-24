@@ -12,6 +12,8 @@ public class InterpolatedStringExpanderLoopBlockTests
             Commands = new List<IExpanderCommand>
             {
                 ExpanderCommandFactory.Loop,
+                ExpanderCommandFactory.StandardToken,
+                ExpanderCommandFactory.StandardLiteral,
             }
         };
     }
@@ -485,11 +487,7 @@ public class InterpolatedStringExpanderLoopBlockTests
         };
         var customSettings = StringTokenFormatterSettings.Default with
         {
-            Commands = new List<IExpanderCommand>
-            {
-                ExpanderCommandFactory.Conditional,
-                ExpanderCommandFactory.Loop,
-            }
+            Commands = new[] { ExpanderCommandFactory.Conditional }.Concat(settings.Commands).ToList(),
         };
         var interpolatedString = new InterpolatedString(segments, customSettings);
         var o1 = TokenValueContainerFactory.FromObject(customSettings, new { IsValue = false, Name = "a" });

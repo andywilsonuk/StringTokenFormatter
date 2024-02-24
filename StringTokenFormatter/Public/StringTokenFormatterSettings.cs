@@ -156,6 +156,8 @@ public record StringTokenFormatterSettings
         ExpanderCommandFactory.Conditional,
         ExpanderCommandFactory.Loop,
         ExpanderCommandFactory.Map,
+        ExpanderCommandFactory.StandardToken,
+        ExpanderCommandFactory.StandardLiteral,
     }.AsReadOnly();
 
     private static readonly IReadOnlyCollection<FormatterDefinition> defaultFormatterDefinitions = Array.Empty<FormatterDefinition>();

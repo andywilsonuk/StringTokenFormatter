@@ -14,6 +14,8 @@ public class InterpolatedStringExpanderMapCommandTests
             {
                 ExpanderCommandFactory.Map,
                 ExpanderCommandFactory.Loop,
+                ExpanderCommandFactory.StandardToken,
+                ExpanderCommandFactory.StandardLiteral,
             }
         };
     }
