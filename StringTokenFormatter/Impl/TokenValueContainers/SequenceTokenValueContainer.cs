@@ -16,23 +16,19 @@ public sealed class SequenceTokenValueContainer : ITokenValueContainer, ISequenc
 
     public TryGetResult TryMap(string token)
     {
-        int prefixIndex = token.IndexOf(settings.HierarchicalDelimiter, StringComparison.Ordinal);
-        string tokenPrefix = prefixIndex == -1 ? token : token[..prefixIndex]; 
+        int? prefixIndex = OrdinalValueHelper.IndexOf(token, settings.HierarchicalDelimiter);
+        string tokenPrefix = prefixIndex == null ? token : token[..prefixIndex.Value];
         return settings.NameComparer.Equals(prefix, tokenPrefix) ? TryGetResult.Success(this) : default;
     }
 
     public TryGetResult TryMap(string token, int position)
     {
-        int prefixStringIndex = token.IndexOf(settings.HierarchicalDelimiter, StringComparison.Ordinal);
-
+        int? prefixStringIndex = OrdinalValueHelper.IndexOf(token, settings.HierarchicalDelimiter);
         object? value = values[position - 1];
-        if (prefixStringIndex == -1)
+        if (prefixStringIndex == null) { return TryGetResult.Success(value); }
+        if (value is ITokenValueContainer childContainer)
         {
-            return TryGetResult.Success(value);
-        }
-        else if (value is ITokenValueContainer childContainer)
-        {
-            string remainingToken = prefixStringIndex == -1 ? string.Empty : token[(prefixStringIndex + settings.HierarchicalDelimiter.Length)..];
+            string remainingToken = token[(prefixStringIndex.Value + settings.HierarchicalDelimiter.Length)..];
             return childContainer.TryMap(remainingToken);
         }
         return default;

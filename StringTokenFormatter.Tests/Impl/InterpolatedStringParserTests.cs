@@ -145,7 +145,7 @@ public class InterpolatedStringParserTests
     }
 
     [Fact]
-    public void PseudoTokenTreatedAsTokenNot_TokenSegment()
+    public void PseudoTokenTreatedAsTokenNotCommand_PseudoTokenSegment()
     {
         string source = "{::special,10:D}";
         var settings = new StringTokenFormatterSettings();
@@ -153,7 +153,7 @@ public class InterpolatedStringParserTests
         var actual = InterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
-            a => Assert.Equal(new InterpolatedStringTokenSegment(source, "::special", "10", "D"), a)
+            a => Assert.Equal(new InterpolatedStringPseudoTokenSegment(source, "::special", "10", "D"), a)
         );
     }
 }

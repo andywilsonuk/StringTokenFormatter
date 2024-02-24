@@ -5,6 +5,7 @@ namespace StringTokenFormatter.Impl;
 public static partial class InterpolatedStringParser
 {
     private const string commandPrefix = ":";
+    private const string pseudoPrefix = commandPrefix + commandPrefix;
     private const string paddingSeparator = ",";
     private const string formattingSeparator = ":";
     private const string tokenComponentsPattern = $"^({commandPrefix}{{0,2}})?([^{paddingSeparator}{formattingSeparator}]*){paddingSeparator}?([^{formattingSeparator}]*){formattingSeparator}?(.*)$";
@@ -62,27 +63,14 @@ public static partial class InterpolatedStringParser
             {
                 yield return new InterpolatedStringLiteralSegment(startToken);
             }
-            else if (!segment.StartsWith(startToken, StringComparison.Ordinal))
+            else if (!OrdinalValueHelper.StartsWith(segment, startToken))
             {
                 yield return new InterpolatedStringLiteralSegment(segment);
             }
             else
             {
-                int middleLength = segment.Length - startToken.Length - endToken.Length;
-                string componentPartsString = segment.Substring(startToken.Length, middleLength);
-                var split = GetTokenComponentsRegex().Split(componentPartsString);
-                bool isCommand = commandPrefix.Equals(split[1], StringComparison.Ordinal);
-
-                if (isCommand)
-                {
-                    if (split[2].Length == 0) { throw new ParserException($"Blank token marker in command matched: {segment}"); }
-                    yield return new InterpolatedStringCommandSegment(segment, split[2], split[3], split[4]);
-                }
-                else
-                {
-                    if (split[2].Length == 0) { throw new ParserException($"Blank token marker matched: {segment}"); }
-                    yield return new InterpolatedStringTokenSegment(segment, split[1] + split[2], split[3], split[4]);
-                }
+                string componentPartsString = segment[startToken.Length..^endToken.Length];
+                yield return ConvertFromComponents(componentPartsString, segment);
             }
             index = captureIndex + captureLength;
         }
@@ -90,5 +78,25 @@ public static partial class InterpolatedStringParser
         {
             yield return new InterpolatedStringLiteralSegment(source[index..]);
         }
+    }
+
+    private static InterpolatedStringSegment ConvertFromComponents(string componentPartsString, string segment)
+    {
+        string[] components = GetTokenComponentsRegex().Split(componentPartsString);
+        string commandComponent = components[1];
+        string nameComponent = components[2];
+        bool isCommand = OrdinalValueHelper.AreEqual(commandPrefix, commandComponent);
+        if (isCommand)
+        {
+            if (nameComponent == string.Empty) { throw new ParserException($"Blank command name in matched: {segment}"); }
+            return new InterpolatedStringCommandSegment(segment, nameComponent, components[3], components[4]);
+        }
+        if (nameComponent == string.Empty) { throw new ParserException($"Blank token name in matched: {segment}"); }
+        bool isPseudo = OrdinalValueHelper.AreEqual(pseudoPrefix, commandComponent);
+        if (isPseudo)
+        {
+            return new InterpolatedStringPseudoTokenSegment(segment, commandComponent + nameComponent, components[3], components[4]);
+        }
+        return new InterpolatedStringTokenSegment(segment, nameComponent, components[3], components[4]);
     }
 }

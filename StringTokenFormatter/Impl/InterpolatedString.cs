@@ -16,13 +16,11 @@ public record InterpolatedStringLiteralSegment(string Raw) : InterpolatedStringS
 
 public abstract record InterpolatedStringTokenOnlySegment(string Raw, string Token) : InterpolatedStringSegment(Raw);
 public record InterpolatedStringTokenSegment(string Raw, string Token, string Alignment, string Format) : InterpolatedStringTokenOnlySegment(Raw, Token);
-public record InterpolatedStringCommandSegment(string Raw, string Command, string Token, string Data) : InterpolatedStringTokenOnlySegment(Raw, Token)
-{
-    public static StringComparer CommandComparer => StringComparer.Ordinal;
-}
+public record InterpolatedStringPseudoTokenSegment(string Raw, string Token, string Alignment, string Format) : InterpolatedStringTokenSegment(Raw, Token, Alignment, Format);
+public record InterpolatedStringCommandSegment(string Raw, string Command, string Token, string Data) : InterpolatedStringTokenOnlySegment(Raw, Token);
 
 public static class InterpolatedStringSegmentExtensions
 {
-    public static bool IsCommandEqual(this InterpolatedStringCommandSegment segment, string command) => InterpolatedStringCommandSegment.CommandComparer.Equals(segment.Command, command);
-    public static bool IsPseudoEqual(this InterpolatedStringTokenSegment segment, string pseudoTokenCommand) => InterpolatedStringCommandSegment.CommandComparer.Equals(segment.Token, pseudoTokenCommand);
+    public static bool IsCommandEqual(this InterpolatedStringCommandSegment segment, string command) => OrdinalValueHelper.AreEqual(segment.Command, command);
+    public static bool IsPseudoEqual(this InterpolatedStringTokenSegment segment, string pseudoTokenCommand) => OrdinalValueHelper.AreEqual(segment.Token, pseudoTokenCommand);
 }
