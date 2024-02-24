@@ -14,32 +14,23 @@ public static class InterpolatedStringExpander
 
         var iterator = new ExpandedStringIterator(interpolatedString.Segments);
         var builder = new ExpandedStringBuilder(formatter, settings.FormatProvider);
-        var context = new ExpanderContext(iterator, builder, container, settings, settings.Commands);
-        InitCommands(context);
+        var commands = new ExpanderCommands(settings.Commands);
+        var context = new ExpanderContext(iterator, builder, container, settings, commands);
+        commands.Init(context);
         IterateSegments(context);
-        FinishCommands(context);
+        commands.Finished(context);
         return builder.ExpandedString();
     }
 
-    private static void InitCommands(ExpanderContext context) => context.Commands.ForEach(c => c.Init(context));
-
     private static void IterateSegments(ExpanderContext context)
     {
-        var iterator = context.SegmentIterator;
-        while (iterator.MoveNext())
+        while (context.SegmentIterator.MoveNext())
         {
             context.SegmentHandled = false;
-
-            foreach (var command in context.Commands)
-            {
-                command.Evaluate(context);
-                if (context.SegmentHandled) { break; }
-            }
+            context.Commands.ExecuteUntil(command => command.Evaluate(context), () => context.SegmentHandled);
             if (context.SegmentHandled) { continue; }
 
-            throw new ExpanderException($"Unhandled segment type {context.SegmentIterator.Current}");
+            throw new ExpanderException($"Unhandled segment {context.SegmentIterator.Current}");
         }
     }
-
-    private static void FinishCommands(ExpanderContext context) => context.Commands.ForEach(c => c.Finished(context));
 }
