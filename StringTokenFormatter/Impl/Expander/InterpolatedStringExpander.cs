@@ -21,13 +21,7 @@ public static class InterpolatedStringExpander
         return builder.ExpandedString();
     }
 
-    private static void InitCommands(ExpanderContext context)
-    {
-        foreach (var command in context.Commands)
-        {
-            command.Init(context);
-        }
-    }
+    private static void InitCommands(ExpanderContext context) => context.Commands.ForEach(c => c.Init(context));
 
     private static void IterateSegments(ExpanderContext context)
     {
@@ -47,11 +41,5 @@ public static class InterpolatedStringExpander
         }
     }
 
-    private static void FinishCommands(ExpanderContext context)
-    {
-        foreach (var command in context.Commands)
-        {
-            command.Finished(context);
-        }
-    }
+    private static void FinishCommands(ExpanderContext context) => context.Commands.ForEach(c => c.Finished(context));
 }
