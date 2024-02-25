@@ -7,9 +7,7 @@ public class MapCommand : IExpanderCommand
     private const string commandName = "map";
     private const string KeyValuePairsPattern = "([^=,]+)=([^,]*)";
 
-    public void Init(ExpanderContext context)
-    {
-    }
+    public void Init(ExpanderContext context) { }
 
     public void Evaluate(ExpanderContext context)
     {
@@ -57,7 +55,7 @@ public class MapCommand : IExpanderCommand
         context.SegmentHandled = true;
     }
 
-    public void Finished(ExpanderContext context)
-    {
-    }
+    public void Finished(ExpanderContext context) { }
+
+    public TryGetResult TryMapPseudo(ExpanderContext context, string tokenName) => default;
 }

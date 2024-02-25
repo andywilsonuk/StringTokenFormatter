@@ -12,8 +12,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             Commands = new List<IExpanderCommand>
             {
                 ExpanderCommandFactory.Conditional,
-                ExpanderCommandFactory.StandardToken,
-                ExpanderCommandFactory.StandardLiteral,
+                ExpanderCommandFactory.Standard,
             }
         };
     }

@@ -12,8 +12,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             Commands = new List<IExpanderCommand>
             {
                 ExpanderCommandFactory.Loop,
-                ExpanderCommandFactory.StandardToken,
-                ExpanderCommandFactory.StandardLiteral,
+                ExpanderCommandFactory.Standard,
             }
         };
     }

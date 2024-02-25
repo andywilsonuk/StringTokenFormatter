@@ -164,6 +164,31 @@ public sealed class LoopBlockCommand : IExpanderCommand
         }
     }
 
+    public TryGetResult TryMapPseudo(ExpanderContext context, string tokenName)
+    {
+        if (OrdinalValueHelper.AreEqual(tokenName, currentIterationCommandName))
+        {
+            var stack = GetStack(context);
+            if (stack.Count == 0)
+            {
+                throw new ExpanderException($"No current loop to get {currentIterationCommandName}");
+            }
+            var stackPeek = stack.Peek();
+            return TryGetResult.Success(stackPeek.CurrentIteration);
+        }
+        if (OrdinalValueHelper.AreEqual(tokenName, countCommandName))
+        {
+            var stack = GetStack(context);
+            if (stack.Count == 0)
+            {
+                throw new ExpanderException($"No current loop to get {currentIterationCommandName}");
+            }
+            var stackPeek = stack.Peek();
+            return TryGetResult.Success(stackPeek.TotalIterations);
+        }
+        return default;
+    }
+
     private const string storeBucketName = nameof(LoopBlockCommand);
     private const string nestingStackStoreKey = "NestingStack";
     private static void CreateStack(ExpanderContext context) => context.DataStore.Set(storeBucketName, nestingStackStoreKey, new Stack<LoopData>());

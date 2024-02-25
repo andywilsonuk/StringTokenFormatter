@@ -14,8 +14,7 @@ public class InterpolatedStringExpanderMapCommandTests
             {
                 ExpanderCommandFactory.Map,
                 ExpanderCommandFactory.Loop,
-                ExpanderCommandFactory.StandardToken,
-                ExpanderCommandFactory.StandardLiteral,
+                ExpanderCommandFactory.Standard,
             }
         };
     }
@@ -251,7 +250,7 @@ public class InterpolatedStringExpanderMapCommandTests
         Assert.Equal("ab", actual);
     }
 
-    [Fact(Skip = "Not yet implemented")]
+    [Fact]
     public void MapLoopCurrentIteration_OutputEachMapValueOnce()
     {
         var segments = new List<InterpolatedStringSegment>
@@ -269,7 +268,7 @@ public class InterpolatedStringExpanderMapCommandTests
         Assert.Equal("firstsecondother", actual);
     }
 
-    [Fact(Skip = "Not yet implemented")]
+    [Fact]
     public void MapLoopCount_OutputThird3TimesOnceForEachItem()
     {
         var segments = new List<InterpolatedStringSegment>

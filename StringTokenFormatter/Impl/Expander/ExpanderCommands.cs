@@ -17,8 +17,6 @@ public class ExpanderCommands
 
     public bool HasCommand<T>() where T : IExpanderCommand => commands.OfType<T>().Any();
 
-    // public static TryGetResult TryMapPseudo(string tokenName)
-    // {
-
-    // }
+    public TryGetResult TryMapPseudo(ExpanderContext context, string tokenName) =>
+        commands.Select(x => x.TryMapPseudo(context, tokenName)).FirstOrDefault(x => x.IsSuccess);
 }

@@ -32,10 +32,18 @@ public static class ExpanderContextExtensions
         return list != null;
     }
 
-    public static TryGetResult TryMap(this ExpanderContext context, string tokenName) =>
-        TryGetSequence(context, tokenName, out var sequence)
-            ? sequence.TryMap(tokenName, GetLoopIteration(context, sequence))
-            : context.Container.TryMap(tokenName);
+    public static TryGetResult TryMap(this ExpanderContext context, string tokenName)
+    {
+        var pseudoMatch = context.Commands.TryMapPseudo(context, tokenName);
+        if (pseudoMatch.IsSuccess) { return pseudoMatch; }
+
+        var containerMatch = context.Container.TryMap(tokenName);
+        if (containerMatch.IsSuccess && containerMatch.Value is ISequenceTokenValueContainer sequence)
+        {
+            return sequence.TryMap(tokenName, GetLoopIteration(context, sequence));
+        }
+        return context.Container.TryMap(tokenName);
+    }
 
     public static int GetLoopIteration(this ExpanderContext context, ISequenceTokenValueContainer sequence) =>
         context.Commands.HasCommand<LoopBlockCommand>()

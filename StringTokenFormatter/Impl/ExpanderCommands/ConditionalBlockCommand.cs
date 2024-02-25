@@ -72,6 +72,8 @@ public class ConditionalBlockCommand : IExpanderCommand
         if (nestedCount != 0) { throw new ExpanderException("Mismatch of conditional commands start and end counts"); }
     }
 
+    public TryGetResult TryMapPseudo(ExpanderContext context, string tokenName) => default;
+
     private const string storeBucketName = nameof(ConditionalBlockCommand);
     private const string disableCountStoreKey = "DisabledCount";
     private const string nestCountStoreKey = "NestedCount";
