@@ -4,8 +4,8 @@ namespace StringTokenFormatter.Impl;
 
 public static partial class InterpolatedStringParser
 {
-    private const string commandPrefix = ":";
-    private const string pseudoPrefix = "::";
+    private const string commandPrefix = Constants.CommandPrefix;
+    private const string pseudoPrefix = Constants.PseudoPrefix;
     private const string paddingSeparator = ",";
     private const string formattingSeparator = ":";
     private const string tokenComponentsPattern = $"^({pseudoPrefix}|{commandPrefix})?([^{paddingSeparator}{formattingSeparator}]*){paddingSeparator}?([^{formattingSeparator}]*){formattingSeparator}?(.*)$";

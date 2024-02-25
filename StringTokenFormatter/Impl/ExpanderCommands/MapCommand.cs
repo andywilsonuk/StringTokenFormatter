@@ -6,6 +6,7 @@ public class MapCommand : IExpanderCommand
 {
     private const string commandName = "map";
     private const string KeyValuePairsPattern = "([^=,]+)=([^,]*)";
+    private const string DiscardValue = "_";
 
     public void Init(ExpanderContext context) { }
 
@@ -35,8 +36,8 @@ public class MapCommand : IExpanderCommand
         {
             var match = matchingPairs[i];
             string matchValue = match.Groups[1].Value;
-            if (string.Equals(matchValue, tokenValueString, StringComparison.InvariantCultureIgnoreCase)
-            || (i == matchingPairs.Length - 1 && string.Equals(matchValue, "_", StringComparison.InvariantCulture)))
+            if (StringComparer.InvariantCultureIgnoreCase.Equals(matchValue, tokenValueString)
+            || (i == matchingPairs.Length - 1 && OrdinalValueHelper.AreEqual(matchValue, DiscardValue)))
             {
                 string mappedValue = match.Groups[2].Value;
                 context.StringBuilder.AppendLiteral(mappedValue);
@@ -56,6 +57,4 @@ public class MapCommand : IExpanderCommand
     }
 
     public void Finished(ExpanderContext context) { }
-
-    public TryGetResult TryMapPseudo(ExpanderContext context, string tokenName) => default;
 }

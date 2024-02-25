@@ -18,5 +18,7 @@ public class ExpanderCommands
     public bool HasCommand<T>() where T : IExpanderCommand => commands.OfType<T>().Any();
 
     public TryGetResult TryMapPseudo(ExpanderContext context, string tokenName) =>
-        commands.Select(x => x.TryMapPseudo(context, tokenName)).FirstOrDefault(x => x.IsSuccess);
+        OrdinalValueHelper.StartsWith(tokenName, Constants.PseudoPrefix)
+        ? commands.OfType<IExpanderPseudoCommands>().Select(x => x.TryMapPseudo(context, tokenName)).FirstOrDefault(x => x.IsSuccess)
+        : default;
 }
