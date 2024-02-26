@@ -5,13 +5,12 @@ public class InterpolatedStringTests
     [Fact]
     public void Tokens_ParsedTokens_ReturnsTokenHashset()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment("{a}", "a", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{A}", "A", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{b}", "b", string.Empty, string.Empty),
-            new InterpolatedStringLiteralSegment("c"),
-        };
+        var segments = new SegmentBuilder()
+            .Token("a", string.Empty, string.Empty)
+            .Token("A", string.Empty, string.Empty)
+            .Token("b", string.Empty, string.Empty)
+            .Literal("c")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
 
         var actual = interpolatedString.Tokens();
@@ -23,12 +22,11 @@ public class InterpolatedStringTests
     [Fact]
     public void Tokens_CommandSegment_HashsetIncludeCommandToken()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:if,a}", "if", "a", string.Empty),
-            new InterpolatedStringTokenSegment("{b}", "b", string.Empty, string.Empty),
-            new InterpolatedStringCommandSegment("{:ifend,a}", "ifend", "a", string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Command("if", "a", string.Empty)
+            .Token("b", string.Empty, string.Empty)
+            .Command("ifend", "a", string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
 
         var actual = interpolatedString.Tokens();
@@ -40,12 +38,11 @@ public class InterpolatedStringTests
     [Fact]
     public void Tokens_CommandSegmentWithEndToken_HashsetIncludeCommandToken()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:if,a}", "if", "a", string.Empty),
-            new InterpolatedStringTokenSegment("{b}", "b", string.Empty, string.Empty),
-            new InterpolatedStringCommandSegment("{:ifend,a}", "ifend", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Command("if", "a", string.Empty)
+            .Token("b", string.Empty, string.Empty)
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
 
         var actual = interpolatedString.Tokens();
@@ -57,11 +54,10 @@ public class InterpolatedStringTests
     [Fact]
     public void Tokens_ParsedTokensCaseSensitive_ReturnsTokenHashset()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment("{a}", "a", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{A}", "A", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Token("a", string.Empty, string.Empty)
+            .Token("A", string.Empty, string.Empty)
+            .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
             NameComparer = StringComparer.Ordinal,

@@ -13,12 +13,12 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithTypeOnlyFormatter_OutputXTwice()
     {
-        var segments = new List<InterpolatedStringSegment>
+        var segments = new SegmentBuilder()
+            .Token("one", string.Empty, string.Empty)
+            .Token("two", string.Empty, "x")
+            .Build();
+        var settings = StringTokenFormatterSettings.Default with
         {
-            new InterpolatedStringTokenSegment("{one}", "one", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, "x"),
-        };
-        var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
                 FormatterDefinition.ForType((decimal value, string formatString) => new string(formatString[0], (int)value)),
@@ -35,12 +35,12 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithTokenNameFormatter_OutputXTwice()
     {
-        var segments = new List<InterpolatedStringSegment>
+        var segments = new SegmentBuilder()
+            .Token("one", string.Empty, string.Empty)
+            .Token("two", string.Empty, "x")
+            .Build();
+        var settings = StringTokenFormatterSettings.Default with
         {
-            new InterpolatedStringTokenSegment("{one}", "one", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, "x"),
-        };
-        var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
                 FormatterDefinition.ForTokenName("two", (int value, string formatString) => new string(formatString[0], value)),
@@ -56,11 +56,11 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithFormatStringFormatter_OutputXTwice()
     {
-        var segments = new List<InterpolatedStringSegment>
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, "x")
+            .Build();
+        var settings = StringTokenFormatterSettings.Default with
         {
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, "x"),
-        };
-        var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
                 FormatterDefinition.ForFormatString("x", (int value, string formatString) => new string(formatString[0], value)),
@@ -76,11 +76,11 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithTokenNameAndFormatStringFormatter_OutputXTwice()
     {
-        var segments = new List<InterpolatedStringSegment>
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, "x")
+            .Build();
+        var settings = StringTokenFormatterSettings.Default with
         {
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, "x"),
-        };
-        var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
                 FormatterDefinition.ForTokenNameAndFormatString("two", "x", (int value, string formatString) => new string(formatString[0], value)),
@@ -96,14 +96,14 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void OrderOfPrecedence_OutputABCD()
     {
-        var segments = new List<InterpolatedStringSegment>
+        var segments = new SegmentBuilder()
+            .Token("tok0", string.Empty, string.Empty)
+            .Token("tok1", string.Empty, string.Empty)
+            .Token("tok0", string.Empty, "x")
+            .Token("tok2", string.Empty, "x")
+            .Build();
+        var settings = StringTokenFormatterSettings.Default with
         {
-            new InterpolatedStringTokenSegment("{tok0}", "tok0", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{tok1}", "tok1", string.Empty, string.Empty),
-            new InterpolatedStringTokenSegment("{tok0}", "tok0", string.Empty, "x"),
-            new InterpolatedStringTokenSegment("{tok2}", "tok2", string.Empty, "x"),
-        };
-        var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
                 FormatterDefinition.ForType((int value, string formatString) => "a"),
@@ -125,11 +125,11 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void DifferingTypes_OutputXTwice()
     {
-        var segments = new List<InterpolatedStringSegment>
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, "x")
+            .Build();
+        var settings = StringTokenFormatterSettings.Default with
         {
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, "x"),
-        };
-        var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
                 FormatterDefinition.ForType((int value, string formatString) => "wrong"),
@@ -147,11 +147,11 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithAlignment_OutputPaddedXTwice()
     {
-        var segments = new List<InterpolatedStringSegment>
+        var segments = new SegmentBuilder()
+            .Token("two", "5", "x")
+            .Build();
+        var settings = StringTokenFormatterSettings.Default with
         {
-            new InterpolatedStringTokenSegment("{two}", "two", "5", "x"),
-        };
-        var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
                 FormatterDefinition.ForTokenName("two", (int value, string formatString) => new string(formatString[0], value)),
@@ -167,11 +167,11 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithInvalidAlignment_Throws()
     {
-        var segments = new List<InterpolatedStringSegment>
+        var segments = new SegmentBuilder()
+            .Token("two", "bad", string.Empty)
+            .Build();
+        var settings = StringTokenFormatterSettings.Default with
         {
-            new InterpolatedStringTokenSegment("{two}", "two", "bad", string.Empty),
-        };
-        var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
                 FormatterDefinition.ForType((int value, string formatString) => "a"),
@@ -185,11 +185,11 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithThrowingFormatter_Throws()
     {
-        var segments = new List<InterpolatedStringSegment>
+        var segments = new SegmentBuilder()
+            .Token("two", "bad", string.Empty)
+            .Build();
+        var settings = StringTokenFormatterSettings.Default with
         {
-            new InterpolatedStringTokenSegment("{two}", "two", "bad", string.Empty),
-        };
-        var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
                 FormatterDefinition.ForType((int value, string formatString) => throw new Exception()),
@@ -203,11 +203,11 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void SpecificTypeNotObject_OutputXTwice()
     {
-        var segments = new List<InterpolatedStringSegment>
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, "x")
+            .Build();
+        var settings = StringTokenFormatterSettings.Default with
         {
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, "x"),
-        };
-        var settings = StringTokenFormatterSettings.Default with {
             FormatterDefinitions = new List<FormatterDefinition>
             {
                 FormatterDefinition.ForType((object value, string formatString) => "wrong"),
@@ -233,10 +233,9 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForType((int value, string formatString) => "wrong"),
             }
         };
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", -16325.62m);
 

@@ -7,10 +7,9 @@ public class InterpolatedStringExpanderTests
     [Fact]
     public void WithoutTokens_ReturnsOriginalString()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringLiteralSegment("text only"),
-        };
+        var segments = new SegmentBuilder()
+            .Literal("text only")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -21,11 +20,10 @@ public class InterpolatedStringExpanderTests
     [Fact]
     public void WithToken_ReturnsExpandedString()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringLiteralSegment("one "),
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Literal("one ")
+            .Token("two", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("two", 2);
 
@@ -35,15 +33,14 @@ public class InterpolatedStringExpanderTests
     }
 
     [Theory]
-    [InlineData("{two,10:D4}", "two", "10", "D4", "      0002")]
-    [InlineData("{two,D4}", "two", "", "D4", "0002")]
-    [InlineData("{two,10}", "two", "10", "", "         2")]
-    public void FormattingAndAlignmentToken_ReturnsExpandedString(string raw, string token, string alignment, string format, string expected)
+    [InlineData("two", "10", "D4", "      0002")]
+    [InlineData("two", "", "D4", "0002")]
+    [InlineData("two", "10", "", "         2")]
+    public void FormattingAndAlignmentToken_ReturnsExpandedString(string token, string alignment, string format, string expected)
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment(raw, token, alignment, format),
-        };
+        var segments = new SegmentBuilder()
+            .Token(token, alignment, format)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("two", 2);
 
@@ -59,11 +56,10 @@ public class InterpolatedStringExpanderTests
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.Throw,
         };
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringLiteralSegment("one "),
-            new InterpolatedStringTokenSegment("{three}", "three", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Literal("one ")
+            .Token("three", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", 2);
 
@@ -77,11 +73,10 @@ public class InterpolatedStringExpanderTests
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
         };
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringLiteralSegment("one "),
-            new InterpolatedStringTokenSegment("{three}", "three", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Literal("one ")
+            .Token("three", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", 2);
 
@@ -99,10 +94,9 @@ public class InterpolatedStringExpanderTests
         {
             FormatProvider = CultureInfo.CreateSpecificCulture(cultureName),
         };
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", -16325.62m);
 
@@ -112,19 +106,19 @@ public class InterpolatedStringExpanderTests
     }
 
     [Theory]
-    [InlineData("{two,10:#.##}", "two", "10", "#.##", "      2,12")]
-    [InlineData("{two,#.##}", "two", "", "#.##", "2,12")]
-    [InlineData("{two,10}", "two", "10", "", "      2,12")]
-    public void FormatProviderFormattingAndAlignmentToken_ReturnsExpandedString(string raw, string token, string alignment, string format, string expected)
+    [InlineData("two", "10", "#.##", "      2,12")]
+    [InlineData("two", "", "#.##", "2,12")]
+    [InlineData("two", "10", "", "      2,12")]
+    public void FormatProviderFormattingAndAlignmentToken_ReturnsExpandedString(string token, string alignment, string format, string expected)
     {
         var settings = new StringTokenFormatterSettings
         {
             FormatProvider = CultureInfo.CreateSpecificCulture("de-DE"),
         };
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment(raw, token, alignment, format),
-        };
+        var segments = new SegmentBuilder()
+
+            .Token(token, alignment, format)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", 2.12m);
 
@@ -138,10 +132,9 @@ public class InterpolatedStringExpanderTests
     [InlineData("")]
     public void BlankValue_ReturnsEmptyString(string? tokenValue)
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("two", tokenValue);
 
@@ -154,11 +147,11 @@ public class InterpolatedStringExpanderTests
     public void ValueConverters_ConvertsContainerValueToBinary()
     {
         TokenValueConverter base2Converter = (v, _n) => v is int base10 ? TryGetResult.Success(Convert.ToString(base10, 2)) : default;
-        var segments = new List<InterpolatedStringSegment>
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, string.Empty)
+            .Build();
+        var settings = StringTokenFormatterSettings.Default with
         {
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
-        };
-        var settings = StringTokenFormatterSettings.Default with {
             ValueConverters = new TokenValueConverter[] { base2Converter },
         };
         var interpolatedString = new InterpolatedString(segments, settings);
@@ -175,17 +168,16 @@ public class InterpolatedStringExpanderTests
         static TryGetResult converter(object? _v, string _n)
         {
             Assert.Fail("This converter should not be reached");
-            return TryGetResult.Success(2) ;
+            return TryGetResult.Success(2);
         }
 
         var settings = new StringTokenFormatterSettings
         {
             ValueConverters = StringTokenFormatterSettings.Default.ValueConverters.Concat(new TokenValueConverter[] { converter }).ToList().AsReadOnly()
         };
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", 2);
 
@@ -197,11 +189,11 @@ public class InterpolatedStringExpanderTests
     [Fact]
     public void UnmatchedValueConverters_Throws()
     {
-        var segments = new List<InterpolatedStringSegment>
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, string.Empty)
+            .Build();
+        var settings = StringTokenFormatterSettings.Default with
         {
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
-        };
-        var settings = StringTokenFormatterSettings.Default with {
             ValueConverters = new[] { TokenValueConverterFactory.NullConverter() },
         };
         var interpolatedString = new InterpolatedString(segments, settings);
@@ -213,12 +205,11 @@ public class InterpolatedStringExpanderTests
     [Fact]
     public void ObjectTypeTokenValueWithoutValueConverter_Throws()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
-        valuesContainer.Add("two", new {});
+        valuesContainer.Add("two", new { });
 
         Assert.Throws<MissingValueConverterException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
@@ -226,10 +217,9 @@ public class InterpolatedStringExpanderTests
     [Fact]
     public void TokenFuncGivenTokenName_ConvertsContainerValue()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
         Func<string, object?> func = token => token == "two" ? 2 : null;
         valuesContainer.Add("two", func);
@@ -246,10 +236,9 @@ public class InterpolatedStringExpanderTests
         {
             InvalidFormatBehavior = InvalidFormatBehavior.Throw,
         };
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment("{two,Z}", "two", string.Empty, "Z"),
-        };
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, "Z")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", 2);
 
@@ -263,10 +252,9 @@ public class InterpolatedStringExpanderTests
         {
             InvalidFormatBehavior = InvalidFormatBehavior.LeaveUnformatted,
         };
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment("{two,Z}", "two", string.Empty, "Z"),
-        };
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, "Z")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", 2);
 
@@ -278,19 +266,18 @@ public class InterpolatedStringExpanderTests
     [Fact]
     public void FormatErrorLeaveToken_StringWithTokenValue()
     {
-         var settings = new StringTokenFormatterSettings
+        var settings = new StringTokenFormatterSettings
         {
             InvalidFormatBehavior = InvalidFormatBehavior.LeaveToken,
         };
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringTokenSegment("{two,Z}", "two", string.Empty, "Z"),
-        };
+        var segments = new SegmentBuilder()
+            .Token("two", string.Empty, "Z")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", 2);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
-        Assert.Equal("{two,Z}", actual);
+        Assert.Equal(segments[0].Raw, actual);
     }
 }

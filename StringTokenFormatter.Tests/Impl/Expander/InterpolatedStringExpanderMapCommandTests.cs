@@ -24,10 +24,9 @@ public class InterpolatedStringExpanderMapCommandTests
     [Fact]
     public void MapEnumValue_SecondCaseValueOutput()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:map,TestCase:First=a,Second=b}", "map", "TestCase", "First=a,Second=b"),
-        };
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "First=a,Second=b")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", TestEnum.Second);
 
@@ -39,10 +38,9 @@ public class InterpolatedStringExpanderMapCommandTests
     [Fact]
     public void MapBoolValue_FalseCaseValueOutput()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:map,TestCase:true=a,false=b}", "map", "TestCase", "true=a,false=b"),
-        };
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "true=a,false=b")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", false);
 
@@ -54,10 +52,9 @@ public class InterpolatedStringExpanderMapCommandTests
     [Fact]
     public void MapStringValueCaseInsensitive_MappedValueOutput()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:map,TestCase:FIRST=a,SECOND=b}", "map", "TestCase", "FIRST=a,SECOND=b"),
-        };
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "FIRST=a,SECOND=b")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", "second");
 
@@ -69,10 +66,9 @@ public class InterpolatedStringExpanderMapCommandTests
     [Fact]
     public void MapIntValue_Case3ValueOutput()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:map,TestCase:1=a,2=b,3=c}", "map", "TestCase", "1=a,2=b,3=c"),
-        };
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "1=a,2=b,3=c")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", 3);
 
@@ -84,10 +80,9 @@ public class InterpolatedStringExpanderMapCommandTests
     [Fact]
     public void NonMatchingMapValue_Throws()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:map,TestCase:1=a}", "map", "TestCase", "1=a"),
-        };
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "1=a")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", 0);
 
@@ -101,10 +96,9 @@ public class InterpolatedStringExpanderMapCommandTests
         {
             InvalidFormatBehavior = InvalidFormatBehavior.LeaveUnformatted,
         };
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:map,TestCase:1=a}", "map", "TestCase", "1=a"),
-        };
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "1=a")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", 2);
 
@@ -120,10 +114,9 @@ public class InterpolatedStringExpanderMapCommandTests
         {
             InvalidFormatBehavior = InvalidFormatBehavior.LeaveToken,
         };
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:map,TestCase:1=a}", "map", "TestCase", "1=a"),
-        };
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "1=a")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", 2);
 
@@ -135,10 +128,9 @@ public class InterpolatedStringExpanderMapCommandTests
     [Fact]
     public void MapIntUsingFunc_SecondCaseValueOutput()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:map,TestCase:1=a,2=b}", "map", "TestCase", "1=a,2=b"),
-        };
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "1=a,2=b")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", () => 2);
 
@@ -150,10 +142,9 @@ public class InterpolatedStringExpanderMapCommandTests
     [Fact]
     public void EmptyMappedValue_OutputsEmpty()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:map,TestCase:1=,2=b}", "map", "TestCase", "1=,2=b"),
-        };
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "1=,2=b")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", 1);
 
@@ -169,10 +160,9 @@ public class InterpolatedStringExpanderMapCommandTests
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
         };
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:map,TestCase:1=a}", "map", "TestCase", "1=a"),
-        };
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "1=a")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, customSettings);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -183,10 +173,9 @@ public class InterpolatedStringExpanderMapCommandTests
     [Fact]
     public void MapDiscardSpecifiedwithMissingCase_OutputDiscardValue()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:map,TestCase:1=a,_=c}", "map", "TestCase", "1=a,_=c"),
-        };
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "1=a,_=c")
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", 2);
 
@@ -198,12 +187,11 @@ public class InterpolatedStringExpanderMapCommandTests
     [Fact]
     public void MapPrimativeInLoop_SecondMappedValueOutput3Times()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:loop}", "loop", string.Empty, "3"),
-            new InterpolatedStringCommandSegment("{:map,TestCase:First=a,Second=b}", "map", "TestCase", "First=a,Second=b"),
-            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Command("loop", string.Empty, "3")
+            .Command("map", "TestCase", "First=a,Second=b")
+            .Command("loopend", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("TestCase", TestEnum.Second);
 
@@ -215,12 +203,11 @@ public class InterpolatedStringExpanderMapCommandTests
     [Fact]
     public void MapLoopSimpleValue_FirstThenSecondOutput()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
-            new InterpolatedStringCommandSegment("{:map,Iterator:First=a,Second=b}", "map", "Iterator", "First=a,Second=b"),
-            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Command("loop", "Iterator", string.Empty)
+            .Command("map", "Iterator", "First=a,Second=b")
+            .Command("loopend", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { TestEnum.First, TestEnum.Second });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
@@ -233,12 +220,11 @@ public class InterpolatedStringExpanderMapCommandTests
     [Fact]
     public void MapLoopComplexValue_FirstThenSecondOutput()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
-            new InterpolatedStringCommandSegment("{:map,Iterator.Name:First=a,Second=b}", "map", "Iterator.Name", "First=a,Second=b"),
-            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Command("loop", "Iterator", string.Empty)
+            .Command("map", "Iterator.Name", "First=a,Second=b")
+            .Command("loopend", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { Name = TestEnum.First });
         var o2 = TokenValueContainerFactory.FromObject(settings, new { Name = TestEnum.Second });
@@ -253,12 +239,11 @@ public class InterpolatedStringExpanderMapCommandTests
     [Fact]
     public void MapLoopCurrentIteration_OutputEachMapValueOnce()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
-            new InterpolatedStringCommandSegment("{:map,::loopiteration:1=first,2=second,_=other}", "map", "::loopiteration", "1=first,2=second,_=other"),
-            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Command("loop", "Iterator", string.Empty)
+            .Command("map", "::loopiteration", "1=first,2=second,_=other")
+            .Command("loopend", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b", "c" });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
@@ -271,12 +256,11 @@ public class InterpolatedStringExpanderMapCommandTests
     [Fact]
     public void MapLoopCount_OutputThird3TimesOnceForEachItem()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringCommandSegment("{:loop}", "loop", "Iterator", string.Empty),
-            new InterpolatedStringCommandSegment("{:map,::loopcount:1=first,2=second,3=third}", "map", "::loopcount", "1=first,2=second,3=third"),
-            new InterpolatedStringCommandSegment("{:loopend}", "loopend", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Command("loop", "Iterator", string.Empty)
+            .Command("map", "::loopcount", "1=first,2=second,3=third")
+            .Command("loopend", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b", "c" });
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);

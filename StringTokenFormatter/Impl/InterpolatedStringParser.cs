@@ -69,8 +69,7 @@ public static partial class InterpolatedStringParser
             }
             else
             {
-                string componentPartsString = segment[startToken.Length..^endToken.Length];
-                yield return ConvertFromComponents(componentPartsString, segment);
+                yield return ParseComponents(segment, startToken, endToken);
             }
             index = captureIndex + captureLength;
         }
@@ -80,8 +79,9 @@ public static partial class InterpolatedStringParser
         }
     }
 
-    private static InterpolatedStringSegment ConvertFromComponents(string componentPartsString, string segment)
+    private static InterpolatedStringSegment ParseComponents(string segment, string startToken, string endToken)
     {
+        string componentPartsString = segment[startToken.Length..^endToken.Length];
         string[] components = GetTokenComponentsRegex().Split(componentPartsString);
         InterpolatedStringTokenOnlySegment parsedSegment = components switch
         {
