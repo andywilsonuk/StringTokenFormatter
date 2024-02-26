@@ -2,13 +2,19 @@ using System.Text.RegularExpressions;
 
 namespace StringTokenFormatter.Impl;
 
-public class MapCommand : IExpanderCommand
+public sealed partial class MapCommand : IExpanderCommand
 {
     private const string commandName = "map";
-    private const string KeyValuePairsPattern = "([^=,]+)=([^,]*)";
-    private const string DiscardValue = "_";
+    private const string keyValuePairsPattern = "([^=,]+)=([^,]*)";
+    private const string discardValue = "_";
 
-    public void Init(ExpanderContext context) { }
+#if NET8_0_OR_GREATER
+    [GeneratedRegex(keyValuePairsPattern, RegexOptions.Singleline | RegexOptions.CultureInvariant)]
+    private static partial Regex GetKeyValuePairsRegex();
+# else
+    private static readonly Regex keyValuePairsRegex = new(keyValuePairsPattern, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+    private static Regex GetKeyValuePairsRegex() => keyValuePairsRegex;
+#endif
 
     public void Evaluate(ExpanderContext context)
     {
@@ -31,13 +37,13 @@ public class MapCommand : IExpanderCommand
         }
         string tokenValueString = tokenValue?.ToString() ?? string.Empty;
 
-        var matchingPairs = Regex.Matches(segment.Data, KeyValuePairsPattern).Cast<Match>().ToArray();
-        for (int i = 0; i < matchingPairs.Length; i++)
+        var matchingPairs = GetKeyValuePairsRegex().Matches(segment.Data);
+        for (int i = 0; i < matchingPairs.Count; i++)
         {
             var match = matchingPairs[i];
             string matchValue = match.Groups[1].Value;
             if (StringComparer.InvariantCultureIgnoreCase.Equals(matchValue, tokenValueString)
-            || (i == matchingPairs.Length - 1 && OrdinalValueHelper.AreEqual(matchValue, DiscardValue)))
+            || (i == matchingPairs.Count - 1 && OrdinalValueHelper.AreEqual(matchValue, discardValue)))
             {
                 string mappedValue = match.Groups[2].Value;
                 context.StringBuilder.AppendLiteral(mappedValue);
@@ -56,5 +62,7 @@ public class MapCommand : IExpanderCommand
         context.SegmentHandled = true;
     }
 
+    internal MapCommand() { }
+    public void Init(ExpanderContext context) { }
     public void Finished(ExpanderContext context) { }
 }

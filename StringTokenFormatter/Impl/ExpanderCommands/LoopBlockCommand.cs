@@ -2,8 +2,6 @@ namespace StringTokenFormatter.Impl;
 
 public sealed class LoopBlockCommand : IExpanderCommand, IExpanderPseudoCommands
 {
-    internal LoopBlockCommand() { }
-
     private const string startCommandName = "loop";
     private const string endCommandName = "loopend";
     private const string currentIterationCommandName = $"{Constants.PseudoPrefix}loopiteration";
@@ -163,6 +161,8 @@ public sealed class LoopBlockCommand : IExpanderCommand, IExpanderPseudoCommands
         public required ISequenceTokenValueContainer? Sequence { get; init; }
         public required int CurrentIteration { get; set; }
     }
+
+    internal LoopBlockCommand() { }
 
     public static int GetCurrentIteration(ExpanderContext context, ISequenceTokenValueContainer sequence)
     {

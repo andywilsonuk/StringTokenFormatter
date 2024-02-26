@@ -2,8 +2,6 @@ namespace StringTokenFormatter.Impl;
 
 public sealed class StandardCommand : IExpanderCommand
 {
-    internal StandardCommand() { }
-
     public void Evaluate(ExpanderContext context)
     {
         if (context.SegmentIterator.Current is InterpolatedStringTokenSegment tokenSegment)
@@ -30,9 +28,7 @@ public sealed class StandardCommand : IExpanderCommand
         context.StringBuilder.AppendLiteral(tokenSegment.Raw);
     }
 
+    internal StandardCommand() { }
     public void Init(ExpanderContext context) { }
-
     public void Finished(ExpanderContext context) { }
-
-    public TryGetResult TryMapPseudo(ExpanderContext context, string tokenName) => default;
 }

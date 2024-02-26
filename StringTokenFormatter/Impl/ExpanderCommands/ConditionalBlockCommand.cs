@@ -1,9 +1,7 @@
 namespace StringTokenFormatter.Impl;
 
-public class ConditionalBlockCommand : IExpanderCommand
+public sealed class ConditionalBlockCommand : IExpanderCommand
 {
-    internal ConditionalBlockCommand() { }
-
     private const string startCommandName = "if";
     private const string endCommandName = "ifend";
 
@@ -84,4 +82,6 @@ public class ConditionalBlockCommand : IExpanderCommand
         public int DisabledCount { get; set; } = 0;
         public int NestedCount { get; set; } = 0;
     }
+
+    internal ConditionalBlockCommand() { }
 }
