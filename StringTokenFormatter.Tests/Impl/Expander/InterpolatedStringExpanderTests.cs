@@ -67,7 +67,7 @@ public class InterpolatedStringExpanderTests
     }
 
     [Fact]
-    public void UnresolvedTokenBehaviorLeaveUnresolved_ThrowsException()
+    public void UnresolvedTokenBehaviorLeaveUnresolved_OutputsRaw()
     {
         var settings = new StringTokenFormatterSettings
         {
@@ -272,6 +272,24 @@ public class InterpolatedStringExpanderTests
         };
         var segments = new SegmentBuilder()
             .Token("two", string.Empty, "Z")
+            .Build();
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("two", 2);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal(segments[0].Raw, actual);
+    }
+
+    [Fact]
+    public void UnresolvedPseudoBehaviorLeaveUnresolved_OutputsRaw()
+    {
+        var settings = new StringTokenFormatterSettings
+        {
+            UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
+        };
+        var segments = new SegmentBuilder()
+            .Pseudo("unknown", string.Empty, string.Empty)
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", 2);

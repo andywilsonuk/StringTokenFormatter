@@ -224,4 +224,23 @@ public class InterpolatedStringExpanderConditionalBlockTests
 
         Assert.Equal("onefour", actual);
     }
+
+    [Fact]
+    public void UnresolvedConditionalTokenWithLeaveUnresolved_OutputsRawAndInner()
+    {
+        var segments = new SegmentBuilder()
+            .Command("if", "IsValid", string.Empty)
+            .Literal("two")
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
+        var customSettings = settings with
+        {
+            UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
+        };
+        var interpolatedString = new InterpolatedString(segments, customSettings);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("{:if,IsValid}two", actual);
+    }
 }

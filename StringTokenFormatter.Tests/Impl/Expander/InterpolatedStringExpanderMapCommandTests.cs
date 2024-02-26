@@ -269,4 +269,21 @@ public class InterpolatedStringExpanderMapCommandTests
 
         Assert.Equal("thirdthirdthird", actual);
     }
+
+    [Fact]
+    public void UnresolvedMapTokenWithLeaveUnresolved_OutputsRaw()
+    {
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "1=a")
+            .Build();
+        var customSettings = settings with
+        {
+            UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
+        };
+        var interpolatedString = new InterpolatedString(segments, customSettings);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal(segments[0].Raw, actual);
+    }
 }
