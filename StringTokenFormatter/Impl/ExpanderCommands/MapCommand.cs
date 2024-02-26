@@ -24,42 +24,45 @@ public sealed partial class MapCommand : IExpanderCommand
             return;
         }
         MapValue(context, commandSegment);
+        context.SegmentHandled = true;
     }
 
     private static void MapValue(ExpanderContext context, InterpolatedStringCommandSegment segment)
     {
-        var tokenValueResult = context.TryMap(segment.Token);
-        if (!context.ConvertValueIfMatched(tokenValueResult, segment.Token, out object? tokenValue))
+        string tokenName = segment.Token;
+        var tokenValueResult = context.TryGetTokenValue(tokenName);
+        if (!tokenValueResult.IsSuccess)
         {
             context.StringBuilder.AppendLiteral(segment.Raw);
-            context.SegmentHandled = true;
             return;
         }
-        string tokenValueString = tokenValue?.ToString() ?? string.Empty;
+        var convertedValue = context.ApplyValueConverter(tokenValueResult.Value, tokenName);
+        string convertedValueString = convertedValue?.ToString() ?? string.Empty;
 
-        var matchingPairs = GetKeyValuePairsRegex().Matches(segment.Data);
-        for (int i = 0; i < matchingPairs.Count; i++)
+        static (string TokenValue, string MapValue) groupResult(Match m) => (TokenValue: m.Groups[1].Value, MapValue: m.Groups[2].Value);
+        var matches = GetKeyValuePairsRegex().Matches(segment.Data);
+        var match = matches.Cast<Match>().Select(groupResult).FirstOrDefault(m => StringComparer.InvariantCultureIgnoreCase.Equals(m.TokenValue, convertedValueString));
+        if (match == default)
         {
-            var match = matchingPairs[i];
-            string matchValue = match.Groups[1].Value;
-            if (StringComparer.InvariantCultureIgnoreCase.Equals(matchValue, tokenValueString)
-            || (i == matchingPairs.Count - 1 && OrdinalValueHelper.AreEqual(matchValue, discardValue)))
+            var last = groupResult(matches[^1]);
+            if (OrdinalValueHelper.AreEqual(last.TokenValue, discardValue))
             {
-                string mappedValue = match.Groups[2].Value;
-                context.StringBuilder.AppendLiteral(mappedValue);
-                context.SegmentHandled = true;
-                return;
+                match = last;
             }
+        }
+        if (match != default)
+        {
+            context.StringBuilder.AppendLiteral(match.MapValue);
+            return;
         }
 
         string outputValue = context.Settings.InvalidFormatBehavior switch
         {
-            InvalidFormatBehavior.LeaveUnformatted => tokenValueString,
+            InvalidFormatBehavior.LeaveUnformatted => convertedValueString,
             InvalidFormatBehavior.LeaveToken => segment.Raw,
-            _ => throw new ExpanderException($"Token {segment.Token} does not have a matching map value for {tokenValue}"),
+            _ => throw new ExpanderException($"Token {segment.Token} does not have a matching map value for {convertedValueString}"),
         };
         context.StringBuilder.AppendLiteral(outputValue);
-        context.SegmentHandled = true;
     }
 
     internal MapCommand() { }

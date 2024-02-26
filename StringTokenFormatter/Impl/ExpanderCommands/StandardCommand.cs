@@ -8,6 +8,7 @@ public sealed class StandardCommand : IExpanderCommand
         {
             EvaluateTokenSegment(context, tokenSegment);
             context.SegmentHandled = true;
+            return;
         }
         if (context.SegmentIterator.Current is InterpolatedStringLiteralSegment rawSegment)
         {
@@ -16,16 +17,39 @@ public sealed class StandardCommand : IExpanderCommand
         }
     }
 
-    private static void EvaluateTokenSegment(ExpanderContext context, InterpolatedStringTokenSegment tokenSegment)
+    private static void EvaluateTokenSegment(ExpanderContext context, InterpolatedStringTokenSegment segment)
     {
-        string tokenName = tokenSegment.Token;
-        var containerMatch = context.TryMap(tokenName);
-        if (context.ConvertValueIfMatched(containerMatch, tokenName, out object? tokenValue))
+        string tokenName = segment.Token;
+        var tokenValueResult = context.TryGetTokenValue(tokenName);
+        if (!tokenValueResult.IsSuccess)
         {
-            context.StringBuilder.AppendTokenValue(context, tokenSegment, tokenValue);
+            context.StringBuilder.AppendLiteral(segment.Raw);
             return;
         }
-        context.StringBuilder.AppendLiteral(tokenSegment.Raw);
+        var convertedValue = context.ApplyValueConverter(tokenValueResult.Value, tokenName);
+        if (convertedValue == null) { return; }
+        AppendTokenValue(context, segment, convertedValue);
+    }
+
+    private static void AppendTokenValue(ExpanderContext context, InterpolatedStringTokenSegment tokenSegment, object tokenValue)
+    {
+        var builder = context.StringBuilder;
+        try
+        {
+            builder.AppendFormat(tokenValue, tokenSegment.Token, tokenSegment.Alignment, tokenSegment.Format);
+        }
+        catch (FormatException) when (context.Settings.InvalidFormatBehavior == InvalidFormatBehavior.LeaveToken)
+        {
+            builder.AppendLiteral(tokenSegment.Raw);
+        }
+        catch (FormatException) when (context.Settings.InvalidFormatBehavior == InvalidFormatBehavior.LeaveUnformatted)
+        {
+            builder.AppendUnformatted(tokenValue);
+        }
+        catch (FormatException ex)
+        {
+            throw new TokenValueFormatException($"Unable to format token {tokenSegment.Raw}", ex);
+        }
     }
 
     internal StandardCommand() { }

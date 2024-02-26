@@ -38,20 +38,38 @@ public sealed class LoopBlockCommand : IExpanderCommand, IExpanderPseudoCommands
         }
     }
 
-    private static void Start(ExpanderContext context, InterpolatedStringCommandSegment commandSegment)
+    private static void Start(ExpanderContext context, InterpolatedStringCommandSegment segment)
     {
         int currentSegmentIndex = context.SegmentIterator.CurrentIndex;
         int requestIterations = 0;
-        string tokenName = commandSegment.Token;
-        if (context.TryGetSequence(tokenName, out var sequence))
+        string tokenName = segment.Token;
+        ISequenceTokenValueContainer? sequence = null;
+        bool failedTokenMap = false;
+
+        if (tokenName != string.Empty)
         {
-            requestIterations = sequence.Count;
+            var tokenValueResult = context.Container.TryMap(tokenName);
+            if (!tokenValueResult.IsSuccess)
+            {
+                context.StringBuilder.AppendLiteral(segment.Raw);
+                failedTokenMap = true;
+            }
+            else if (tokenValueResult.Value is ISequenceTokenValueContainer tokenValueSequence)
+            {
+                sequence = tokenValueSequence;
+                requestIterations = tokenValueSequence.Count;
+            }
+            else
+            {
+                var convertedValue = context.ApplyValueConverter(tokenValueResult.Value, tokenName);
+                if (convertedValue is not int iterationsFromTokenValue)
+                {
+                    throw new ExpanderException($"Loop token '{tokenName}' value is not an int");
+                }
+                requestIterations = iterationsFromTokenValue;
+            }
         }
-        else if (TryGetTokenIterations(context, tokenName, out int? tokenIterations))
-        {
-            requestIterations = tokenIterations.Value;
-        }
-        if (TryGetDataIterations(commandSegment.Data, out int? dataIterations))
+        if (!failedTokenMap && TryGetDataIterations(segment.Data, out int? dataIterations))
         {
             if (sequence != null && dataIterations > sequence.Count)
             {
@@ -69,22 +87,6 @@ public sealed class LoopBlockCommand : IExpanderCommand, IExpanderPseudoCommands
             TotalIterations = requestIterations,
             Sequence = sequence
         });
-    }
-
-    private static bool TryGetTokenIterations(ExpanderContext context, string token, [NotNullWhen(true)] out int? iterations)
-    {
-        var containerMatch = context.Container.TryMap(token);
-        if (containerMatch.IsSuccess && containerMatch.Value is not ISequenceTokenValueContainer)
-        {
-            if (context.ConvertValueIfMatched(containerMatch, token, out object? tokenValue) && tokenValue is int iterationsFromTokenValue)
-            {
-                iterations = iterationsFromTokenValue;
-                return true;
-            }
-            throw new ExpanderException($"Loop token '{token}' value is not an int");
-        }
-        iterations = null;
-        return false;
     }
 
     private static bool TryGetDataIterations(string data, [NotNullWhen(true)] out int? iterations)

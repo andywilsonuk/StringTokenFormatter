@@ -48,8 +48,14 @@ public sealed class ConditionalBlockCommand : IExpanderCommand
         bool isNegated = tokenName[0] == '!';
         string conditionalTokenName = isNegated ? tokenName[1..] : tokenName;
 
-        var tokenValueResult = context.TryMap(conditionalTokenName);
-        if (!context.ConvertValueIfMatched(tokenValueResult, conditionalTokenName, out object? tokenValue) || tokenValue is not bool conditionEnabled)
+        var tokenValueResult = context.TryGetTokenValue(conditionalTokenName);
+        if (!tokenValueResult.IsSuccess)
+        {
+            context.StringBuilder.AppendLiteral(segment.Raw);
+            return;
+        }
+        var convertedValue = context.ApplyValueConverter(tokenValueResult.Value, conditionalTokenName);
+        if (convertedValue is not bool conditionEnabled)
         {
             throw new ExpanderException($"Conditional token value '{conditionalTokenName}' is not a boolean");
         }
