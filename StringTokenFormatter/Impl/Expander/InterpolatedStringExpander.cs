@@ -30,7 +30,7 @@ public static class InterpolatedStringExpander
             context.Commands.ExecuteUntil(command => command.Evaluate(context), () => context.SegmentHandled);
             if (context.SegmentHandled) { continue; }
 
-            throw new ExpanderException($"Unhandled segment {context.SegmentIterator.Current}");
+            throw new ExpanderException($"Unhandled segment '{context.SegmentIterator.Current.Raw}'");
         }
     }
 }

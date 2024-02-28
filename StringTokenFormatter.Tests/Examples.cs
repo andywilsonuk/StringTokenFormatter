@@ -117,7 +117,6 @@ public class Examples
     /// <summary>
     /// Conditional command plus negation. Map command using enum.
     /// </summary>
-    private enum ModeOfTransport { Unknown = 0, Bike = 1, Car = 2, Bus = 3, }
     [Fact]
     public void ConditionalCommand_MapCommand()
     {
@@ -135,58 +134,90 @@ public class Examples
 
         Assert.Equal("Self propelled", actual);
     }
+    private enum ModeOfTransport { Unknown = 0, Bike = 1, Car = 2, Bus = 3, }
 
     /// <summary>
     /// A more complex example using numerous features.
     /// </summary>
-    private class OrderLine(string product, int quantity, double price)
+    [Fact]
+    public void OrderConfirmation()
     {
-        public string Product { get; } = product;
-        public int Quantity { get; } = quantity;
-        public double Price { get; } = price;
-    }
-    [Fact(Skip = "incomplete")]
-    public void ComplexExample()
-    {
-        var random = new Random();
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatProvider = CultureInfo.GetCultureInfo("en-GB"),
+            FormatProvider = CultureInfo.GetCultureInfo("en-US"),
+            FormatterDefinitions = new[] {
+                FormatterDefinition.ForTokenName<int>("Order.Id", (id, _format) =>  $"#{id:000000}"),
+                FormatterDefinition.ForType<Guid>((guid, format) => format == "Initial" ? guid.ToString("D").Split('-')[0].ToUpperInvariant() : guid.ToString()),
+            },
         };
         var resolver = new InterpolatedStringResolver(settings);
         string interpolatedStringRaw = new StringBuilder()
-            .Append("")
+            .AppendLine("Hi {Customer.Name},")
+            .AppendLine("Thank you for {:map,Customer.IsFirstOrder:true=your first order,false=your order}.")
+            .AppendLine("Order details")
+            .AppendLine("- Id: {Order.Id}")
+            .AppendLine("- Payment method: {:map,Order.PaymentMethod:DebitCard=Debit card,CreditCard=Credit card}")
+            .AppendLine("- Delivery option: {Order.Delivery}")
+            .AppendLine("{:if,Order.HasDeliveryComment}- Comment for delivery driver: {Order.DeliveryComment}{:ifend}")
+            .AppendLine("Items")
+            .Append("{:loop,OrderLines}")
+            .AppendLine("- {OrderLines.Product} @ {OrderLines.Price:C}")
+            .Append("{:loopend}")
+            .AppendLine("Total: {OrderTotal:C}")
+            .Append("Ref: {MessageId:Initial}")
             .ToString();
         var interpolatedString = resolver.Interpolate(interpolatedStringRaw);
 
         var customer = new
         {
-            Name = "James Strong",
+            Name = "Jane Strong",
             IsFirstOrder = true,
         };
         var order = new Dictionary<string, object>()
         {
-            ["Id"] = "#8321",
-            ["PaymentMethod"] = "Credit card",
+            ["Id"] = 8321,
+            ["PaymentMethod"] = "CreditCard",
             ["Delivery"] = "Next day",
             ["DeliveryComment"] = "Please leave if no one in",
         };
         var orderLines = new[]
         {
-            new OrderLine(product: "T-shirt size M", quantity: 2, price: 25.50),
-            new OrderLine(product: "Coat size L", quantity: 1, price: 40.0),
-            new OrderLine(product: "Socks one size", quantity: 4, price: 14.0),
+            new OrderLine(product: "T-shirt", price: 25.5),
+            new OrderLine(product: "Coat", price: 40.0),
+            new OrderLine(product: "Socks", price: 14.0),
         };
         var combinedContainer = resolver.Builder()
             .AddNestedObject("Customer", customer)
             .AddNestedKeyValues("Order", order)
+            .AddNestedSingle("Order", "HasDeliveryComment", order["DeliveryComment"] is not null)
             .AddSequence("OrderLines", orderLines)
             .AddSingle("OrderTotal", orderLines.Sum(x => x.Price))
-            .AddSingle("UniqueId", () => random.Next())
+            .AddSingle("MessageId", new Lazy<object>(() => Guid.Parse("73054fad-ba31-4cc2-a1c1-ac534adc9b45")))
             .CombinedResult();
 
         string actual = resolver.FromContainer(interpolatedString, combinedContainer);
 
-        Assert.Equal("", actual);
+        string expected = """
+        Hi Jane Strong,
+        Thank you for your first order.
+        Order details
+        - Id: #008321
+        - Payment method: Credit card
+        - Delivery option: Next day
+        - Comment for delivery driver: Please leave if no one in
+        Items
+        - T-shirt @ $25.50
+        - Coat @ $40.00
+        - Socks @ $14.00
+        Total: $79.50
+        Ref: 73054FAD
+        """;
+
+        Assert.Equal(expected, actual);
+    }
+    private class OrderLine(string product, double price)
+    {
+        public string Product { get; } = product;
+        public double Price { get; } = price;
     }
 }
