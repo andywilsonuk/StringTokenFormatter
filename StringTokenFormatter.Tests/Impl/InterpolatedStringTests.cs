@@ -69,4 +69,20 @@ public class InterpolatedStringTests
         var expected = new HashSet<string> { "a", "A" };
         Assert.Equal(expected, actual);
     }
+
+    [Fact]
+    public void ToRawString_SegmentConcatination_ReturnsSingleCombinedString()
+    {
+        var segments = new SegmentBuilder()
+            .Literal("a")
+            .Token("b", string.Empty, string.Empty)
+            .Pseudo("c", string.Empty, string.Empty)
+            .Command("d", string.Empty, string.Empty)
+            .Build();
+        var interpolatedString = new InterpolatedString(segments, StringTokenFormatterSettings.Default);
+
+        var actual = interpolatedString.ToRawString();
+
+        Assert.Equal("a{b}{::c}{:d}", actual);
+    }
 }
