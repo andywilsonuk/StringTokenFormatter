@@ -23,7 +23,7 @@
 		<FileVersion>9.0.0</FileVersion>
 		<AssemblyTitle>String Token Formatter</AssemblyTitle>
 		<Authors>Andy Wilson, Tony Valenti</Authors>
-		<Description>A high-speed library to parse interpolated strings at runtime and replace tokens with corresponding values.</Description>
+		<Description>Provides token replacement for interpolated (templated) strings not known at compile time such as those retrieved from data stores using a variety of token to value mappers.</Description>
 		<Copyright>Andy Wilson</Copyright>
 		<PackageProjectUrl>https://github.com/andywilsonuk/StringTokenFormatter</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/andywilsonuk/StringTokenFormatter</RepositoryUrl>

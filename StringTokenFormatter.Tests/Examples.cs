@@ -151,7 +151,7 @@ public class Examples
             },
         };
         var resolver = new InterpolatedStringResolver(settings);
-        string interpolatedStringRaw = new StringBuilder()
+        string templateString = new StringBuilder()
             .AppendLine("Hi {Customer.Name},")
             .AppendLine("Thank you for {:map,Customer.IsFirstOrder:true=your first order,false=your order}.")
             .AppendLine("Order details")
@@ -166,7 +166,7 @@ public class Examples
             .AppendLine("Total: {OrderTotal:C}")
             .Append("Ref: {MessageId:Initial}")
             .ToString();
-        var interpolatedString = resolver.Interpolate(interpolatedStringRaw);
+        var interpolatedString = resolver.Interpolate(templateString);
 
         var customer = new
         {

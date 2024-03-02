@@ -1,6 +1,10 @@
-# StringTokenFormatter v8.0
+# StringTokenFormatter v9.0
 
-This library provides token replacement for interpolated strings not known at compile time such as those retrieved from data stores (file system, database, API, config files etc) and offers support for a variety of token to value mappers.
+Provides token replacement for interpolated (templated) strings not known at compile time such as those retrieved from data stores (file system, database, API, config files etc) using a variety of token to value mappers.
+
+It isn’t a replacement for string interpolation where the 'interpolation expression' is known at compile time and instead builds upon the idea of `string.Format` where a templated string is passed along with a series of replacement values. This library offers additional features beyond what either of the out-of-the-box implementations provide.
+
+Supported platforms: .NET 5 and later, .NET Standard 2.0
 
 Available on nuget.org at https://www.nuget.org/packages/StringTokenFormatter.
 
@@ -15,43 +19,178 @@ var client = new {
 string message = interpolatedString.FormatFromObject(client);
 ```
 
-# .NET versions
+# Migrating to version 9
 
-.NET 6, 7, 8 and .NET Standard 2.0 with C# 10 language features
-
-# Migrating from version 6
-
-There are major breaking changes. See [the v6 migration page](/migration-v6.md) for details on how to upgrade from version 6 to version 7.
+See [the v8 migration page](/migration-v8.md) for details on breaking changes and how to upgrade from version 8 to version 9.
 
 # Features overview
 
-As well as `string` extensions, there are equivalent `Uri` extensions and a reusable [Resolver](#the-resolver) class which allows for easier sharing of custom settings.
+As well as `string` extensions, there are equivalent `Uri` extensions, the preferred method is to use the dependency injection friendly [Resolver](#interpolated-string-resolver) which makes sharing custom settings and working with complex templates easier.
 
 ```C#
-string source = "Answer is {percent,10:P}";
+string templateString = "Answer is {percent,10:P}";
 var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default);
 
-string actual = resolver.FromTuples(source, ("percent", 1.2));
+string actual = resolver.FromTuples(templateString, ("percent", 1.2));
 
 Assert.Equal("Answer is    120.00%", actual);
 ```
 
-Tokens with formatting and alignment can be specified in the same way as `string.Format` ([.net docs](https://learn.microsoft.com/en-us/dotnet/api/system.string.format)). Alternative [token syntax](#syntax) can be selected in the settings.
+Tokens with formatting and alignment can be specified in the same way as `string.Format` ([.net docs](https://learn.microsoft.com/en-us/dotnet/api/system.string.format)). Alternative [token syntax](#syntax) can be selected in the [settings](#settings).
 
-Nested tokens (like `prefix.name`), cascading containers and other complex token resolution setups are supported through the `CompositeTokenValueContainer`, see [Building composite containers](#building-composite-token-value-containers) for the helper class.
+Grouping tokens with prefixes, multiple containers and other complex token resolution setups are supported through the `CompositeTokenValueContainer`, see [Building composite containers](#building-composite-token-value-containers) for the helper class.
 
-Conditional blocks of text and loops can be controlled through [block commands](#block-commands), for example:
+Conditional blocks of text, loops and simple value mapping can be controlled through [commands](#commands).
+
+As well supporting formatting through `IFormatProvider`, strongly-type `FormatterDefinitions` functions can be configured to match type, token name or format string.
+
+[Value Containers](#value-containers) can return primatives (`string`, `int` etc) as well as `Func` or `Lazy` values which will be resolved before formatting using one of the [Value Converters](#valueconverters). Additional converters can be included to perform custom conversion logic after token matching but before formatting.
 
 ```C#
-string original = "start {:if,IsValid}{middle}{:ifend,IsValid} end";
-var tokenValues = new { Middle = "center", IsValid = true };
-string result = original.FormatFromObject(tokenValues);
-Assert.Equal("start center end", result);
+var settings = StringTokenFormatterSettings.Default with
+{
+    FormatProvider = CultureInfo.GetCultureInfo("en-US"),
+    FormatterDefinitions = new[] {
+        FormatterDefinition.ForTokenName<int>("Order.Id", (id, _format) =>  $"#{id:000000}"),
+        FormatterDefinition.ForType<Guid>((guid, format) => format == "Initial" ? guid.ToString("D").Split('-')[0].ToUpperInvariant() : guid.ToString()),
+    },
+};
+var resolver = new InterpolatedStringResolver(settings);
+string templateString = new StringBuilder()
+    .AppendLine("Hi {Customer.Name},")
+    .AppendLine("Thank you for {:map,Customer.IsFirstOrder:true=your first order,false=your order}.")
+    .AppendLine("Order details")
+    .AppendLine("- Id: {Order.Id}")
+    .AppendLine("- Payment method: {:map,Order.PaymentMethod:DebitCard=Debit card,CreditCard=Credit card}")
+    .AppendLine("- Delivery option: {Order.Delivery}")
+    .AppendLine("{:if,Order.HasDeliveryComment}- Comment for delivery driver: {Order.DeliveryComment}{:ifend}")
+    .AppendLine("Items")
+    .Append("{:loop,OrderLines}")
+    .AppendLine("- {OrderLines.Product} @ {OrderLines.Price:C}")
+    .Append("{:loopend}")
+    .AppendLine("Total: {OrderTotal:C}")
+    .Append("Ref: {MessageId:Initial}")
+    .ToString();
+var interpolatedString = resolver.Interpolate(templateString);
+
+var customer = new
+{
+    Name = "Jane Strong",
+    IsFirstOrder = true,
+};
+var order = new Dictionary<string, object>()
+{
+    ["Id"] = 8321,
+    ["PaymentMethod"] = "CreditCard",
+    ["Delivery"] = "Next day",
+    ["DeliveryComment"] = "Please leave if no one in",
+};
+var orderLines = new[]
+{
+    new OrderLine(product: "T-shirt", price: 25.5),
+    new OrderLine(product: "Coat", price: 40.0),
+    new OrderLine(product: "Socks", price: 14.0),
+};
+var combinedContainer = resolver.Builder()
+    .AddPrefixedObject("Customer", customer)
+    .AddPrefixedKeyValues("Order", order)
+    .AddPrefixedSingle("Order", "HasDeliveryComment", order["DeliveryComment"] is not null)
+    .AddSequence("OrderLines", orderLines)
+    .AddSingle("OrderTotal", orderLines.Sum(x => x.Price))
+    .AddSingle("MessageId", new Lazy<object>(() => Guid.Parse("73054fad-ba31-4cc2-a1c1-ac534adc9b45")))
+    .CombinedResult();
+
+string actual = resolver.FromContainer(interpolatedString, combinedContainer);
+
+string expected = """
+Hi Jane Strong,
+Thank you for your first order.
+Order details
+- Id: #008321
+- Payment method: Credit card
+- Delivery option: Next day
+- Comment for delivery driver: Please leave if no one in
+Items
+- T-shirt @ $25.50
+- Coat @ $40.00
+- Socks @ $14.00
+Total: $79.50
+Ref: 73054FAD
+""";
+
+Assert.Equal(expected, actual);
+
+record OrderLine(string product, double price);
 ```
 
-The [Value Converter](#valueconverters) settings provide `Lazy` loading and function-resolved values and can be extended to perform custom conversion logic after token matching but before formatting. Any [value container](#value-containers) can return a `Lazy` or `Func` which will be resolved before formatting.
 
-See also [additional features and notes](#additional-features-and-notes) for performance optimization strategies and advanced usage. 
+# Interpolated String Resolver
+
+Once beyond simple use cases, things can get a little complicated and this is where the `InterpolatedStringResolver` steps in.
+
+A helper class called `InterpolatedStringResolver` exists to allow the easy reuse of custom settings without overriding the global default. An IoC container could be used to store the resolver for use throughout the application. The resolver contains the standard expansion methods and is in some ways a preferred option to using the `string` extension methods.
+
+The resolver provides methods for both expansion of tokens from `string` and parsed `InterpolatedString`.
+
+# How token resolution works
+
+To resolve the tokens within a string, there is a two stage process, first parsing, then expanding.
+
+## Parsing
+
+The `InterpolatedStringParser` turns a template `string` into an `InterpolatedString` defined as a list of strongly-typed `InterpolatedStringSegments`.
+
+Generating the `InterpolatedString` takes time but can be stored and passed multiple times to the `InterpolatedStringExpander`. 
+
+```mermaid
+flowchart LR
+    Settings[/settings/]
+    TemplateString[/template string/]
+    Parser[InterpolatedStringParser]
+    InterpolatedStringSegments[/segments/]
+    InterpolatedString[/InterpolatedString/]
+    TemplateString --> Parser
+    Settings --> Parser
+    Parser --> InterpolatedStringSegments
+    InterpolatedStringSegments --> InterpolatedString
+```
+
+## Expanding
+
+The `InterpolatedStringExpander` take the `InterpolatedString` and processes it using the values in the `ValueContainer`.
+
+1. The passed `ITokenValueContainer` provides the value based on the token name
+2. A value conversion is then attempted based on the collection of `ValueConverters` in the settings
+3. If the token contains alignment or formatting details, `string.Format` is called with the `FormatProvider` from the settings
+
+Block Commands are processed by the `InterpolatedStringExpander` and follow the flow of steps 2.1 and 2.2 for obtaining their relevant values from tokens. 
+
+```mermaid
+flowchart LR
+    InterpolatedString[/InterpolatedString/]
+    ValueContainer[/ValueContainer/]
+    Expander[InterpolatedStringExpander]
+    Segment[/segment/]
+    Command[Command]
+    ValueConverter[Value Converter]
+    FormatDefinition[Format Definition]
+    FormatProvider[Format Provider]
+    ResultantStringSegment[/resultant string/]
+    ResultantString[/combined string/]
+    subgraph SegmentProcessing[Segment Processing]
+        direction TB
+        Segment --> Command
+        Command --> ValueConverter
+        ValueConverter --> FormatDefinition
+        ValueConverter --> FormatProvider
+        FormatDefinition --> ResultantStringSegment
+        FormatProvider --> ResultantStringSegment
+    end
+    InterpolatedString --> Expander
+    ValueContainer --> Expander
+    Expander --> SegmentProcessing
+    SegmentProcessing --> ResultantString
+```
 
 # Value containers
 
@@ -227,32 +366,6 @@ Defines the prefix for `HierarchicalTokenValueContainer` instances. Default `.` 
 See also [Token Value Container Builder](#building-composite-token-value-containers).
 
 ## Additional features and notes
-
-### Flow of Control
-
-When resolving the token values within an interpolated string, the following sequence is followed:
-
-1. The `InterpolatedStringParser` turns a `string` into an `InterpolatedString`
-2. The `InterpolatedStringExpander` take the `InterpolatedString` and processes it. For a given token
-    1. The passed `ITokenValueContainer` provides the value based on the token name
-    2. A value conversion is then attempted based on the collection of `ValueConverters` in the settings
-    3. If the token contains alignment or formatting details, `string.Format` is called with the `FormatProvider` from the settings
-
-Block Commands are processed by the `InterpolatedStringExpander` and follow the flow of steps 2.1 and 2.2 for obtaining their relevant values from tokens. 
-
-### Reusing InterpolatedString instances
-
-The `InterpolatedStringParser.Parse` method is responsible for identifying tokens within the source string and returning the `InterpolatedString` of segments. Generating the `InterpolatedString` takes time but can be stored and pass multiple times to the `InterpolatedStringExpander.Expand` method. 
-
-An example would be an email template merge whereby the same message text is used each time but with client-specific details within the `ITokenValueContainer`.
-
-See also [The Resolver](#the-resolver).
-
-### The Resolver
-
-A helper class called `InterpolatedStringResolver` exists to allow the easy reuse of custom settings without overriding the global default. An IoC container could be used to store the resolver for use throughout the application. The resolver contains the standard expansion methods and is in some ways a preferred option to using the `string` extension methods.
-
-The resolver provides methods for both expansion of tokens from `string` and parsed `InterpolatedString`.
 
 ### Building composite token value containers
 
