@@ -104,7 +104,7 @@ public class Examples
             Name = "Savings Account",
         };
         var combinedContainer = resolver.Builder()
-            .AddNestedObject("Account", account)
+            .AddPrefixedObject("Account", account)
             .AddSingle("text", "It has come to our attention that...")
             .CombinedResult();
         var interpolatedString = resolver.Interpolate("Ref: {Account.Id}, {Account.Name:titleCase}. {text}");
@@ -187,9 +187,9 @@ public class Examples
             new OrderLine(product: "Socks", price: 14.0),
         };
         var combinedContainer = resolver.Builder()
-            .AddNestedObject("Customer", customer)
-            .AddNestedKeyValues("Order", order)
-            .AddNestedSingle("Order", "HasDeliveryComment", order["DeliveryComment"] is not null)
+            .AddPrefixedObject("Customer", customer)
+            .AddPrefixedKeyValues("Order", order)
+            .AddPrefixedSingle("Order", "HasDeliveryComment", order["DeliveryComment"] is not null)
             .AddSequence("OrderLines", orderLines)
             .AddSingle("OrderTotal", orderLines.Sum(x => x.Price))
             .AddSingle("MessageId", new Lazy<object>(() => Guid.Parse("73054fad-ba31-4cc2-a1c1-ac534adc9b45")))

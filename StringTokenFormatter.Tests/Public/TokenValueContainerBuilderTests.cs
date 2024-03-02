@@ -16,7 +16,8 @@ public partial class TokenValueContainerBuilderTests
     [Fact]
     public void MultipleContainerCombinations_AllUsed()
     {
-        var account = new {
+        var account = new
+        {
             Id = 2,
         };
         var person = new Dictionary<string, string>()
@@ -25,8 +26,8 @@ public partial class TokenValueContainerBuilderTests
         };
 
         builder.AddSingle("text", "message text");
-        builder.AddNestedObject("Account", account);
-        builder.AddNestedKeyValues("Person", person);
+        builder.AddPrefixedObject("Account", account);
+        builder.AddPrefixedKeyValues("Person", person);
         var combinedContainer = builder.CombinedResult();
 
         string interpolatedString = "Hi {Person.Name}, {text}. Ref: {Account.Id}";
@@ -64,7 +65,7 @@ public partial class TokenValueContainerBuilderTests
     [Fact]
     public void ClassSequence_ObjectValueOutput()
     {
-        builder.AddSequence("Seq", new [] { new ComplexClass("first"), new ComplexClass("second") });
+        builder.AddSequence("Seq", new[] { new ComplexClass("first"), new ComplexClass("second") });
         var combinedContainer = builder.CombinedResult();
 
         string interpolatedString = "{:loop,Seq}{Seq.Value} {:loopend}";
@@ -72,7 +73,7 @@ public partial class TokenValueContainerBuilderTests
 
         Assert.Equal("first second ", actual);
     }
-    
+
     [Fact]
     public void StructSequence_ObjectValueOutput()
     {

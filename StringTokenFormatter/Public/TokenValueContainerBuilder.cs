@@ -36,22 +36,22 @@ public class TokenValueContainerBuilder
     public TokenValueContainerBuilder AddContainers(IEnumerable<ITokenValueContainer> containers) =>
         FluentAdd(containers);
 
-    public TokenValueContainerBuilder AddNestedSingle<T>(string prefix, string token, T value) where T : notnull =>
-        AddNestedContainer(prefix, TokenValueContainerFactory.FromSingle(Settings, token, value));
+    public TokenValueContainerBuilder AddPrefixedSingle<T>(string prefix, string token, T value) where T : notnull =>
+        AddPrefixedContainer(prefix, TokenValueContainerFactory.FromSingle(Settings, token, value));
 
-    public TokenValueContainerBuilder AddNestedKeyValues<T>(string prefix, IEnumerable<KeyValuePair<string, T>> pairs) =>
-        AddNestedContainer(prefix, TokenValueContainerFactory.FromPairs(Settings, pairs));
+    public TokenValueContainerBuilder AddPrefixedKeyValues<T>(string prefix, IEnumerable<KeyValuePair<string, T>> pairs) =>
+        AddPrefixedContainer(prefix, TokenValueContainerFactory.FromPairs(Settings, pairs));
 
-    public TokenValueContainerBuilder AddNestedTuples<T>(string prefix, IEnumerable<(string, T)> tuples) =>
-        AddNestedContainer(prefix, TokenValueContainerFactory.FromTuples(Settings, tuples));
+    public TokenValueContainerBuilder AddPrefixedTuples<T>(string prefix, IEnumerable<(string, T)> tuples) =>
+        AddPrefixedContainer(prefix, TokenValueContainerFactory.FromTuples(Settings, tuples));
 
-    public TokenValueContainerBuilder AddNestedObject<T>(string prefix, T source) where T : class =>
-        AddNestedContainer(prefix, TokenValueContainerFactory.FromObject(Settings, source));
+    public TokenValueContainerBuilder AddPrefixedObject<T>(string prefix, T source) where T : class =>
+        AddPrefixedContainer(prefix, TokenValueContainerFactory.FromObject(Settings, source));
 
-    public TokenValueContainerBuilder AddNestedFunc<T>(string prefix, Func<string, T> func) =>
-        AddNestedContainer(prefix, TokenValueContainerFactory.FromFunc(Settings, func));
+    public TokenValueContainerBuilder AddPrefixedFunc<T>(string prefix, Func<string, T> func) =>
+        AddPrefixedContainer(prefix, TokenValueContainerFactory.FromFunc(Settings, func));
 
-    public TokenValueContainerBuilder AddNestedContainer(string prefix, ITokenValueContainer tokenValueContainer) =>
+    public TokenValueContainerBuilder AddPrefixedContainer(string prefix, ITokenValueContainer tokenValueContainer) =>
         FluentAdd(TokenValueContainerFactory.FromHierarchical(Settings, prefix, tokenValueContainer));
 
     public ITokenValueContainer CombinedResult() => TokenValueContainerFactory.FromCombination(Settings, innerList);
