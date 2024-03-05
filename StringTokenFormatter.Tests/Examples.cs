@@ -11,14 +11,14 @@ public class Examples
     [Fact]
     public void ObjectContainerFromAnonymousType()
     {
-        string interpolatedString = "Hello {FirstName} {LastName}";
+        string templateString = "Hello {FirstName} {LastName}";
         var client = new
         {
             FirstName = "John",
             LastName = "Smith",
         };
 
-        string actual = interpolatedString.FormatFromObject(client);
+        string actual = templateString.FormatFromObject(client);
 
         Assert.Equal("Hello John Smith", actual);
     }
@@ -30,11 +30,11 @@ public class Examples
     [Fact]
     public void FormattingParityWithStringFormat()
     {
-        string interpolatedString = "Today is {outlook} with a temperature of {temperature:N1}°C and {humidity,6:P} humidity";
+        string templateString = "Today is {outlook} with a temperature of {temperature:N1}°C and {humidity,6:P} humidity";
         var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default);
         var tokenValues = new (string, object)[] { ("temperature", 23), ("humidity", 0.6m), ("outlook", "sunny") };
 
-        string actual = resolver.FromTuples(interpolatedString, tokenValues);
+        string actual = resolver.FromTuples(templateString, tokenValues);
 
         Assert.Equal("Today is sunny with a temperature of 23.0°C and 60.00% humidity", actual);
     }
@@ -47,7 +47,7 @@ public class Examples
     [Fact]
     public void LoopWithPrimativeValuesList_MapCommandUsingFunc()
     {
-        string interpolatedString = new StringBuilder()
+        string templateString = new StringBuilder()
             .Append("<table>")
             .Append("{:loop,ListValue}<tr class=\"{:map,IsEven:false=stripe,true=no-stripe}\">")
             .Append("<td>{::loopiteration:D2}/{::loopcount:D2}</td>")
@@ -67,7 +67,7 @@ public class Examples
             .AddSequence("ListValue", listValues)
             .CombinedResult();
 
-        string actual = interpolatedString.FormatFromContainer(combinedContainer);
+        string actual = templateString.FormatFromContainer(combinedContainer);
 
         string expected = new StringBuilder()
             .Append("<table>")
@@ -121,7 +121,7 @@ public class Examples
     public void ConditionalCommand_MapCommand()
     {
         var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default);
-        string interpolatedString = new StringBuilder()
+        string templateString = new StringBuilder()
             .Append("{:if,travelledToWork}{:map,mode:Unknown=Not set,Bike=Self propelled,Car=Combustion engine,Bus=Electric}{:ifend}")
             .Append("{:if,!travelledToWork}Did not travel{:ifend}")
             .ToString();
@@ -130,7 +130,7 @@ public class Examples
             .AddSingle("mode", ModeOfTransport.Bike)
             .CombinedResult();
 
-        string actual = resolver.FromContainer(interpolatedString, combinedContainer);
+        string actual = resolver.FromContainer(templateString, combinedContainer);
 
         Assert.Equal("Self propelled", actual);
     }
@@ -212,7 +212,6 @@ public class Examples
         Total: $79.50
         Ref: 73054FAD
         """;
-
         Assert.Equal(expected, actual);
     }
     private class OrderLine(string product, double price)

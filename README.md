@@ -46,6 +46,8 @@ As well supporting formatting through `IFormatProvider`, strongly-type `Formatte
 
 [Value Containers](#value-containers) can return primatives (`string`, `int` etc) as well as `Func` or `Lazy` values which will be resolved before formatting using one of the [Value Converters](#value-converters). Additional converters can be included to perform custom conversion logic after token matching but before formatting.
 
+A more complete example:
+
 ```C#
 var settings = StringTokenFormatterSettings.Default with
 {
@@ -291,24 +293,24 @@ Assert.Equal("Ref: 002, Savings account", actual);
 
 # Commands
 
-Commands wrap literal or token segments and provide behavior configurable by container values.
+To provide additional logic when resolving tokens to values, Commands offer a range of functionality. There are a number of included commands which are enabled by default and custom can be added by implementing the interface `IExpanderCommand`.
+
+Commands included by default which are available in `ExpanderCommandFactory`:
+
+| Command            | Action                                                            |
+| :----------------: | :---------------------------------------------------------------: |
+| Conditional        | Controls inclusion of containing segments based on boolean value  |
+| Loop               | Allows containing segments to be iterated multiple times          | 
+| Map                | A comma-separated list of token value to text mappings            | 
+| Standard           | Handles tokens and literals not handled by other commands         |
 
 The command names are always lowercase whilst tokens abide by the `TokenResolutionPolicy` (as well as `ValueConverter`s).
-
-Commands available in `ExpanderCommandFactory`:
-
-| Command            | Result                                                    |
-| :----------------: | :-------------------------------------------------------: |
-| Conditional        | Controls includes of wrapped text based on boolean value  |
-| Loop               | Allows for repeated text based on specific iterations     | 
-| Map                | A comma-separated list of token value to text mappings    | 
-| Standard           | Handles tokens and literals not handled by other commands |
 
 ## Conditional block command
 
 Simple boolean conditions can be used to exclude blocks of text. 
 
-The starting command format is `:if,token` where the `token` resolves to a boolean value dictating whether to include the block. The ending command is `:ifend` and can optionally include the token name.
+The starting command format is `:if,token` where `token` resolves to a boolean value dictating whether to include the block. The ending command is `:ifend` and can optionally include the token name.
 
 ```C#
 string templateString = "start {:if,IsValid}{middle}{:ifend,IsValid} end";
@@ -321,12 +323,32 @@ Nested conditions are supported.
 
 ## Loop block command
 
-Provides a fixed number of iterations for the nested block.
+For repeating blocks of content, the loop command offers a number of options.
 
-For token derived iterations `{:loop,token}` is used and for constant iterations `{:loop:value}` where `value` is the number of iterations required. The ending command is `{:loopend}`.
+The syntax for the loop command is `{:loop,token:iterations}` with an ending command of `{:loopend}`. One of `token` or `iterations` must be specified.
+
+Use options:
+
+1. `Token` can be a sequence (see below)
+2. `Iterations` is an converted to an `int` sets an upper limit on sequence iterations (to take the first x values)
+3. Specifying `Iterations` without `Token` can be used to provide a fixed number of iterations
+4. Also `Token` can map to an `int` or equally a `Func` as provided by a [Value Container](#value-containers)
+
+There are also two pseudo tokens defined for loops:
+
+- `::loopiteration` which returns the current iteration starting at 1
+- `::loopcount` which is the total number of iterations
+
+Nested loops are supported.
+
+Note: The number of iterations is calculated upon entering the loop and cannot be changed during the iterations.
+
+## Literal iteration count
+
+For token-derived iterations `{:loop,token}` is used and for constant iterations `{:loop:iterations}` where `iterations` is the number of iterations required. The ending command is `{:loopend}`.
 
 ```C#
-string templateString = "outside {:loop,Iterations}{innerValue}{:loopend} outside";
+string templateString = "{:loop,Iterations}{innerValue}{:loopend}";
 int callCount = 0;
 var called = () => {
     callCount++;
@@ -334,17 +356,84 @@ var called = () => {
     {
         1 => "a",
         2 => "b",                
-        _ => throw new IndexOutOfRangeException("Too many calls"),
+        _ => "z",
     };
 };
 var tokenValues = new { Iterations = 2, InnerValue = called };
 string result = templateString.FormatFromObject(tokenValues);
-Assert.Equal("outside ab outside", result);
+Assert.Equal("ab", result);
 ```
 
 In this example, the token value `InnerValue` is a `Func<string>` which returns a different value on each call to the function.
 
-Nested loops are supported.
+## Token sequence - primatives
+
+The sequence can either be a primative (`string`, `int` etc) or a complex object (see next section).
+
+The `TokenValueContainerBuilder` instance provides methods `AddSequence` and `AddPrefixedSequence` for adding `IEnumerable<object>`; the latter to use `prefix.` before the name.
+
+```C#
+string templateString = new StringBuilder()
+    .Append("<table>")
+    .Append("{:loop,ListValue}<tr>")
+    .Append("<td>{::loopiteration:D2}/{::loopcount:D2}</td>")
+    .Append("<td>{ListValue}</td>")
+    .Append("</tr>{:loopend}")
+    .Append("</table>")
+    .ToString();
+var listValues = new List<string> { "Apple", "Banana", "Cherry", "Damson", "Elderberry" };
+var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default);
+var combinedContainer = resolver.Builder()
+    .AddSequence("ListValue", listValues)
+    .CombinedResult();
+
+string actual = resolver.FromContainer(templateString, combinedContainer);
+
+string expected = new StringBuilder()
+    .Append("<table>")
+    .Append("<tr><td>01/05</td><td>Apple</td></tr>")
+    .Append("<tr ><td>02/05</td><td>Banana</td></tr>")
+    .Append("<tr><td>03/05</td><td>Cherry</td></tr>")
+    .Append("<tr><td>04/05</td><td>Damson</td></tr>")
+    .Append("<tr><td>05/05</td><td>Elderberry</td></tr>")
+    .Append("</table>")
+    .ToString();
+Assert.Equal(expected, actual);
+```
+
+## Token sequence - objects
+
+The `TokenValueContainerBuilder` instance methods `AddSequence` and `AddPrefixedSequence` will automatically wrap a complex object into an `ObjectTokenValueContainer` and so allows for the same functionality. The object could be a class instance, a record or an anonymous object.
+
+When iterating a complex object, the format is `{:loop,Token.PropertyName}` where `Token` is the sequence name and `PropertyName` is a property on the current sequence iteration object. The `HierarchicalDelimiter` as defined in the [settings](#settings) is used to separate the two components and is period `.` by default.
+
+```C#
+var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default);
+string templateString = new StringBuilder()
+    .Append("{:loop,OrderLines}")
+    .AppendLine("- {OrderLines.Product} @ {OrderLines.Price:C}")
+    .Append("{:loopend}");
+var orderLines = new[]
+{
+    new OrderLine("T-shirt", 25.5),
+    new OrderLine("Coat", 40.0),
+    new OrderLine("Socks", 14.0),
+};
+var combinedContainer = resolver.Builder()
+    .AddSequence("OrderLines", orderLines)
+    .CombinedResult();
+
+string actual = resolver.FromContainer(templateString, combinedContainer);
+
+string expected = """
+- T-shirt @ $25.50
+- Coat @ $40.00
+- Socks @ $14.00
+""";
+Assert.Equal(expected, actual);
+
+record OrderLine(string product, double price);
+```
 
 ## Map command
 
@@ -352,7 +441,17 @@ TODO: Map command details
 
 ## Standard command
 
-TODO: Standard command details
+The default command used when not segment is not handled previously. It expands simple token and literal segments.
+
+When modifying the Command settings, the Standard Command should be included to provide the basic functionality.
+
+## Custom commands
+
+implementing the interface `IExpanderCommand`
+
+`IExpanderPseudoCommands`
+
+TODO: Custom commands
 
 # Building composite token value containers
 
