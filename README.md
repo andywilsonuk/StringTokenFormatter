@@ -23,7 +23,7 @@ string message = interpolatedString.FormatFromObject(client);
 
 See [the v8 migration page](/migration-v8.md) for details on breaking changes and how to upgrade from version 8 to version 9.
 
-# Features overview
+# Overview
 
 As well as `string` extensions, there are equivalent `Uri` extensions, the preferred method is to use the dependency injection friendly [Resolver](#interpolated-string-resolver) which makes sharing custom settings and working with complex templates easier.
 
@@ -44,7 +44,7 @@ Conditional blocks of text, loops and simple value mapping can be controlled thr
 
 As well supporting formatting through `IFormatProvider`, strongly-type `FormatterDefinition`s functions can be configured to match type, token name or format string.
 
-[Value Containers](#value-containers) can return primatives (`string`, `int` etc) as well as `Func` or `Lazy` values which will be resolved before formatting using one of the [Value Converters](#valueconverters). Additional converters can be included to perform custom conversion logic after token matching but before formatting.
+[Value Containers](#value-containers) can return primatives (`string`, `int` etc) as well as `Func` or `Lazy` values which will be resolved before formatting using one of the [Value Converters](#value-converters). Additional converters can be included to perform custom conversion logic after token matching but before formatting.
 
 ```C#
 var settings = StringTokenFormatterSettings.Default with
@@ -244,29 +244,65 @@ Note: comma (,) and colon (:) should not be used in token names to avoid confusi
 
 # Format Definitions
 
-Formatting of token values can be done through the `IFormatProvider` interface or by a strongly-typed `FormatterDefinition` function.
+Formatting of token values can be done through the standard `IFormatProvider` interface or by a strongly-typed `FormatterDefinition` function.
 
+Custom `IFormatProvider`/`ICustomFormatter` implementations are an inelegant solution see [.net docs](https://learn.microsoft.com/en-us/dotnet/api/system.icustomformatter); the library provides a mechanism for matching strongly-typed values in addition to other citeria.
 
+Static methods are available on `FormatterDefinition` to create instances that can be passed into the [settings](#settings):
 
-`FormatterDefinition.ForType`
+- `ForType<T>(fn)` - Token value matches type `T`
+- `ForTokenName<T>(string tokenName, fn)` Token name matches and value matches type `T`
+- `ForFormatString<T>(string formatString, fn)` - Format string specific on token segment matches and value matches type `T`
+- `ForTokenNameAndFormatString<T>(string tokenName, string formatString, fn)` - Token name, format string and value type `T` all match
 
-`FormatterDefinition.ForTokenName`
+Where `fn` is defined as `Func<T, string, string>` with the first parameter being the strongly-typed token value after any [value conversion](#value-converters), the second is the `formatString` or empty if not specified. The return value is the formatted string result.
 
-`FormatterDefinition.ForFormatString`
+Token name follows the casing set in `NameComparer` in [settings](#settings) whilst `formatString` is case insensitive. The matching logic is from the most specific to the least irrespective of order.
 
-`FormatterDefinition.ForTokenNameAndFormatString`
+Example defining two `FormatterDefinition` criteria and format functions:
 
-Example:
+```C#
+static string intFormatter(int value, string _formatString) => value.ToString("D3");
+static string nameFormatter(string value, string formatString) =>
+{
+    if (formatString == "titleCase")
+    {
+        return $"{value.Substring(0, 1).ToUpper()}{value.Substring(1).ToLower()}";
+    }
+    return value;
+};
+var settings = StringTokenFormatterSettings.Default with
+{
+    FormatterDefinitions = new[] {
+        FormatterDefinition.ForType<int>(intFormatter),
+        FormatterDefinition.ForTokenName<string>("Name", nameFormatter)
+    },
+};
+var resolver = new InterpolatedStringResolver(settings);
 
-
-
-TODO: format definition details
+var account = new
+{
+    Id = 2,
+    Name = "Savings Account",
+};
+string actual = resolver.FromObject("Ref: {Id}, {Name:titleCase}", account);
+Assert.Equal("Ref: 002, Savings account", actual);
+```
 
 # Commands
 
 Commands wrap literal or token segments and provide behavior configurable by container values.
 
 The command names are always lowercase whilst tokens abide by the `TokenResolutionPolicy` (as well as `ValueConverter`s).
+
+Commands available in `ExpanderCommandFactory`:
+
+| Command            | Result                                                    |
+| :----------------: | :-------------------------------------------------------: |
+| Conditional        | Controls includes of wrapped text based on boolean value  |
+| Loop               | Allows for repeated text based on specific iterations     | 
+| Map                | A comma-separated list of token value to text mappings    | 
+| Standard           | Handles tokens and literals not handled by other commands |
 
 ## Conditional block command
 
@@ -313,6 +349,10 @@ Nested loops are supported.
 ## Map command
 
 TODO: Map command details
+
+## Standard command
+
+TODO: Standard command details
 
 # Building composite token value containers
 
@@ -394,11 +434,30 @@ Note: Token markers are case sensitive.
 
 ### `FormatProvider`
 
-Is used to specify the `IFormatProvider` applied to token values and uses [string.Format](https://learn.microsoft.com/en-us/dotnet/api/system.string.format) to apply formatting and alignment for example: `{value,10:D4}`. Default `CultureInfo.CurrentUICulture`.
+Used to specify the `IFormatProvider` applied to token values. Default `CultureInfo.CurrentUICulture`.
+
+Specific cultures info - in this instance `en-US` - can be used as with `string.Format`.
+
+```C#
+var settings = StringTokenFormatterSettings.Default with
+{
+    FormatProvider = CultureInfo.GetCultureInfo("en-US"),
+};
+```
 
 ### `FormatterDefinitions`
 
 Contains a collection of strong-typed custom formatters. Default is empty collection.
+
+```C#
+var settings = StringTokenFormatterSettings.Default with
+{
+    FormatterDefinitions = new[] {
+        FormatterDefinition.ForTokenName<int>("Id", (id, _format) =>  $"#{id:000000}"),
+        FormatterDefinition.ForType<Guid>((guid, format) => format == "InitialOnly" ? guid.ToString("D").Split('-')[0].ToUpper() : guid.ToString()),
+    },
+};
+```
 
 For more information see the [format definitions](#format-definitions) section.
 
@@ -408,14 +467,7 @@ The comparer used by `ITokenValueContainer` when performing token to value look-
 
 ### `Commands`
 
-The collection of `IExpanderCommand` implementations to be used by the `InterpolatedStringExpander`. Default collection from `ExpanderCommandFactory`:
-
-| Command            | Result                                                    |
-| :----------------: | :-------------------------------------------------------: |
-| Conditional        | Controls includes of wrapped text based on boolean value  |
-| Loop               | Allows for repeated text based on specific iterations     | 
-| Map                | A comma-separated list of token value to text mappings    | 
-| Standard           | Handles tokens and literals not handled by other commands |
+The collection of `IExpanderCommand` implementations to be used by the `InterpolatedStringExpander`. Default collection from `ExpanderCommandFactory`: `Conditional`, `Loop`, `Map`, `Standard`.
 
 See [Commands](#commands) for more information.
 
@@ -452,21 +504,11 @@ Defines how `string.Format` or `FormatDefinition` exceptions are handled. Defaul
 
 ### `ValueConverters`
 
-Applies to token values after matching but before formatting. Converters are attempted in order so that once one has successfully converted the value then no further conversions take place. Default collection (from `TokenValueConverterFactory`):
+Applies to token values after matching but before formatting. Converters are attempted in order so that once one has successfully converted the value then no further conversions take place. 
 
-| Value                       | Result                                                   |
-| :-------------------------: | :------------------------------------------------------: |
-| Null                        | no conversion                                            |
-| `string` or `ValueType`     | no conversion                                            | 
-| `Lazy<T>`                   | `Lazy.Value`                                             |
-| `Func<T>`                   | function result                                          |
-| `Func<string, T>`           | Supplied token name function result                      |
+By design `ToString` is not used as a value converter because calling that on a custom object will yield the `object.ToString` result which is often not the intended behavior.
 
-They can be useful to provide post-token match functionality; a great example is a when using an object which contains a property that uses a `Lazy`. The token matcher resolves the token marker to property and then through the `ValueConverters` calls the `Lazy.Value` and returns the value of the `Lazy` for formatting.
-
-All passed through types must be handled by a Value Converter otherwise an exception is thrown.
-
-By design `ToString` is not used as a value converter because calling that on a custom object will yield the `object.ToString` result which is often not the intended behavior. For scenarios when the `ToString` has been overridden, the result of calling `StringTokenFormatter.Impl.TokenValueConverterFactory.ToStringConverter<T>()` can be added to the settings list of `ValueConverters` so that the `ToString` method for that specific type will be used as a valid value conversion.
+For more information see the [Value Converters](#value-converters) section.
 
 ### `HierarchicalDelimiter`
 
@@ -484,9 +526,36 @@ See also [Token Value Container Builder](#building-composite-token-value-contain
 
 - Parse a template string into an `InterpolatedString`, most easily done using the [Resolver](#interpolated-string-resolver)
 - Remove unused commands from the [settings](#settings)
+- Remove unused Value Converters from the [settings](#settings)
 - Reuse [Value Containers](#value-containers) where possible
 - Use .NET 6 or above for improved regex performance
 - Use .NET 8 FrozenDictionary for faster read access, see the [Frozen Dictionary section](#frozen-dictionary-support-in-net-8-support-in-net-8)
+
+# Value Converters
+
+Applies to token values after matching but before formatting. Converters are attempted in order so that once one has successfully converted the value then no further conversions take place. Default collection (from `TokenValueConverterFactory`):
+
+| Value                       | Result                                                   |
+| :-------------------------: | :------------------------------------------------------: |
+| Null                        | no conversion                                            |
+| `string` or `ValueType`     | no conversion                                            | 
+| `Lazy<T>`                   | `Lazy.Value`                                             |
+| `Func<T>`                   | function result                                          |
+| `Func<string, T>`           | Supplied token name function result                      |
+
+They can be useful to provide post-token match functionality; a great example is a when using an object which contains a property that uses a `Lazy`. The token matcher resolves the token marker to property and then through the `ValueConverters` calls the `Lazy.Value` and returns the value of the `Lazy` for formatting.
+
+All token value types must be handled by a Value Converter otherwise an exception is thrown.
+
+By design `ToString` is not used as a value converter because calling that on a custom object will yield the `object.ToString` result which is often not the intended behavior. For scenarios when the `ToString` has been overridden, the result of calling `StringTokenFormatter.Impl.TokenValueConverterFactory.ToStringConverter<T>()` can be added to the settings list of `ValueConverters` so that the `ToString` method for that specific type will be used as a valid value conversion.
+
+# Thread safety
+
+By default, the library is designed to be broadly stateless, deterministic and thread-safe.
+
+Instances of [settings](#settings) and parsed `InterpolatedString`s can be reused on the same or another thread. The included [Value Containers](#value-containers) maintain the value mappings which largely will resolve to primative values (`string`, `int` etc) however using `Func` or `Lazy` values could lead to stateful behavior and should be avoided.
+
+It should be noted that [expanding](#how-token-resolution-works) tokens to values, internally creates context state and is subject to garbage collection; at this time, there is no pool for reusing spent context state.
 
 # Frozen Dictionary support in .NET 8
 
