@@ -122,7 +122,7 @@ public class Examples
     {
         var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default);
         string templateString = new StringBuilder()
-            .Append("{:if,travelledToWork}{:map,mode:Unknown=Not set,Bike=Self propelled,Car=Combustion engine,Bus=Electric}{:ifend}")
+            .Append("{:if,travelledToWork}{:map,mode:Bike=Self propelled,Car=Combustion engine,Bus=Electric,_=Not set}{:ifend}")
             .Append("{:if,!travelledToWork}Did not travel{:ifend}")
             .ToString();
         var combinedContainer = resolver.Builder()

@@ -22,6 +22,7 @@ string message = interpolatedString.FormatFromObject(client);
 # Migrating to version 9
 
 See [the v8 migration page](/migration-v8.md) for details on breaking changes and how to upgrade from version 8 to version 9.
+See [the v6 migration page](/migration-v6.md) for details on breaking changes and how to upgrade from version 6 to version 7.
 
 # Overview
 
@@ -343,30 +344,9 @@ Nested loops are supported.
 
 Note: The number of iterations is calculated upon entering the loop and cannot be changed during the iterations.
 
-## Literal iteration count
+Also see [the composite builder](#building-composite-token-value-containers) for more on including sequences.
 
-For token-derived iterations `{:loop,token}` is used and for constant iterations `{:loop:iterations}` where `iterations` is the number of iterations required. The ending command is `{:loopend}`.
-
-```C#
-string templateString = "{:loop,Iterations}{innerValue}{:loopend}";
-int callCount = 0;
-var called = () => {
-    callCount++;
-    return callCount switch
-    {
-        1 => "a",
-        2 => "b",                
-        _ => "z",
-    };
-};
-var tokenValues = new { Iterations = 2, InnerValue = called };
-string result = templateString.FormatFromObject(tokenValues);
-Assert.Equal("ab", result);
-```
-
-In this example, the token value `InnerValue` is a `Func<string>` which returns a different value on each call to the function.
-
-## Token sequence - primatives
+### Token sequence - primatives
 
 The sequence can either be a primative (`string`, `int` etc) or a complex object (see next section).
 
@@ -401,7 +381,7 @@ string expected = new StringBuilder()
 Assert.Equal(expected, actual);
 ```
 
-## Token sequence - objects
+### Token sequence - objects
 
 The `TokenValueContainerBuilder` instance methods `AddSequence` and `AddPrefixedSequence` will automatically wrap a complex object into an `ObjectTokenValueContainer` and so allows for the same functionality. The object could be a class instance, a record or an anonymous object.
 
@@ -435,9 +415,42 @@ Assert.Equal(expected, actual);
 record OrderLine(string product, double price);
 ```
 
+### Literal iteration count
+
+For token-derived iterations `{:loop,token}` is used and for constant iterations `{:loop:iterations}` where `iterations` is the number of iterations required. The ending command is `{:loopend}`.
+
+```C#
+string templateString = "{:loop,Iterations}{innerValue}{:loopend}";
+int callCount = 0;
+var called = () => {
+    callCount++;
+    return callCount switch
+    {
+        1 => "a",
+        2 => "b",                
+        _ => "z",
+    };
+};
+var tokenValues = new { Iterations = 2, InnerValue = called };
+string result = templateString.FormatFromObject(tokenValues);
+Assert.Equal("ab", result);
+```
+
+In this example, the token value `InnerValue` is a `Func<string>` which returns a different value on each call to the function.
+
 ## Map command
 
-TODO: Map command details
+The map command allows for simple key/value mapping; the idea being to keep the text inside the template rather than in code.
+
+An example where `Mode` is the token name and after the colon `:` are the comma-separated key/value mappings:
+
+```C#
+{:map,Mode:Bike=Self propelled,Car=Combustion engine,Bus=Electric,_=Not set}
+```
+
+The key is the `string` output of resolving the token’s value and performing any conversion in the usual way. Common token values are `enum`, `string` and `int` where there is a small number of discrete mappings.
+
+The last parameter can optionally be a catch-all by using the discard operator `_` as shown in the example.
 
 ## Standard command
 
@@ -447,11 +460,17 @@ When modifying the Command settings, the Standard Command should be included to 
 
 ## Custom commands
 
-implementing the interface `IExpanderCommand`
+Implementing command is done using the interface `IExpanderCommand` which is then included in the [settings](#settings).
 
-`IExpanderPseudoCommands`
+Three methods are available:
 
-TODO: Custom commands
+- `Init` which happens at the start of the expansion process
+- `Evaluate` is called for each segment, unless it has been handled by setting `context.SegmentHandled` to true
+- `Finished` can be used for validation such as the number of end commands match the start commands
+
+For pseudo command and additional interface `IExpanderPseudoCommands` can be implemented which works in the same way as for [value containers](#value-containers).
+
+Commands in this form were introduced in version 9 and therefore are considered beta and might be subject to interface changes are more use cases are identified.
 
 # Building composite token value containers
 
@@ -467,13 +486,13 @@ var account = new {
     Name = "The second account",
 };
 
-var builder = new TokenValueContainerBuilder(StringTokenFormatterSettings.Default);
-builder.AddSingle("text", "Message text");
-builder.AddPrefixedObject("Account", account);
-var combinedContainer = builder.CombinedResult();
+var combinedContainer = new TokenValueContainerBuilder(StringTokenFormatterSettings.Default)
+    .AddSingle("text", "Message text")
+    .AddPrefixedObject("Account", account)
+    .CombinedResult();
 
-string interpolatedString = "Ref: {Account.Id}. {text}.";
-string actual = interpolatedString.FormatFromContainer(combinedContainer);
+string templateString = "Ref: {Account.Id}. {text}.";
+string actual = templateString.FormatFromContainer(combinedContainer);
 
 Assert.Equal("Ref: 2. Message text.", actual);
 ```
@@ -614,6 +633,22 @@ For more information see the [Value Converters](#value-converters) section.
 Defines the prefix for `HierarchicalTokenValueContainer` instances. Default `.` (period).
 
 See also [Token Value Container Builder](#building-composite-token-value-containers).
+
+# Exceptions
+
+`TokenContainerException` - thrown when data passed to container constructor is invalid
+
+`ParserException` - general problem parsing the template string into an `InterpolatedString`
+
+`ExpanderException` - general problem expanding the `InterpolatedString` into the resultant string 
+
+`UnresolvedTokenException` - the token cannot be found in the container
+
+`MissingValueConverterException` - the token value does not match any of the [value converters](#value-converters)
+
+`TokenValueFormatException` - the token value failed to format
+
+The base exception from which these inherit is `StringTokenFormatterException`.
 
 # Creating a custom `ITokenValueContainer`
 
