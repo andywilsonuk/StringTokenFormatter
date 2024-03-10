@@ -1,20 +1,5 @@
 ﻿namespace StringTokenFormatter;
 
-public enum TokenResolutionPolicy
-{
-    /// <summary>
-    /// Null or empty string are valid container returns.
-    /// </summary>
-    ResolveAll = 0,
-    /// <summary>
-    /// Null is invalid but empty string are valid container returns.
-    /// </summary>
-    IgnoreNull = 1,
-    /// <summary>
-    /// Null and empty string are invalid container returns.
-    /// </summary>
-    IgnoreNullOrEmpty = 2,
-}
 public enum UnresolvedTokenBehavior
 {
     /// <summary>
@@ -41,6 +26,21 @@ public enum InvalidFormatBehavior
     /// </summary>
     LeaveToken = 2,
 }
+public enum TokenResolutionPolicy
+{
+    /// <summary>
+    /// Null or empty string are valid container returns.
+    /// </summary>
+    ResolveAll = 0,
+    /// <summary>
+    /// Null is invalid but empty string are valid container returns.
+    /// </summary>
+    IgnoreNull = 1,
+    /// <summary>
+    /// Null and empty string are invalid container returns.
+    /// </summary>
+    IgnoreNullOrEmpty = 2,
+}
 public interface IInterpolatedStringSettings
 {
     /// <summary>
@@ -64,9 +64,17 @@ public interface IInterpolatedStringSettings
     /// </summary>
     public InvalidFormatBehavior InvalidFormatBehavior { get; }
     /// <summary>
-    /// Gets the collection of Block Commands.
+    /// Gets the collection of Commands.
     /// </summary>
-    public IReadOnlyCollection<IBlockCommand> BlockCommands { get; }
+    public IReadOnlyCollection<IExpanderCommand> Commands { get; }
+    /// <summary>
+    /// Gets the comparer for matching token names. Default: `StringComparer.OrdinalIgnoreCase`
+    /// </summary>
+    public StringComparer NameComparer { get; }
+    /// <summary>
+    /// Gets the collection of Formatter Definitions.
+    /// </summary>
+    public IReadOnlyCollection<FormatterDefinition> FormatterDefinitions { get; }
 }
 public interface ITokenValueContainerSettings
 {
@@ -74,6 +82,9 @@ public interface ITokenValueContainerSettings
     /// Gets the comparer for matching token names. Default: `StringComparer.OrdinalIgnoreCase`
     /// </summary>
     public StringComparer NameComparer { get; }
+}
+public interface ICompositeTokenValueContainerSettings
+{
     /// <summary>
     /// Gets the policy to use when container values are null or empty string. Default: `TokenResolutionPolicy.ResolveAll`
     /// </summary>
@@ -86,9 +97,16 @@ public interface IHierarchicalTokenValueContainerSettings : ITokenValueContainer
     /// </summary>
     public string HierarchicalDelimiter { get; }
 }
-public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInterpolatedStringSettings, IHierarchicalTokenValueContainerSettings
+public record StringTokenFormatterSettings
+    : ITokenValueContainerSettings, IInterpolatedStringSettings, ICompositeTokenValueContainerSettings, IHierarchicalTokenValueContainerSettings
 {
+    /// <summary>
+    /// Initial settings from which custom settings can be derived.
+    /// </summary>
     public static StringTokenFormatterSettings Default { get; } = new();
+    /// <summary>
+    /// Used when settings are not explicitly passed to StringTokenFormatter methods.
+    /// </summary>
     public static StringTokenFormatterSettings Global { get; set; } = Default;
 
     public StringComparer NameComparer { get; init; } = StringComparer.OrdinalIgnoreCase;
@@ -96,18 +114,26 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
 
     public TokenSyntax Syntax { get; init; } = CommonTokenSyntax.Curly;
     public UnresolvedTokenBehavior UnresolvedTokenBehavior { get; init; } = UnresolvedTokenBehavior.Throw;
-    public IReadOnlyCollection<TokenValueConverter> ValueConverters {
+    public IReadOnlyCollection<TokenValueConverter> ValueConverters
+    {
         get { return valueConverters ?? defaultValueConverters; }
         init { valueConverters = value; }
     }
     public IFormatProvider FormatProvider { get; init; } = CultureInfo.CurrentUICulture;
     public InvalidFormatBehavior InvalidFormatBehavior { get; init; } = InvalidFormatBehavior.Throw;
-    public IReadOnlyCollection<IBlockCommand> BlockCommands {
-        get { return blockCommands ?? defaultBlockCommands; }
-        init { blockCommands = value; }
+    public IReadOnlyCollection<IExpanderCommand> Commands
+    {
+        get { return commands ?? defaultCommands; }
+        init { commands = value; }
     }
 
     public string HierarchicalDelimiter { get; init; } = ".";
+
+    public IReadOnlyCollection<FormatterDefinition> FormatterDefinitions
+    {
+        get { return formatterDefinitions ?? defaultFormatterDefinitions; }
+        init { formatterDefinitions = value; }
+    }
 
     private IReadOnlyCollection<TokenValueConverter> valueConverters = defaultValueConverters;
     private static readonly IReadOnlyCollection<TokenValueConverter> defaultValueConverters = new List<TokenValueConverter>
@@ -119,13 +145,20 @@ public record StringTokenFormatterSettings : ITokenValueContainerSettings, IInte
         TokenValueConverterFactory.FuncConverter<string>(),
         TokenValueConverterFactory.FuncConverter<object>(),
         TokenValueConverterFactory.TokenFuncConverter<string>(),
-        TokenValueConverterFactory.TokenFuncConverter<object>()
+        TokenValueConverterFactory.TokenFuncConverter<object>(),
+        TokenValueConverterFactory.FuncConverterNonGeneric(),
+        TokenValueConverterFactory.TokenFuncConverterNonGeneric(),
     }.AsReadOnly();
 
-    private IReadOnlyCollection<IBlockCommand> blockCommands = defaultBlockCommands;
-    private static readonly IReadOnlyCollection<IBlockCommand> defaultBlockCommands = new List<IBlockCommand>
+    private IReadOnlyCollection<IExpanderCommand> commands = defaultCommands;
+    private static readonly IReadOnlyCollection<IExpanderCommand> defaultCommands = new List<IExpanderCommand>
     {
-        BlockCommandFactory.Conditional,
-        BlockCommandFactory.Loop,
+        ExpanderCommandFactory.Conditional,
+        ExpanderCommandFactory.Loop,
+        ExpanderCommandFactory.Map,
+        ExpanderCommandFactory.Standard,
     }.AsReadOnly();
+
+    private static readonly IReadOnlyCollection<FormatterDefinition> defaultFormatterDefinitions = Array.Empty<FormatterDefinition>();
+    private IReadOnlyCollection<FormatterDefinition> formatterDefinitions = defaultFormatterDefinitions;
 }

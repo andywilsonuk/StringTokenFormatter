@@ -11,7 +11,7 @@ public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
 
     internal DictionaryTokenValueContainer(ITokenValueContainerSettings settings, IEnumerable<(string TokenName, T Value)> source)
     {
-        this.settings = Guard.NotNull(settings, nameof(settings));
+        this.settings = Guard.NotNull(settings, nameof(settings)).Validate();
         this.pairs = CreateDictionary(Guard.NotNull(source, nameof(source)));
     }
 
@@ -34,8 +34,7 @@ public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
         return d;
     }
 
-    public TryGetResult TryMap(string token) =>
-        pairs.TryGetValue(token, out var value) && settings.TokenResolutionPolicy.Satisfies(value) ? TryGetResult.Success(value) : default;
+    public TryGetResult TryMap(string token) => pairs.TryGetValue(token, out var value) ? TryGetResult.Success(value) : default;
 
 #if NET8_0_OR_GREATER
     /// <summary>

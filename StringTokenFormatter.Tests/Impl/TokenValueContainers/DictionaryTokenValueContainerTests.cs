@@ -43,26 +43,6 @@ public class DictionaryTokenValueContainerTests
     }
 
     [Fact]
-    public void TryMap_MatchingTokenPolicyViolation_ReturnsDefault()
-    {
-         var pairs = new (string, int?)[]
-        {
-            ("a", null),
-            ("b", 2),
-        };
-        var settings = new StringTokenFormatterSettings
-        {
-            NameComparer = StringComparer.OrdinalIgnoreCase,
-            TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNull,
-        };
-        var container = TokenValueContainerFactory.FromTuples(settings, pairs);
-
-        var actual = container.TryMap("a");
-
-        Assert.Equal(default, actual);
-    }
-
-    [Fact]
     public void TryMap_MatchingTokenCaseSensitive_ReturnsSuccess()
     {
          var pairs = new (string, int?)[]

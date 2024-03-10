@@ -4,22 +4,21 @@ using System.Collections.Frozen;
 
 namespace StringTokenFormatter.Impl;
 
-public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T : class
+public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T : notnull
 {
-    private static readonly PropertyCache<T> propertyCache = new();
     private readonly ITokenValueContainerSettings settings;
     private IDictionary<string, NonLockingLazy> pairs;
 
     internal ObjectTokenValueContainer(ITokenValueContainerSettings settings, T source)
     {
-        this.settings = Guard.NotNull(settings, nameof(settings));
+        this.settings = Guard.NotNull(settings, nameof(settings)).Validate();
         this.pairs = CreateDictionary(Guard.NotNull(source, nameof(source)));
     }
 
     private Dictionary<string, NonLockingLazy> CreateDictionary(T source)
     {
         var d = new Dictionary<string, NonLockingLazy>(settings.NameComparer);
-        foreach (var (propertyName, getValue) in propertyCache.GetPairs())
+        foreach (var (propertyName, getValue) in PropertyCache<T>.Properties)
         {
             d.Add(propertyName, new NonLockingLazy(() => getValue(source)));
         }
@@ -27,8 +26,7 @@ public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T 
         return d;
     }
 
-    public TryGetResult TryMap(string token) =>
-        pairs.TryGetValue(token, out var lazy) && settings.TokenResolutionPolicy.Satisfies(lazy.Value) ? TryGetResult.Success(lazy.Value) : default;
+    public TryGetResult TryMap(string token) => pairs.TryGetValue(token, out var lazy) ? TryGetResult.Success(lazy.Value) : default;
 
 #if NET8_0_OR_GREATER
     /// <summary>

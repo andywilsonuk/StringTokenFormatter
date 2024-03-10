@@ -3,14 +3,12 @@ using System.Reflection;
 
 namespace StringTokenFormatter.Impl;
 
-public class PropertyCache<T>
+public static class PropertyCache<T>
 {
     public record PropertyPairs(string PropertyName, Func<T, object> GetValue);
 
-    const BindingFlags bindingFilter = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
-    private readonly List<PropertyPairs> propertyCache = GetPropertyPairs();
-
-    public IEnumerable<PropertyPairs> GetPairs() => propertyCache;
+    public static readonly IReadOnlyCollection<PropertyPairs> Properties = GetPropertyPairs();
+    public static int Count => Properties.Count;
 
     private static List<PropertyPairs> GetPropertyPairs() => (
         from prop in GetPublicProperties(typeof(T))
@@ -20,10 +18,12 @@ public class PropertyCache<T>
         select new PropertyPairs(prop.Name, getterFn)
     ).ToList();
 
-    private static IEnumerable<PropertyInfo> GetPublicProperties(Type type) =>
+    private const BindingFlags bindingFilter = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
+
+    private static IReadOnlyCollection<PropertyInfo> GetPublicProperties(Type type) =>
         type.IsInterface ? GetInterfaceProperties(type) : type.GetProperties(bindingFilter);
 
-    private static IEnumerable<PropertyInfo> GetInterfaceProperties(Type type)
+    private static HashSet<PropertyInfo> GetInterfaceProperties(Type type)
     {
         var propertyInfos = new HashSet<PropertyInfo>();
         var considered = new HashSet<Type>();
@@ -51,9 +51,9 @@ public class PropertyCache<T>
     private static Func<T, object> CreateGetter(MethodInfo Getter)
     {
         var instance = Expression.Parameter(typeof(T), "instance");
-        var ex = Expression.Convert(Expression.Call(instance, Getter), typeof(object));
+        var exp = Expression.Convert(Expression.Call(instance, Getter), typeof(object));
         var parameters = new ParameterExpression[] { instance };
-        var ret = Expression.Lambda<Func<T, object>>(ex, parameters).Compile();
+        var ret = Expression.Lambda<Func<T, object>>(exp, parameters).Compile();
         return ret;
     }
 }

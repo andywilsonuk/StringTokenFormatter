@@ -8,7 +8,7 @@ public sealed class HierarchicalTokenValueContainer : ITokenValueContainer
 
     internal HierarchicalTokenValueContainer(IHierarchicalTokenValueContainerSettings settings, string prefix, ITokenValueContainer container)
     {
-        this.settings = Guard.NotNull(settings, nameof(settings));
+        this.settings = Guard.NotNull(settings, nameof(settings)).Validate();
         this.prefix = Guard.NotEmpty(prefix, nameof(prefix));
         this.container = Guard.NotNull(container, nameof(container));
         Guard.NotEmpty(settings.HierarchicalDelimiter, nameof(settings.HierarchicalDelimiter));
@@ -16,11 +16,11 @@ public sealed class HierarchicalTokenValueContainer : ITokenValueContainer
 
     public TryGetResult TryMap(string token)
     {
-        int prefixIndex = token.IndexOf(settings.HierarchicalDelimiter, StringComparison.Ordinal);
-        if (prefixIndex == -1) { return default; }
-        if (!settings.NameComparer.Equals(prefix, token.Substring(0, prefixIndex))) { return default; }
+        int? prefixIndex = OrdinalValueHelper.IndexOf(token, settings.HierarchicalDelimiter);
+        if (prefixIndex == null) { return default; }
+        if (!settings.NameComparer.Equals(prefix, token[..prefixIndex.Value])) { return default; }
 
-        string remainingToken = token.Substring(prefixIndex + settings.HierarchicalDelimiter.Length);
+        string remainingToken = token[(prefixIndex.Value + settings.HierarchicalDelimiter.Length)..];
         return container.TryMap(remainingToken);
     }
 }

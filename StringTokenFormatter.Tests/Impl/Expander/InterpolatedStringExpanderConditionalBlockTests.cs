@@ -7,24 +7,25 @@ public class InterpolatedStringExpanderConditionalBlockTests
 
     public InterpolatedStringExpanderConditionalBlockTests()
     {
-        settings = StringTokenFormatterSettings.Default with {
-            BlockCommands = new List<IBlockCommand>
+        settings = StringTokenFormatterSettings.Default with
+        {
+            Commands = new List<IExpanderCommand>
             {
-                BlockCommandFactory.Conditional,
+                ExpanderCommandFactory.Conditional,
+                ExpanderCommandFactory.Standard,
             }
         };
     }
 
     [Fact]
-    public void Expand_ConditionLiteralValue_StringWithLiteralValue()
+    public void ConditionLiteralValue_StringWithLiteralValue()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringLiteralSegment("one "),
-            new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
-            new InterpolatedStringLiteralSegment("two"),
-            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Literal("one ")
+            .Command("if", "IsValid", string.Empty)
+            .Literal("two")
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("IsValid", true);
 
@@ -34,15 +35,14 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_ConditionTokenValue_StringWithTokenValue()
+    public void ConditionTokenValue_StringWithTokenValue()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringLiteralSegment("one "),
-            new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
-            new InterpolatedStringTokenSegment("{two}", "two", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Literal("one ")
+            .Command("if", "IsValid", string.Empty)
+            .Token("two", string.Empty, string.Empty)
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", 2);
         valuesContainer.Add("IsValid", true);
@@ -53,15 +53,14 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_FalseCondition_StringWithoutValue()
+    public void FalseCondition_StringWithoutValue()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringLiteralSegment("one "),
-            new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
-            new InterpolatedStringLiteralSegment("two"),
-            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Literal("one ")
+            .Command("if", "IsValid", string.Empty)
+            .Literal("two")
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("IsValid", false);
 
@@ -71,21 +70,20 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_NestedConditions_StringWithNestedValue()
+    public void NestedConditions_StringWithNestedValue()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringLiteralSegment("one "),
-            new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
-            new InterpolatedStringLiteralSegment("two"),
-            new InterpolatedStringBlockSegment("{:if,IsNotValid}", "if", "IsNotValid", string.Empty),
-            new InterpolatedStringLiteralSegment("suppressed"),
-            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:if,IsAlsoValid}", "if", "IsAlsoValid", string.Empty),
-            new InterpolatedStringLiteralSegment(" three"),
-            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
-            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Literal("one ")
+            .Command("if", "IsValid", string.Empty)
+            .Literal("two")
+            .Command("if", "IsNotValid", string.Empty)
+            .Literal("suppressed")
+            .Command("ifend", string.Empty, string.Empty)
+            .Command("if", "IsAlsoValid", string.Empty)
+            .Literal(" three")
+            .Command("ifend", string.Empty, string.Empty)
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("IsValid", true);
         valuesContainer.Add("IsAlsoValid", true);
@@ -97,13 +95,12 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_ConditionMissingEndIfCommand_Throws()
+    public void ConditionMissingEndIfCommand_Throws()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringLiteralSegment("one "),
-            new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Literal("one ")
+            .Command("if", "IsValid", string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("IsValid", true);
 
@@ -111,29 +108,139 @@ public class InterpolatedStringExpanderConditionalBlockTests
     }
 
     [Fact]
-    public void Expand_ConditionMissingIfCommand_Throws()
+    public void ConditionMissingIfCommand_Throws()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringLiteralSegment("one "),
-            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Literal("one ")
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
 
     [Fact]
-    public void Expand_ConditionInvalidTokenValue_Throws()
+    public void ConditionInvalidTokenValue_Throws()
     {
-        var segments = new List<InterpolatedStringSegment>
-        {
-            new InterpolatedStringLiteralSegment("one "),
-            new InterpolatedStringBlockSegment("{:if,IsValid}", "if", "IsValid", string.Empty),
-            new InterpolatedStringBlockSegment("{:ifend}", "ifend", string.Empty, string.Empty),
-        };
+        var segments = new SegmentBuilder()
+            .Literal("one ")
+            .Command("if", "IsValid", string.Empty)
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("IsValid", 1);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
+    }
+
+    [Fact]
+    public void ConditionWithEmptyInner_EmptyString()
+    {
+        var segments = new SegmentBuilder()
+            .Command("if", "IsValid", string.Empty)
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("IsValid", true);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal(string.Empty, actual);
+    }
+
+    [Fact]
+    public void NegatedCondition_StringWithoutLiteralValue()
+    {
+        var segments = new SegmentBuilder()
+            .Literal("one")
+            .Command("if", "!IsValid", string.Empty)
+            .Literal(" two")
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("IsValid", true);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("one", actual);
+    }
+
+
+    [Fact]
+    public void ConditionalPreventsInnerTokenMatching_StringWithoutSuppressedValue()
+    {
+        var segments = new SegmentBuilder()
+            .Command("if", "!IsValid", string.Empty)
+            .Token("Suppressed", string.Empty, string.Empty)
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
+        var interpolatedString = new InterpolatedString(segments, settings);
+
+        valuesContainer.Add("IsValid", true);
+        valuesContainer.Add("Suppressed", () => Assert.Fail("This value should not be called"));
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal(string.Empty, actual);
+    }
+
+    [Fact]
+    public void ConditionalFromFunc_StringWithoutSuppressedValue()
+    {
+        var segments = new SegmentBuilder()
+            .Command("if", "IsValid", string.Empty)
+            .Literal("Included")
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
+        var interpolatedString = new InterpolatedString(segments, settings);
+
+        valuesContainer.Add("IsValid", () => true);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("Included", actual);
+    }
+
+    [Fact]
+    public void MultipleConditionsIncludingNegation_LiteralsOneAndFourOutput()
+    {
+        var segments = new SegmentBuilder()
+            .Command("if", "IsValid", string.Empty)
+            .Literal("one")
+            .Command("ifend", string.Empty, string.Empty)
+            .Command("if", "!IsValid", string.Empty)
+            .Literal("two")
+            .Command("ifend", string.Empty, string.Empty)
+            .Command("if", "!IsValid", string.Empty)
+            .Literal("three")
+            .Command("ifend", string.Empty, string.Empty)
+            .Command("if", "IsValid", string.Empty)
+            .Literal("four")
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("IsValid", true);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("onefour", actual);
+    }
+
+    [Fact]
+    public void UnresolvedConditionalTokenWithLeaveUnresolved_OutputsRawAndInner()
+    {
+        var segments = new SegmentBuilder()
+            .Command("if", "IsValid", string.Empty)
+            .Literal("two")
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
+        var customSettings = settings with
+        {
+            UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
+        };
+        var interpolatedString = new InterpolatedString(segments, customSettings);
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("{:if,IsValid}two", actual);
     }
 }

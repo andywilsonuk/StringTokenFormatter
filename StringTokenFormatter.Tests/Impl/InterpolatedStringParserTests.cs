@@ -3,10 +3,11 @@ namespace StringTokenFormatter.Tests;
 public class InterpolatedStringParserTests
 {
     [Fact]
-    public void Parse_WithToken_ReturnsInterpolatedString()
+    public void OutputWithToken_ReturnsInterpolatedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
+        var settings = new StringTokenFormatterSettings
+        {
             Syntax = CommonTokenSyntax.Round,
         };
 
@@ -21,10 +22,11 @@ public class InterpolatedStringParserTests
     }
 
     [Fact]
-    public void Parse_WithoutToken_ReturnsSingleValueInterpolatedString()
+    public void OutputWithoutToken_ReturnsSingleValueInterpolatedString()
     {
         string source = "first two third";
-        var settings = new StringTokenFormatterSettings {
+        var settings = new StringTokenFormatterSettings
+        {
             Syntax = CommonTokenSyntax.Round,
         };
 
@@ -36,7 +38,7 @@ public class InterpolatedStringParserTests
     }
 
     [Fact]
-    public void Parse_WithFormattedToken_ReturnsInterpolatedString()
+    public void OutputWithFormattedToken_ReturnsInterpolatedString()
     {
         string source = "{two:D}";
         var settings = new StringTokenFormatterSettings();
@@ -49,7 +51,7 @@ public class InterpolatedStringParserTests
     }
 
     [Fact]
-    public void Parse_WithFormattedAndPaddedToken_ReturnsInterpolatedString()
+    public void OutputWithFormattedAndPaddedToken_ReturnsInterpolatedString()
     {
         string source = "{two,10:D}";
         var settings = new StringTokenFormatterSettings();
@@ -62,10 +64,11 @@ public class InterpolatedStringParserTests
     }
 
     [Fact]
-    public void Parse_WithEscapedToken_ReturnsInterpolatedString()
+    public void OutputWithEscapedToken_ReturnsInterpolatedString()
     {
         string source = "first ((two) third";
-        var settings = new StringTokenFormatterSettings {
+        var settings = new StringTokenFormatterSettings
+        {
             Syntax = CommonTokenSyntax.Round,
         };
 
@@ -79,10 +82,11 @@ public class InterpolatedStringParserTests
     }
 
     [Fact]
-    public void Parse_WithBlankToken_Throws()
+    public void OutputWithBlankToken_Throws()
     {
         string source = "first {} third";
-        var settings = new StringTokenFormatterSettings {
+        var settings = new StringTokenFormatterSettings
+        {
             Syntax = CommonTokenSyntax.Curly,
         };
 
@@ -90,10 +94,11 @@ public class InterpolatedStringParserTests
     }
 
     [Fact]
-    public void Parse_WithInvalidSyntax_Throws()
+    public void OutputWithInvalidSyntax_Throws()
     {
         string source = "first {a} third";
-        var settings = new StringTokenFormatterSettings {
+        var settings = new StringTokenFormatterSettings
+        {
             Syntax = new TokenSyntax(string.Empty, "}", "{{"),
         };
 
@@ -101,7 +106,7 @@ public class InterpolatedStringParserTests
     }
 
     [Fact]
-    public void Parse_WithBlockCommand_ReturnsBlockCommandSegment()
+    public void OutputWithCommand_ReturnsCommandSegment()
     {
         string source = "{:cmd}";
         var settings = new StringTokenFormatterSettings();
@@ -109,12 +114,12 @@ public class InterpolatedStringParserTests
         var actual = InterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
-            a => Assert.Equal(new InterpolatedStringBlockSegment(source, "cmd", string.Empty, string.Empty), a)
+            a => Assert.Equal(new InterpolatedStringCommandSegment(source, "cmd", string.Empty, string.Empty), a)
         );
     }
 
     [Fact]
-    public void Parse_WithBlockCommandToken_ReturnsBlockCommandSegmentWithToken()
+    public void OutputWithCommandToken_ReturnsCommandSegmentWithToken()
     {
         string source = "{:cmd,token}";
         var settings = new StringTokenFormatterSettings();
@@ -122,12 +127,12 @@ public class InterpolatedStringParserTests
         var actual = InterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
-            a => Assert.Equal(new InterpolatedStringBlockSegment(source, "cmd", "token", string.Empty), a)
+            a => Assert.Equal(new InterpolatedStringCommandSegment(source, "cmd", "token", string.Empty), a)
         );
     }
 
     [Fact]
-    public void Parse_WithBlockCommandData_ReturnsBlockCommandSegmentWithData()
+    public void OutputWithCommandData_ReturnsCommandSegmentWithData()
     {
         string source = "{:cmd:4}";
         var settings = new StringTokenFormatterSettings();
@@ -135,7 +140,20 @@ public class InterpolatedStringParserTests
         var actual = InterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
-            a => Assert.Equal(new InterpolatedStringBlockSegment(source, "cmd", string.Empty, "4"), a)
+            a => Assert.Equal(new InterpolatedStringCommandSegment(source, "cmd", string.Empty, "4"), a)
+        );
+    }
+
+    [Fact]
+    public void PseudoTokenTreatedAsTokenNotCommand_PseudoTokenSegment()
+    {
+        string source = "{::special,10:D}";
+        var settings = new StringTokenFormatterSettings();
+
+        var actual = InterpolatedStringParser.Parse(source, settings);
+
+        Assert.Collection(actual.Segments,
+            a => Assert.Equal(new InterpolatedStringPseudoTokenSegment(source, "::special", "10", "D"), a)
         );
     }
 }
