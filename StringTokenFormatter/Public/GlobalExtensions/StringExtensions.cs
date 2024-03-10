@@ -2,12 +2,6 @@
 
 public static class StringExtensions
 {
-    public static InterpolatedString ToInterpolatedString(this string source) =>
-        InterpolatedStringParser.Parse(source, StringTokenFormatterSettings.Global);
-
-    public static InterpolatedString ToInterpolatedString(this string source, StringTokenFormatterSettings settings) =>
-        InterpolatedStringParser.Parse(source, settings);
-
     public static string FormatFromSingle<T>(this string source, string token, T replacementValue) where T : notnull =>
         FormatFromSingle(source, token, replacementValue, StringTokenFormatterSettings.Global);
     public static string FormatFromSingle<T>(this string source, string token, T replacementValue, StringTokenFormatterSettings settings) where T : notnull =>
