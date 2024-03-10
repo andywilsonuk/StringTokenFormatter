@@ -14,7 +14,7 @@ public partial class TokenValueContainerBuilderTests
     }
 
     [Fact]
-    public void MultipleContainerCombinations_AllUsed()
+    public void AddSequence_MultipleContainerCombinations_AllUsed()
     {
         var account = new
         {
@@ -37,7 +37,7 @@ public partial class TokenValueContainerBuilderTests
     }
 
     [Fact]
-    public void StringSequence_PrimativeValuesMaintained()
+    public void AddSequence_StringSequence_PrimativeValuesMaintained()
     {
         builder.AddSequence("Seq", new string[] { "first", "second" });
         var combinedContainer = builder.CombinedResult();
@@ -50,7 +50,7 @@ public partial class TokenValueContainerBuilderTests
     }
 
     [Fact]
-    public void IntSequence_PrimativeValuesMaintained()
+    public void AddSequence_IntSequence_PrimativeValuesMaintained()
     {
         builder.AddSequence("Seq", new int[] { 1, 2 });
         var combinedContainer = builder.CombinedResult();
@@ -63,7 +63,7 @@ public partial class TokenValueContainerBuilderTests
     }
 
     [Fact]
-    public void ClassSequence_ObjectValueOutput()
+    public void AddSequence_ClassSequence_ObjectValueOutput()
     {
         builder.AddSequence("Seq", new[] { new ComplexClass("first"), new ComplexClass("second") });
         var combinedContainer = builder.CombinedResult();
@@ -75,7 +75,7 @@ public partial class TokenValueContainerBuilderTests
     }
 
     [Fact]
-    public void StructSequence_ObjectValueOutput()
+    public void AddSequence_StructSequence_ObjectValueOutput()
     {
         builder.AddSequence("Seq", new[] { new ComplexStruct("first"), new ComplexStruct("second") });
         var combinedContainer = builder.CombinedResult();
@@ -87,7 +87,7 @@ public partial class TokenValueContainerBuilderTests
     }
 
     [Fact]
-    public void AnonymousSequence_ObjectValueOutput()
+    public void AddSequence_AnonymousSequence_ObjectValueOutput()
     {
         builder.AddSequence("Seq", new[] { new { Value = "first" }, new { Value = "second" } });
         var combinedContainer = builder.CombinedResult();
@@ -96,5 +96,17 @@ public partial class TokenValueContainerBuilderTests
         string actual = resolver.FromContainer(interpolatedString, combinedContainer);
 
         Assert.Equal("first second ", actual);
+    }
+
+    [Fact]
+    public void AddPrefixedSequence_StringSequence_PrimativeValuesMaintained()
+    {
+        builder.AddPrefixedSequence("prefix", "Seq", new string[] { "first", "second" });
+        var combinedContainer = builder.CombinedResult();
+
+        var actual = combinedContainer.TryMap("prefix.Seq");
+
+        Assert.True(actual.IsSuccess);
+        Assert.IsAssignableFrom<SequenceTokenValueContainer>(actual.Value);
     }
 }
