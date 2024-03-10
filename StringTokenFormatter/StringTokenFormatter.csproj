@@ -34,6 +34,7 @@
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>StringTokenFormatter.snk</AssemblyOriginatorKeyFile>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageIcon>StringTokenFormatter.png</PackageIcon>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="..\LICENSE.md">
@@ -41,6 +42,10 @@
 			<PackagePath></PackagePath>
 		</None>
 		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="..\StringTokenFormatter.png">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
