@@ -19,10 +19,7 @@ var client = new {
 string message = interpolatedString.FormatFromObject(client);
 ```
 
-# Migrating to version 9
-
-See [the v8 migration page](/migration-v8.md) for details on breaking changes and how to upgrade from version 8 to version 9.
-See [the v6 migration page](/migration-v6.md) for details on breaking changes and how to upgrade from version 6 to version 7.
+See the [v9 migration page](/migration-v9.md) for details on breaking changes and how to upgrade from version 8 to version 9.
 
 # Overview
 
@@ -45,7 +42,7 @@ Conditional blocks of text, loops and simple value mapping can be controlled thr
 
 As well supporting formatting through `IFormatProvider`, strongly-type `FormatterDefinition`s functions can be configured to match type, token name or format string.
 
-[Value Containers](#value-containers) can return primatives (`string`, `int` etc) as well as `Func` or `Lazy` values which will be resolved before formatting using one of the [Value Converters](#value-converters). Additional converters can be included to perform custom conversion logic after token matching but before formatting.
+[Value Containers](#value-containers) can return primitives (`string`, `int` etc) as well as `Func` or `Lazy` values which will be resolved before formatting using one of the [Value Converters](#value-converters). Additional converters can be included to perform custom conversion logic after token matching but before formatting.
 
 A more complete example:
 
@@ -128,6 +125,24 @@ record OrderLine(string product, double price);
 
 More [examples](https://github.com/andywilsonuk/StringTokenFormatter/blob/main/StringTokenFormatter.Tests/Examples.cs).
 
+# Table of Contents
+
+- [Overview](#overview)
+- [Interpolated String Resolver](#interpolated-string-resolver)
+- [How token resolution works](#how-token-resolution-works)
+- [Value Containers](#value-containers)
+- [Formatter Definitions](#formatter-definitions)
+- [Commands](#commands)
+- [Building composite token value containers](#building-composite-token-value-containers)
+- [Settings](#settings)
+- [Exceptions](#exceptions)
+- [Custom Value Containers](#custom-value-containers)
+- [Value Converters](#value-converters)
+- [Performance tuning](#performance-tuning)
+- [Thread safety](#thread-safety)
+- [Frozen Dictionary support in .NET 8](#frozen-dictionary-support-in-net-8)
+- [Async loading of token values](#async-loading-of-token-values)
+
 # Interpolated String Resolver
 
 Beyond simple use cases, things can get a little complicated and this is where the `InterpolatedStringResolver` steps in.
@@ -142,7 +157,7 @@ The resolver contains the standard token resolving methods and is the preferred 
 
 # How token resolution works
 
-To resolve the tokens within a template string, there is a two stage process, first parsing, then expanding.
+To resolve the tokens within a template string, there is a two-stage process, first parsing, then expanding.
 
 ## Parsing
 
@@ -169,7 +184,7 @@ The `InterpolatedStringExpander` take the `InterpolatedString` and processes it 
 
 1. The passed `ITokenValueContainer` provides the value based on the token name
 2. A value conversion is then attempted based on the collection of `TokenValueConverter`s in the settings
-3. If the token contains alignment or formatting details, `string.Format` is called with the `FormatProvider` from the settings
+3. Value is then formatted using a [Formatter Defintion](#formatter-definitions) or `FormatProvider` from the settings
 
 Block Commands are processed by the `InterpolatedStringExpander` and follow the flow of steps 2.1 and 2.2 for obtaining their relevant values from tokens. 
 
@@ -181,7 +196,7 @@ flowchart LR
     Segment[/segment/]
     Command[Command]
     ValueConverter[Value Converter]
-    FormatDefinition[Format Definition]
+    FormatterDefinition[Formatter Definition]
     FormatProvider[Format Provider]
     ResultantStringSegment[/resultant string/]
     ResultantString[/combined string/]
@@ -189,9 +204,9 @@ flowchart LR
         direction TB
         Segment --> Command
         Command --> ValueConverter
-        ValueConverter --> FormatDefinition
+        ValueConverter --> FormatterDefinition
         ValueConverter --> FormatProvider
-        FormatDefinition --> ResultantStringSegment
+        FormatterDefinition --> ResultantStringSegment
         FormatProvider --> ResultantStringSegment
     end
     InterpolatedString --> Expander
@@ -243,13 +258,13 @@ Assert.Equal("start center end", result);
 
 See [building composite token value containers](#building-composite-token-value-containers) for hierarchical or cascading containers. Also [custom containers](#creating-a-custom-itokenvaluecontainer).
 
-Note: comma (,) and colon (:) should not be used in token names to avoid confusion with alignment and format values.
+Note: comma `,` and colon `:` should not be used in token names to avoid confusion with alignment and format values.
 
-# Format Definitions
+# Formatter Definitions
 
 Formatting of token values can be done through the standard `IFormatProvider` interface or by a strongly-typed `FormatterDefinition` function.
 
-Custom `IFormatProvider`/`ICustomFormatter` implementations are an inelegant solution see [.net docs](https://learn.microsoft.com/en-us/dotnet/api/system.icustomformatter); the library provides a mechanism for matching strongly-typed values in addition to other citeria.
+Custom `IFormatProvider`/`ICustomFormatter` implementations are an inelegant solution see [.net docs](https://learn.microsoft.com/en-us/dotnet/api/system.icustomformatter); the library provides a mechanism for matching strongly-typed values in addition to other criteria.
 
 Static methods are available on `FormatterDefinition` to create instances that can be passed into the [settings](#settings):
 
@@ -294,18 +309,18 @@ Assert.Equal("Ref: 002, Savings account", actual);
 
 # Commands
 
-To provide additional logic when resolving tokens to values, Commands offer a range of functionality. There are a number of included commands which are enabled by default and custom can be added by implementing the interface `IExpanderCommand`.
-
-Commands included by default which are available in `ExpanderCommandFactory`:
+To provide additional logic when resolving tokens to values, Commands offer a range of functionality. There are a number of included commands which are enabled by default.
 
 | Command            | Action                                                            |
 | :----------------: | :---------------------------------------------------------------: |
 | Conditional        | Controls inclusion of containing segments based on boolean value  |
-| Loop               | Allows containing segments to be iterated multiple times          | 
 | Map                | A comma-separated list of token value to text mappings            | 
+| Loop               | Allows containing segments to be iterated multiple times          | 
 | Standard           | Handles tokens and literals not handled by other commands         |
 
 The command names are always lowercase whilst tokens abide by the `TokenResolutionPolicy` (as well as `ValueConverter`s).
+
+Commands included by default are available in `ExpanderCommandFactory`.
 
 ## Conditional block command
 
@@ -321,6 +336,20 @@ Assert.Equal("start  end", result);
 ```
 
 Nested conditions are supported.
+
+## Map command
+
+The map command allows for simple key/value mapping; the idea being to keep the text inside the template rather than in code.
+
+An example where `Mode` is the token name and after the colon `:` are the comma-separated key/value mappings:
+
+```
+{:map,Mode:Bike=Self propelled,Car=Combustion engine,Bus=Electric,_=Not set}
+```
+
+The key is the `string` output of resolving the token’s value and performing any conversion in the usual way. Common token values are `enum`, `string` and `int` where there is a small number of discrete mappings.
+
+The last parameter can optionally be a catch-all by using the discard operator `_` as shown in the example.
 
 ## Loop block command
 
@@ -346,9 +375,9 @@ Note: The number of iterations is calculated upon entering the loop and cannot b
 
 Also see [the composite builder](#building-composite-token-value-containers) for more on including sequences.
 
-### Token sequence - primatives
+### Token sequence - primitives
 
-The sequence can either be a primative (`string`, `int` etc) or a complex object (see next section).
+The sequence can either be a primitive (`string`, `int` etc) or a complex object (see next section).
 
 The `TokenValueContainerBuilder` instance provides methods `AddSequence` and `AddPrefixedSequence` for adding `IEnumerable<object>`; the latter to use `prefix.` before the name.
 
@@ -437,20 +466,6 @@ Assert.Equal("ab", result);
 ```
 
 In this example, the token value `InnerValue` is a `Func<string>` which returns a different value on each call to the function.
-
-## Map command
-
-The map command allows for simple key/value mapping; the idea being to keep the text inside the template rather than in code.
-
-An example where `Mode` is the token name and after the colon `:` are the comma-separated key/value mappings:
-
-```C#
-{:map,Mode:Bike=Self propelled,Car=Combustion engine,Bus=Electric,_=Not set}
-```
-
-The key is the `string` output of resolving the token’s value and performing any conversion in the usual way. Common token values are `enum`, `string` and `int` where there is a small number of discrete mappings.
-
-The last parameter can optionally be a catch-all by using the discard operator `_` as shown in the example.
 
 ## Standard command
 
@@ -554,7 +569,7 @@ Note: Token markers are case sensitive.
 
 Used to specify the `IFormatProvider` applied to token values. Default `CultureInfo.CurrentUICulture`.
 
-Specific cultures info - in this instance `en-US` - can be used as with `string.Format`.
+Specific cultures info, in this instance `en-US`, can be used as with `string.Format`.
 
 ```C#
 var settings = StringTokenFormatterSettings.Default with
@@ -577,7 +592,7 @@ var settings = StringTokenFormatterSettings.Default with
 };
 ```
 
-For more information see the [format definitions](#format-definitions) section.
+For more information see the [formatter definitions](#formatter-definitions) section.
 
 ### `NameComparer`
 
@@ -605,20 +620,20 @@ The policies are:
 
 Defines what should happen if the token specified in the interpolated string cannot be matched within the `ITokenValueContainer`. Default `UnresolvedTokenBehavior.Throw`.
 
-| Behavior          | Result                                                   |
-| :---------------: | :------------------------------------------------------: |
-| Throw             | An `UnresolvedTokenException` exception is raised        |
-| LeaveUnresolved   | The text will contain the templateString token unmodified      |
+| Behavior          | Result                                                      |
+| :---------------: | :---------------------------------------------------------: |
+| Throw             | An `UnresolvedTokenException` exception is raised           |
+| LeaveUnresolved   | The text will contain the template string token unmodified  |
 
 ### `InvalidFormatBehavior`
 
-Defines how `string.Format` or `FormatDefinition` exceptions are handled. Default `InvalidFormatBehavior.Throw`.
+Defines how formatting errors are handled. Default `InvalidFormatBehavior.Throw`.
 
-| Behavior          | Result                                                     |
-| :---------------: | :--------------------------------------------------------: |
-| Throw             | An `TokenValueFormatException` exception is raised         |
-| LeaveUnformatted  | The text will contain the token value unformatted          |
-| LeaveToken        | The text will contain the templateString token unmodified  |
+| Behavior          | Result                                                      |
+| :---------------: | :---------------------------------------------------------: |
+| Throw             | An `TokenValueFormatException` exception is raised          |
+| LeaveUnformatted  | The text will contain the token value unformatted           |
+| LeaveToken        | The text will contain the template string token unmodified  |
 
 ### `ValueConverters`
 
@@ -650,20 +665,18 @@ See also [Token Value Container Builder](#building-composite-token-value-contain
 
 The base exception from which these inherit is `StringTokenFormatterException`.
 
-# Creating a custom `ITokenValueContainer`
+# Custom Value Containers
 
-Whilst there are a number of built-in containers, it may be necessary to create a completely custom container. The container should take in the settings interface `ITokenValueContainerSettings` and obey the `NameComparer` property.
+Whilst there are a number of built-in containers, it may be necessary to create a completely custom container. The container should implement the `ITokenValueContainer` and optionally receive a constructor argument of settings interface `ITokenValueContainerSettings` and obey the `NameComparer` property.
+
+The `ITokenValueContainer` interface provide a single method used to map token names into values using the method `TryGetResult.Success(value)`.
+
+```C#
+TryGetResult TryMap(string token);
+```
+
 
 See also [Token Value Container Builder](#building-composite-token-value-containers).
-
-# Performance tuning
-
-- Parse a template string into an `InterpolatedString`, most easily done using the [Resolver](#interpolated-string-resolver)
-- Remove unused commands from the [settings](#settings)
-- Remove unused Value Converters from the [settings](#settings)
-- Reuse [Value Containers](#value-containers) where possible
-- Use .NET 6 or above for improved regex performance
-- Use .NET 8 FrozenDictionary for faster read access, see the [Frozen Dictionary section](#frozen-dictionary-support-in-net-8-support-in-net-8)
 
 # Value Converters
 
@@ -681,13 +694,22 @@ They can be useful to provide post-token match functionality; a great example is
 
 All token value types must be handled by a Value Converter otherwise an exception is thrown.
 
-By design `ToString` is not used as a value converter because calling that on a custom object will yield the `object.ToString` result which is often not the intended behavior. For scenarios when the `ToString` has been overridden, the result of calling `StringTokenFormatter.Impl.TokenValueConverterFactory.ToStringConverter<T>()` can be added to the settings list of `ValueConverters` so that the `ToString` method for that specific type will be used as a valid value conversion.
+By design `ToString()` is not used as a value converter because calling it on a custom object will yield the `object.ToString()` result which is often not the intended behavior. For scenarios when the `ToString()` has been overridden, the result of calling `StringTokenFormatter.Impl.TokenValueConverterFactory.ToStringConverter<T>()` can be added to the settings list of `ValueConverters` so that the `ToString()` method for that specific type will be used as a valid value conversion.
+
+# Performance tuning
+
+- Parse a template string into an `InterpolatedString`, most easily done using the [Resolver](#interpolated-string-resolver)
+- Remove unused commands from the [settings](#settings)
+- Remove unused Value Converters from the [settings](#settings)
+- Reuse [Value Containers](#value-containers) where possible
+- Use .NET 6 or above for improved regex performance
+- Use .NET 8 Frozen Dictionary for faster read access, see the [Frozen Dictionary section](#frozen-dictionary-support-in-net-8)
 
 # Thread safety
 
 By default, the library is designed to be broadly stateless, deterministic and thread-safe.
 
-Instances of [settings](#settings) and parsed `InterpolatedString`s can be reused on the same or another thread. The included [Value Containers](#value-containers) maintain the value mappings which largely will resolve to primative values (`string`, `int` etc) however using `Func` or `Lazy` values could lead to stateful behavior and should be avoided.
+Instances of [settings](#settings) and parsed `InterpolatedString`s can be reused on the same or another thread. The included [Value Containers](#value-containers) maintain the value mappings which largely will resolve to primitive values (`string`, `int` etc) however using `Func` or `Lazy` values could lead to stateful behavior and should be avoided.
 
 It should be noted that [expanding](#how-token-resolution-works) tokens to values, internally creates context state and is subject to garbage collection; at this time, there is no pool for reusing spent context state.
 
@@ -699,4 +721,4 @@ When compiling against the .NET 8 version of the library, a method `Frozen` is a
 
 There is no plan to support async/await within the library; the reason is that the library is designed to the CPU-bound and adding in an IO-bound layer massively changes the design and considered use-cases.
 
-The `InterpolatedString` returned by the `InterpolatedStringParser` contains an extension method `Tokens` which provides a unique list of tokens found within the interpolated string. These token names can be used by an async method to, for example, request the token values from a data store. The token values can be loaded into an object or `IEnumerable<KeyValuePair<string, T>>` and provided as a parameter to the matching `TokenValueContainerFactory` method. The `InterpolatedString` and `ITokenValueContainer` can then be passed to the `InterpolatedStringExpander.Expand` method which in turns returns the resultant string.
+The `InterpolatedString` returned by the `InterpolatedStringParser` contains a method `Tokens()` which provides a unique list of tokens found within the interpolated string. These token names can be used by an async method to, for example, request the token values from a data store. The token values can be loaded into a [container](#value-containers) in the usual way.
