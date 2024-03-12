@@ -47,12 +47,16 @@ As well supporting formatting through `IFormatProvider`, strongly-type `Formatte
 A more complete example:
 
 ```C#
+static string OrderIdFormatter(int id, string _format) => $"#{id:000000}";
+static string GuidFormatter(Guid guid, string format) =>
+    format == "Initial" ? guid.ToString("D").Split('-')[0].ToUpper() : guid.ToString();
+
 var settings = StringTokenFormatterSettings.Default with
 {
     FormatProvider = CultureInfo.GetCultureInfo("en-US"),
     FormatterDefinitions = new[] {
-        FormatterDefinition.ForTokenName<int>("Order.Id", (id, _format) =>  $"#{id:000000}"),
-        FormatterDefinition.ForType<Guid>((guid, format) => format == "Initial" ? guid.ToString("D").Split('-')[0].ToUpperInvariant() : guid.ToString()),
+        FormatterDefinition.ForTokenName<int>("Order.Id", OrderIdFormatter),
+        FormatterDefinition.ForType<Guid>(GuidFormatter),
     },
 };
 var resolver = new InterpolatedStringResolver(settings);
