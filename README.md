@@ -1,8 +1,8 @@
 # StringTokenFormatter v9.0
 
-Provides token replacement for interpolated (templated) strings not known at compile time such as those retrieved from data stores (file system, database, API, config files etc) using a variety of token to value mappers.
+Provides token replacement for template strings which cannot be interpolated at compile time such as those retrieved from data stores (file system, database, API, config files etc) using a variety of token to value mappers.
 
-It isn’t a replacement for string interpolation where the 'interpolation expression' is known at compile time and instead builds upon the idea of `string.Format` where a templated string is passed along with a series of replacement values. This library offers additional features beyond what either of the out-of-the-box implementations provide.
+It isn’t a replacement for String Interpolation where the string is known at compile time and instead builds upon the idea of `string.Format` where a template string is passed along with a series of replacement values. This library offers additional features beyond what either of the out-of-the-box implementations provide.
 
 Supported platforms: .NET 5 and later, .NET Standard 2.0
 
@@ -133,6 +133,9 @@ More [examples](https://github.com/andywilsonuk/StringTokenFormatter/blob/main/S
 - [Value Containers](#value-containers)
 - [Formatter Definitions](#formatter-definitions)
 - [Commands](#commands)
+  - [Conditional](#conditional-block-command)
+  - [Map](#map-command)
+  - [Loop](#loop-block-command)
 - [Building composite token value containers](#building-composite-token-value-containers)
 - [Settings](#settings)
 - [Exceptions](#exceptions)
@@ -256,7 +259,7 @@ string result = templateString.FormatFromFunc("middle", func);
 Assert.Equal("start center end", result);
 ```
 
-See [building composite token value containers](#building-composite-token-value-containers) for hierarchical or cascading containers. Also [custom containers](#creating-a-custom-itokenvaluecontainer).
+See [building composite token value containers](#building-composite-token-value-containers) for hierarchical or cascading containers. Also [custom containers](#custom-value-containers).
 
 Note: comma `,` and colon `:` should not be used in token names to avoid confusion with alignment and format values.
 
@@ -335,7 +338,7 @@ string result = templateString.FormatFromObject(tokenValues);
 Assert.Equal("start  end", result);
 ```
 
-Nested conditions are supported.
+Negation is also supported `{:if,!IsValid}`; as are nested conditional blocks.
 
 ## Map command
 
