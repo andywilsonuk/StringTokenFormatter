@@ -18,9 +18,9 @@
 
 	<PropertyGroup>
 		<PackageId>StringTokenFormatter</PackageId>
-		<PackageVersion>9.0.0</PackageVersion>
-		<AssemblyVersion>9.0.0</AssemblyVersion>
-		<FileVersion>9.0.0</FileVersion>
+		<PackageVersion>9.0.1</PackageVersion>
+		<AssemblyVersion>9.0.1</AssemblyVersion>
+		<FileVersion>9.0.1</FileVersion>
 		<AssemblyTitle>String Token Formatter</AssemblyTitle>
 		<Authors>Andy Wilson, Tony Valenti</Authors>
 		<Description>Provides token replacement for interpolated (templated) strings not known at compile time such as those retrieved from data stores using a variety of token to value mappers.</Description>

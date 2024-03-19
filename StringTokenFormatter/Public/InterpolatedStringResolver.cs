@@ -2,6 +2,8 @@
 
 public class InterpolatedStringResolver
 {
+    public static InterpolatedStringResolver Default { get; } = new(StringTokenFormatterSettings.Default);
+
     private readonly ExpanderValueFormatter formatter;
 
     public StringTokenFormatterSettings Settings { get; }
