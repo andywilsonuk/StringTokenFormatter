@@ -282,6 +282,31 @@ Static methods are available on `FormatterDefinition` to create instances that c
 
 Where `fn` is defined as `Func<T, string, string>` with the first parameter being the strongly-typed token value after any [value conversion](#value-converters), the second is the `formatString` or empty if not specified. The return value is the formatted string result.
 
+All four methods also accept `Func<T, string, string, string>`. Its first two parameters are the same, and its third parameter is the actual token name from the template. Existing two-parameter formatters continue to work unchanged. The token name is passed as written in the template, even when `NameComparer` matches it case insensitively.
+
+For example, a type formatter can distinguish phone tokens from other strings without registering every possible token name:
+
+```C#
+var settings = StringTokenFormatterSettings.Default with
+{
+    FormatterDefinitions = new[]
+    {
+        FormatterDefinition.ForType<string>((value, format, tokenName) =>
+            tokenName.EndsWith("Phone", StringComparison.OrdinalIgnoreCase)
+                && value.Length == 10 && value.All(char.IsDigit)
+                    ? $"({value.Substring(0, 3)}) {value.Substring(3, 3)}-{value.Substring(6)}"
+                    : value),
+    },
+};
+var resolver = new InterpolatedStringResolver(settings);
+string actual = resolver.FromObject("{Phone} / {Reference}", new
+{
+    Phone = "2025550100",
+    Reference = "2025550100",
+});
+Assert.Equal("(202) 555-0100 / 2025550100", actual);
+```
+
 Token name follows the casing set in `NameComparer` in [settings](#settings) whilst `formatString` is case insensitive. The matching logic is from the most specific to the least irrespective of order.
 
 Example defining two `FormatterDefinition` criteria and format functions:
@@ -623,6 +648,8 @@ The policies are:
 | IgnoreNull        | Uses the value if it is not null                         |
 | IgnoreNullOrEmpty | Uses the value if it is not null and not an empty string |
 
+If a matching container returns a value rejected by the policy, resolution continues with the next container. If no container supplies an accepted value, the token is unresolved and `UnresolvedTokenBehavior` applies. `ResolveAll` preserves the first successful match, including null or an empty string.
+
 ### `UnresolvedTokenBehavior`
 
 Defines what should happen if the token specified in the interpolated string cannot be matched within the `ITokenValueContainer`. Default `UnresolvedTokenBehavior.Throw`.
@@ -631,6 +658,46 @@ Defines what should happen if the token specified in the interpolated string can
 | :---------------: | :---------------------------------------------------------: |
 | Throw             | An `UnresolvedTokenException` exception is raised           |
 | LeaveUnresolved   | The text will contain the template string token unmodified  |
+| Replace           | Uses `UnresolvedTokenReplacement` as the token value        |
+
+### `UnresolvedTokenReplacement`
+
+The string used when the effective unresolved-token behavior is `Replace`. Default `string.Empty`. Replacement values pass through the usual value converters, formatters and alignment, just like resolved values. Null is not a valid replacement setting.
+
+```C#
+var settings = StringTokenFormatterSettings.Default with
+{
+    UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
+    UnresolvedTokenReplacement = "N/A",
+};
+var resolver = new InterpolatedStringResolver(settings);
+Assert.Equal("Hello N/A", resolver.FromObject("Hello {Name}", new { Other = "value" }));
+```
+
+### `UnresolvedTokenReplacementFormatter`
+
+A callback of type `Func<string, UnresolvedTokenBehavior, UnresolvedTokenBehavior?>` that selects the behavior for each unresolved token. Despite the name, it returns a behavior, not replacement text. The arguments are the token name and configured default behavior. Return `Throw`, `LeaveUnresolved`, or `Replace` to override the default, or null to use the configured default. The default callback returns the configured behavior unchanged. The callback is not invoked for resolved tokens.
+
+For example, replace missing customer fields while leaving unrelated placeholders intact:
+
+```C#
+var settings = StringTokenFormatterSettings.Default with
+{
+    UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
+    UnresolvedTokenReplacement = "N/A",
+    UnresolvedTokenReplacementFormatter = (tokenName, defaultBehavior) =>
+        tokenName.StartsWith("Customer.", StringComparison.OrdinalIgnoreCase)
+            ? UnresolvedTokenBehavior.Replace
+            : defaultBehavior,
+};
+var resolver = new InterpolatedStringResolver(settings);
+var container = resolver.Builder().AddSingle("Other", "value").CombinedResult();
+Assert.Equal("N/A / {OtherMissing}", resolver.FromContainer("{Customer.Name} / {OtherMissing}", container));
+```
+
+Custom implementations of `IInterpolatedStringSettings` do not need new members. To opt into replacement text and per-token behavior selection, also implement the optional `IUnresolvedTokenReplacementSettings` interface. Without that interface, the existing behavior is unchanged; selecting `Replace` uses an empty string.
+
+Replacement applies to normal token resolution, including map-command inputs and tokens inside loop bodies. Loop-source discovery keeps its existing command behavior and does not invoke the replacement callback.
 
 ### `InvalidFormatBehavior`
 

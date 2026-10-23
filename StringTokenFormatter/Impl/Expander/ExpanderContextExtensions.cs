@@ -16,9 +16,17 @@ public static class ExpanderContextExtensions
             if (sequenceMatch.IsSuccess) { return sequenceMatch; }
 
         }
-        if (context.Settings.UnresolvedTokenBehavior == UnresolvedTokenBehavior.Throw)
+        var replacementSettings = context.Settings as IUnresolvedTokenReplacementSettings;
+        var defaultBehavior = context.Settings.UnresolvedTokenBehavior;
+        var behavior = replacementSettings?.UnresolvedTokenReplacementFormatter(tokenName, defaultBehavior) ?? defaultBehavior;
+        Guard.IsDefined(behavior, nameof(IUnresolvedTokenReplacementSettings.UnresolvedTokenReplacementFormatter));
+        if (behavior == UnresolvedTokenBehavior.Throw)
         {
             throw new UnresolvedTokenException($"Token '{tokenName}' was not found within the container");
+        }
+        if (behavior == UnresolvedTokenBehavior.Replace)
+        {
+            return TryGetResult.Success(replacementSettings?.UnresolvedTokenReplacement ?? string.Empty);
         }
         return default;
     }

@@ -10,6 +10,10 @@ public enum UnresolvedTokenBehavior
     /// Unmatched tokens or invalid values (based on the policy) result in the original token being output.
     /// </summary>
     LeaveUnresolved = 1,
+    /// <summary>
+    /// Unmatched tokens or invalid values (based on the policy) result in a replacement value being used.
+    /// </summary>
+    Replace = 2,
 }
 public enum InvalidFormatBehavior
 {
@@ -83,6 +87,22 @@ public interface ITokenValueContainerSettings
     /// </summary>
     public StringComparer NameComparer { get; }
 }
+/// <summary>
+/// Optional settings for replacing unresolved tokens, used alongside <see cref="IInterpolatedStringSettings"/>.
+/// </summary>
+public interface IUnresolvedTokenReplacementSettings
+{
+    /// <summary>
+    /// Gets the value used when the unresolved token behavior is <see cref="UnresolvedTokenBehavior.Replace"/>.
+    /// The default is an empty string, including when these optional settings are not implemented.
+    /// </summary>
+    public string UnresolvedTokenReplacement { get; }
+    /// <summary>
+    /// Gets the callback invoked only after a token cannot be resolved. It receives the token name and
+    /// configured default behavior, and returns a behavior, not replacement text. A null result uses the default behavior.
+    /// </summary>
+    public Func<string, UnresolvedTokenBehavior, UnresolvedTokenBehavior?> UnresolvedTokenReplacementFormatter { get; }
+}
 public interface ICompositeTokenValueContainerSettings
 {
     /// <summary>
@@ -98,7 +118,7 @@ public interface IHierarchicalTokenValueContainerSettings : ITokenValueContainer
     public string HierarchicalDelimiter { get; }
 }
 public record StringTokenFormatterSettings
-    : ITokenValueContainerSettings, IInterpolatedStringSettings, ICompositeTokenValueContainerSettings, IHierarchicalTokenValueContainerSettings
+    : ITokenValueContainerSettings, IInterpolatedStringSettings, ICompositeTokenValueContainerSettings, IHierarchicalTokenValueContainerSettings, IUnresolvedTokenReplacementSettings
 {
     /// <summary>
     /// Initial settings from which custom settings can be derived.
@@ -114,6 +134,10 @@ public record StringTokenFormatterSettings
 
     public TokenSyntax Syntax { get; init; } = CommonTokenSyntax.Curly;
     public UnresolvedTokenBehavior UnresolvedTokenBehavior { get; init; } = UnresolvedTokenBehavior.Throw;
+    /// <inheritdoc cref="IUnresolvedTokenReplacementSettings.UnresolvedTokenReplacement"/>
+    public string UnresolvedTokenReplacement { get; init; } = string.Empty;
+    /// <inheritdoc cref="IUnresolvedTokenReplacementSettings.UnresolvedTokenReplacementFormatter"/>
+    public Func<string, UnresolvedTokenBehavior, UnresolvedTokenBehavior?> UnresolvedTokenReplacementFormatter { get; init; } = (_, defaultBehavior) => defaultBehavior;
     public IReadOnlyCollection<TokenValueConverter> ValueConverters
     {
         get { return valueConverters ?? defaultValueConverters; }
