@@ -14,5 +14,5 @@ public sealed class CompositeTokenValueContainer : ITokenValueContainer
     }
 
     public TryGetResult TryMap(string token) =>
-        containers.Select(c => c.TryMap(token)).FirstOrDefault(value => value.IsSuccess && settings.TokenResolutionPolicy.Satisfies(value));
+        containers.Select(c => c.TryMap(token)).FirstOrDefault(value => value.IsSuccess && settings.TokenResolutionPolicy.Satisfies(value.Value));
 }
