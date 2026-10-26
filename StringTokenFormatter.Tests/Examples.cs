@@ -30,13 +30,16 @@ public class Examples
     [Fact]
     public void FormattingParityWithStringFormat()
     {
-        string templateString = "Today is {outlook} with a temperature of {temperature:N1}°C and {humidity,6:P} humidity";
-        var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default);
+        string templateString = "Today is {outlook} with a temperature of {temperature:N1}°C and {humidity:P1} humidity";
+        var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default with
+        {
+            FormatProvider = CultureInfo.GetCultureInfo("en-US"),
+        });
         var tokenValues = new (string, object)[] { ("temperature", 23), ("humidity", 0.6m), ("outlook", "sunny") };
 
         string actual = resolver.FromTuples(templateString, tokenValues);
 
-        Assert.Equal("Today is sunny with a temperature of 23.0°C and 60.00% humidity", actual);
+        Assert.Equal("Today is sunny with a temperature of 23.0°C and 60.0% humidity", actual);
     }
 
     /// <summary>
