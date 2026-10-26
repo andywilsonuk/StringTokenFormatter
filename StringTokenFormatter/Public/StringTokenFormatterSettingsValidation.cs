@@ -10,6 +10,11 @@ public static class StringTokenFormatterSettingsExtensions
         Guard.NotNull(settings, nameof(settings));
         Guard.NotNull(settings.Syntax, nameof(settings.Syntax)).Validate();
         Guard.IsDefined(settings.UnresolvedTokenBehavior, nameof(settings.UnresolvedTokenBehavior));
+        if (settings is IUnresolvedTokenReplacementSettings replacementSettings)
+        {
+            Guard.NotNull(replacementSettings.UnresolvedTokenReplacement, nameof(replacementSettings.UnresolvedTokenReplacement));
+            Guard.NotNull(replacementSettings.UnresolvedTokenReplacementFormatter, nameof(replacementSettings.UnresolvedTokenReplacementFormatter));
+        }
         Guard.NotEmpty(settings.ValueConverters, nameof(settings.ValueConverters));
         Guard.NotNull(settings.FormatProvider, nameof(settings.FormatProvider));
         Guard.IsDefined(settings.InvalidFormatBehavior, nameof(settings.InvalidFormatBehavior));

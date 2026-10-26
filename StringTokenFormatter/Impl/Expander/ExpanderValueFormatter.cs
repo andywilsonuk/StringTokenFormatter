@@ -23,7 +23,14 @@ public sealed class ExpanderValueFormatter
         {
             if (TryGetBestDefinition(valueType, tokenName, formatString, out FormatterDefinition? definition))
             {
-                formattedValue = definition.Formatter.DynamicInvoke(value, formatString) as string ?? string.Empty;
+                var formatter = definition.Formatter;
+                int parameterCount = formatter.GetType().GetMethod("Invoke")!.GetParameters().Length;
+                formattedValue = (parameterCount switch
+                {
+                    2 => formatter.DynamicInvoke(value, formatString),
+                    3 => formatter.DynamicInvoke(value, formatString, tokenName),
+                    _ => throw new FormatException($"Formatter must accept two or three arguments, but accepts {parameterCount}"),
+                }) as string ?? string.Empty;
                 return true;
             }
             formattedValue = string.Empty;

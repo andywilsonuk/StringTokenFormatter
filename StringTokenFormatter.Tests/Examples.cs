@@ -216,8 +216,67 @@ public class Examples
         Total: $79.50
         Ref: 73054FAD
         """;
-        Assert.Equal(expected, actual);
+        // AppendLine uses the platform newline, independently of this source file's line endings.
+        Assert.Equal(expected.Replace("\r\n", "\n").Replace("\n", Environment.NewLine), actual);
     }
+    [Fact]
+    public void TokenAwarePhoneFormatter()
+    {
+        var settings = StringTokenFormatterSettings.Default with
+        {
+            FormatterDefinitions = new[]
+            {
+                FormatterDefinition.ForType<string>((value, format, tokenName) =>
+                    tokenName.EndsWith("Phone", StringComparison.OrdinalIgnoreCase)
+                        && value.Length == 10 && value.All(char.IsDigit)
+                            ? $"({value.Substring(0, 3)}) {value.Substring(3, 3)}-{value.Substring(6)}"
+                            : value),
+            },
+        };
+        var resolver = new InterpolatedStringResolver(settings);
+
+        string actual = resolver.FromObject("{Phone} / {Reference}", new
+        {
+            Phone = "2025550100",
+            Reference = "2025550100",
+        });
+
+        Assert.Equal("(202) 555-0100 / 2025550100", actual);
+    }
+
+    [Fact]
+    public void MissingTokenReplacement()
+    {
+        var settings = StringTokenFormatterSettings.Default with
+        {
+            UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
+            UnresolvedTokenReplacement = "N/A",
+        };
+        var resolver = new InterpolatedStringResolver(settings);
+
+        Assert.Equal("Hello N/A", resolver.FromObject("Hello {Name}", new { Other = "value" }));
+    }
+
+    [Fact]
+    public void MissingCustomerTokensAreReplacedAndOtherPlaceholdersArePreserved()
+    {
+        var settings = StringTokenFormatterSettings.Default with
+        {
+            UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
+            UnresolvedTokenReplacement = "N/A",
+            UnresolvedTokenReplacementFormatter = (tokenName, defaultBehavior) =>
+                tokenName.StartsWith("Customer.", StringComparison.OrdinalIgnoreCase)
+                    ? UnresolvedTokenBehavior.Replace
+                    : defaultBehavior,
+        };
+        var resolver = new InterpolatedStringResolver(settings);
+        var container = resolver.Builder().AddSingle("Other", "value").CombinedResult();
+
+        string actual = resolver.FromContainer("{Customer.Name} / {OtherMissing}", container);
+
+        Assert.Equal("N/A / {OtherMissing}", actual);
+    }
+
     private class OrderLine(string product, double price)
     {
         public string Product { get; } = product;
