@@ -183,6 +183,6 @@ public record StringTokenFormatterSettings
         ExpanderCommandFactory.Standard,
     }.AsReadOnly();
 
-    private static readonly IReadOnlyCollection<FormatterDefinition> defaultFormatterDefinitions = Array.Empty<FormatterDefinition>();
+    private static readonly IReadOnlyCollection<FormatterDefinition> defaultFormatterDefinitions = [];
     private IReadOnlyCollection<FormatterDefinition> formatterDefinitions = defaultFormatterDefinitions;
 }

@@ -24,7 +24,7 @@ public static partial class InterpolatedStringParser
         Guard.NotNull(settings, nameof(settings)).Validate();
         if (string.IsNullOrEmpty(source))
         {
-            return new InterpolatedString(Array.Empty<InterpolatedStringSegment>(), settings);
+            return new InterpolatedString([], settings);
         }
         var matches = GetRegexMatches(source, settings.Syntax);
         var segments = ConvertToSegments(source, matches, settings.Syntax);
