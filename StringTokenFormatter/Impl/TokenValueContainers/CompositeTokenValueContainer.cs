@@ -9,7 +9,7 @@ public sealed class CompositeTokenValueContainer : ITokenValueContainer
     {
         this.settings = Guard.NotNull(settings, nameof(settings)).Validate();
         Guard.NotNull(containers, nameof(containers));
-        this.containers = containers.Select(x => Guard.NotNull(x, $"Child container of {nameof(containers)} is null")).ToArray();
+        this.containers = [.. containers.Select(x => Guard.NotNull(x, $"Child container of {nameof(containers)} is null"))];
         Guard.NotEmpty(this.containers, nameof(containers));
     }
 

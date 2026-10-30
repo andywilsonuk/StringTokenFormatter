@@ -10,13 +10,13 @@ public static class PropertyCache<T>
     public static readonly IReadOnlyCollection<PropertyPairs> Properties = GetPropertyPairs();
     public static int Count => Properties.Count;
 
-    private static List<PropertyPairs> GetPropertyPairs() => (
+    private static List<PropertyPairs> GetPropertyPairs() => [.. (
         from prop in GetPublicProperties(typeof(T))
         let getMethod = prop.GetGetMethod()
         where getMethod != null && getMethod.GetParameters().Length == 0
         let getterFn = CreateGetter(getMethod)
         select new PropertyPairs(prop.Name, getterFn)
-    ).ToList();
+    )];
 
     private const BindingFlags bindingFilter = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 

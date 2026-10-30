@@ -4,7 +4,7 @@ public sealed class ExpandedStringIterator
 {
     internal ExpandedStringIterator(IReadOnlyCollection<InterpolatedStringSegment> segments)
     {
-        Segments = segments.ToArray();
+        Segments = [.. segments];
     }
 
     public InterpolatedStringSegment[] Segments { get; }
