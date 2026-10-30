@@ -1,3 +1,9 @@
 {
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "chat.tools.terminal.autoApprove": {
+        "/^dotnet --version$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
 }

@@ -1,4 +1,6 @@
-# StringTokenFormatter v9.0
+# StringTokenFormatter pre-release v10
+
+This is the pre-release version of v10, for v9 see https://github.com/andywilsonuk/StringTokenFormatter/tree/v9.1.
 
 Provides token replacement for template strings which cannot be interpolated at compile time such as those retrieved from data stores (file system, database, API, config files etc) using a variety of token to value mappers.
 
