@@ -778,7 +778,7 @@ By design `ToString()` is not used as a value converter because calling it on a 
 - Remove unused commands from the [settings](#settings)
 - Remove unused Value Converters from the [settings](#settings)
 - Reuse [Value Containers](#value-containers) where possible
-- Use .NET 6 or above for improved regex performance
+- Use .NET 6 or above for improved parsing performance
 - Use .NET 8 Frozen Dictionary for faster read access, see the [Frozen Dictionary section](#frozen-dictionary-support-in-net-8)
 
 # Thread safety
