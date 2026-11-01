@@ -19,10 +19,10 @@ public class InterpolatedStringExpanderFormatterTests
             .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new List<FormatterDefinition>
-            {
+            FormatterDefinitions =
+            [
                 FormatterDefinition.ForType((decimal value, string formatString) => new string(formatString[0], (int)value)),
-            }
+            ]
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", (decimal)2);
@@ -41,10 +41,10 @@ public class InterpolatedStringExpanderFormatterTests
             .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new List<FormatterDefinition>
-            {
+            FormatterDefinitions =
+            [
                 FormatterDefinition.ForTokenName("two", (int value, string formatString) => new string(formatString[0], value)),
-            }
+            ]
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -61,10 +61,10 @@ public class InterpolatedStringExpanderFormatterTests
             .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new List<FormatterDefinition>
-            {
+            FormatterDefinitions =
+            [
                 FormatterDefinition.ForFormatString("x", (int value, string formatString) => new string(formatString[0], value)),
-            }
+            ]
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -81,10 +81,10 @@ public class InterpolatedStringExpanderFormatterTests
             .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new List<FormatterDefinition>
-            {
+            FormatterDefinitions =
+            [
                 FormatterDefinition.ForTokenNameAndFormatString("two", "x", (int value, string formatString) => new string(formatString[0], value)),
-            }
+            ]
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -104,13 +104,13 @@ public class InterpolatedStringExpanderFormatterTests
             .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new List<FormatterDefinition>
-            {
+            FormatterDefinitions =
+            [
                 FormatterDefinition.ForType((int value, string formatString) => "a"),
                 FormatterDefinition.ForTokenName("tok1", (int value, string formatString) => "b"),
                 FormatterDefinition.ForFormatString("x", (int value, string formatString) => "c"),
                 FormatterDefinition.ForTokenNameAndFormatString("tok2", "x", (int value, string formatString) => "d"),
-            }
+            ]
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("tok0", 0);
@@ -130,11 +130,11 @@ public class InterpolatedStringExpanderFormatterTests
             .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new List<FormatterDefinition>
-            {
+            FormatterDefinitions =
+            [
                 FormatterDefinition.ForType((int value, string formatString) => "wrong"),
                 FormatterDefinition.ForType((decimal value, string formatString) => new string(formatString[0], (int)value)),
-            }
+            ]
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", (decimal)2);
@@ -152,10 +152,10 @@ public class InterpolatedStringExpanderFormatterTests
             .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new List<FormatterDefinition>
-            {
+            FormatterDefinitions =
+            [
                 FormatterDefinition.ForTokenName("two", (int value, string formatString) => new string(formatString[0], value)),
-            }
+            ]
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -172,10 +172,10 @@ public class InterpolatedStringExpanderFormatterTests
             .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new List<FormatterDefinition>
-            {
+            FormatterDefinitions =
+            [
                 FormatterDefinition.ForType((int value, string formatString) => "a"),
-            }
+            ]
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -190,10 +190,10 @@ public class InterpolatedStringExpanderFormatterTests
             .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new List<FormatterDefinition>
-            {
+            FormatterDefinitions =
+            [
                 FormatterDefinition.ForType((int value, string formatString) => throw new Exception()),
-            }
+            ]
         };
         var interpolatedString = new InterpolatedString(segments, settings);
 
@@ -208,11 +208,11 @@ public class InterpolatedStringExpanderFormatterTests
             .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new List<FormatterDefinition>
-            {
+            FormatterDefinitions =
+            [
                 FormatterDefinition.ForType((object value, string formatString) => "wrong"),
                 FormatterDefinition.ForType((int value, string formatString) => new string(formatString[0], value)),
-            }
+            ]
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", 2);
@@ -228,10 +228,10 @@ public class InterpolatedStringExpanderFormatterTests
         var settings = new StringTokenFormatterSettings
         {
             FormatProvider = CultureInfo.CreateSpecificCulture("en-GB"),
-            FormatterDefinitions = new List<FormatterDefinition>
-            {
+            FormatterDefinitions =
+            [
                 FormatterDefinition.ForType((int value, string formatString) => "wrong"),
-            }
+            ]
         };
         var segments = new SegmentBuilder()
             .Token("two", string.Empty, string.Empty)

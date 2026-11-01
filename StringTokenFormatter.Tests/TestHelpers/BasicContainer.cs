@@ -2,7 +2,7 @@ namespace StringTokenFormatter.Tests;
 
 public class BasicContainer : ITokenValueContainer
 {
-    private readonly Dictionary<string, object?> tokens = new();
+    private readonly Dictionary<string, object?> tokens = [];
 
     public BasicContainer Add(string tokenName, object? value)
     {

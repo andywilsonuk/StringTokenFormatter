@@ -34,7 +34,7 @@ public class StringTokenFormatterSettingsValidationTests
     {
         var settings = StringTokenFormatterSettings.Default with
         {
-            ValueConverters = new List<TokenValueConverter>(),
+            ValueConverters = [],
         };
 
         Assert.Throws<ArgumentException>(() => settings.Validate());
@@ -78,7 +78,7 @@ public class StringTokenFormatterSettingsValidationTests
     {
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new [] {
+            FormatterDefinitions = new[] {
                 FormatterDefinition.ForType<int>((_1, _2) => "1"),
                 FormatterDefinition.ForType<int>((_1, _2) => "2"),
             },

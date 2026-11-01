@@ -18,12 +18,12 @@ public class StringTokenFormatterSettingsTests : IDisposable
     [Fact]
     public void Constructor_CustomSettings_ReturnsCustomValues()
     {
-        var actual = new StringTokenFormatterSettings 
+        var actual = new StringTokenFormatterSettings
         {
-            ValueConverters = new List<TokenValueConverter>
-            {
+            ValueConverters =
+            [
                 TokenValueConverterFactory.PrimitiveConverter(),
-            }
+            ]
         };
 
         Assert.Single(actual.ValueConverters);
@@ -32,16 +32,17 @@ public class StringTokenFormatterSettingsTests : IDisposable
     [Fact]
     public void Global_OverrideGlobal_ReturnsDefaultValues()
     {
-        var actual = StringTokenFormatterSettings.Global with {
+        var actual = StringTokenFormatterSettings.Global with
+        {
             NameComparer = StringComparer.CurrentCulture,
             TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNull,
             Syntax = CommonTokenSyntax.DollarCurly,
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
-            ValueConverters = new List<TokenValueConverter>
-            {
+            ValueConverters =
+            [
                 TokenValueConverterFactory.NullConverter(),
                 TokenValueConverterFactory.PrimitiveConverter(),
-            },
+            ],
             FormatProvider = CultureInfo.InvariantCulture,
         };
 
@@ -62,12 +63,13 @@ public class StringTokenFormatterSettingsTests : IDisposable
         Assert.Equal(expected, actual);
     }
 
-     [Fact]
+    [Fact]
     public void Global_ModifiedGlobal_NotSameAsDefault()
     {
         var defaultSyntax = StringTokenFormatterSettings.Default.Syntax;
 
-        StringTokenFormatterSettings.Global = StringTokenFormatterSettings.Default with {
+        StringTokenFormatterSettings.Global = StringTokenFormatterSettings.Default with
+        {
             Syntax = CommonTokenSyntax.DollarRound,
         };
 

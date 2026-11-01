@@ -9,11 +9,11 @@ public class InterpolatedStringExpanderConditionalBlockTests
     {
         settings = StringTokenFormatterSettings.Default with
         {
-            Commands = new List<IExpanderCommand>
-            {
+            Commands =
+            [
                 ExpanderCommandFactory.Conditional,
                 ExpanderCommandFactory.Standard,
-            }
+            ]
         };
     }
 

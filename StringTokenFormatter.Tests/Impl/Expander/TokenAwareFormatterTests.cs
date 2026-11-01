@@ -93,8 +93,8 @@ public class TokenAwareFormatterTests
             .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new List<FormatterDefinition>
-            {
+            FormatterDefinitions =
+            [
                 tokenAwareSpecifics
                     ? FormatterDefinition.ForType((int value, string formatString) => "type")
                     : FormatterDefinition.ForType((int value, string formatString, string tokenName) => "type"),
@@ -107,7 +107,7 @@ public class TokenAwareFormatterTests
                 tokenAwareSpecifics
                     ? FormatterDefinition.ForTokenNameAndFormatString("amount", "special", (int value, string formatString, string tokenName) => "both")
                     : FormatterDefinition.ForTokenNameAndFormatString("amount", "special", (int value, string formatString) => "both"),
-            }
+            ]
         };
         var values = new BasicContainer();
         values.Add("plain", 42);

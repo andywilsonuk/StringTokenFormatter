@@ -9,11 +9,11 @@ public class InterpolatedStringExpanderLoopBlockTests
     {
         settings = StringTokenFormatterSettings.Default with
         {
-            Commands = new List<IExpanderCommand>
-            {
+            Commands =
+            [
                 ExpanderCommandFactory.Loop,
                 ExpanderCommandFactory.Standard,
-            }
+            ]
         };
     }
 

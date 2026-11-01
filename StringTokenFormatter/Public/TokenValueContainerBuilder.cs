@@ -2,7 +2,7 @@ namespace StringTokenFormatter;
 
 public class TokenValueContainerBuilder
 {
-    private readonly List<ITokenValueContainer> innerList = new();
+    private readonly List<ITokenValueContainer> innerList = [];
 
     public StringTokenFormatterSettings Settings { get; }
     public IReadOnlyCollection<ITokenValueContainer> Containers => innerList;
