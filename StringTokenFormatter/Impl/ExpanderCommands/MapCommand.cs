@@ -1,20 +1,9 @@
-using System.Text.RegularExpressions;
-
 namespace StringTokenFormatter.Impl;
 
-public sealed partial class MapCommand : IExpanderCommand
+public sealed class MapCommand : IExpanderCommand
 {
     private const string commandName = "map";
-    private const string keyValuePairsPattern = "([^=,]+)=([^,]*)";
     private const string discardValue = "_";
-
-#if NET8_0_OR_GREATER
-    [GeneratedRegex(keyValuePairsPattern, RegexOptions.Singleline | RegexOptions.CultureInvariant)]
-    private static partial Regex GetKeyValuePairsRegex();
-# else
-    private static readonly Regex keyValuePairsRegex = new(keyValuePairsPattern, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
-    private static Regex GetKeyValuePairsRegex() => keyValuePairsRegex;
-#endif
 
     public void Evaluate(ExpanderContext context)
     {
@@ -39,20 +28,9 @@ public sealed partial class MapCommand : IExpanderCommand
         var convertedValue = context.ApplyValueConverter(tokenValueResult.Value, tokenName);
         string convertedValueString = convertedValue?.ToString() ?? string.Empty;
 
-        static (string TokenValue, string MapValue) groupResult(Match m) => (TokenValue: m.Groups[1].Value, MapValue: m.Groups[2].Value);
-        var matches = GetKeyValuePairsRegex().Matches(segment.Data);
-        var match = matches.Cast<Match>().Select(groupResult).FirstOrDefault(m => StringComparer.InvariantCultureIgnoreCase.Equals(m.TokenValue, convertedValueString));
-        if (match == default)
+        if (TryFindMapValue(segment.Data, convertedValueString, out string mapValue))
         {
-            var last = groupResult(matches[^1]);
-            if (OrdinalValueHelper.AreEqual(last.TokenValue, discardValue))
-            {
-                match = last;
-            }
-        }
-        if (match != default)
-        {
-            context.StringBuilder.AppendLiteral(match.MapValue);
+            context.StringBuilder.AppendLiteral(mapValue);
             return;
         }
 
@@ -63,6 +41,80 @@ public sealed partial class MapCommand : IExpanderCommand
             _ => throw new ExpanderException($"Token {segment.Token} does not have a matching map value for {convertedValueString}"),
         };
         context.StringBuilder.AppendLiteral(outputValue);
+    }
+
+    private static bool TryFindMapValue(string data, string convertedValue, out string mapValue)
+    {
+        int lastKeyStart = 0;
+        int lastKeyLength = 0;
+        int lastValueStart = 0;
+        int lastValueLength = 0;
+        bool hasLastPair = false;
+        int fieldStart = 0;
+
+        while (fieldStart < data.Length)
+        {
+            int fieldEnd = data.IndexOf(',', fieldStart);
+            if (fieldEnd < 0)
+            {
+                fieldEnd = data.Length;
+            }
+
+            int keyStart = fieldStart;
+            while (keyStart < fieldEnd)
+            {
+                int equalsIndex = data.IndexOf('=', keyStart, fieldEnd - keyStart);
+                if (equalsIndex < 0)
+                {
+                    break;
+                }
+                if (equalsIndex == keyStart)
+                {
+                    keyStart++;
+                    continue;
+                }
+
+                int keyLength = equalsIndex - keyStart;
+                int valueStart = equalsIndex + 1;
+                int valueLength = fieldEnd - valueStart;
+                lastKeyStart = keyStart;
+                lastKeyLength = keyLength;
+                lastValueStart = valueStart;
+                lastValueLength = valueLength;
+                hasLastPair = true;
+
+                if (CultureInfo.InvariantCulture.CompareInfo.Compare(
+                    data,
+                    keyStart,
+                    keyLength,
+                    convertedValue,
+                    0,
+                    convertedValue.Length,
+                    CompareOptions.IgnoreCase) == 0)
+                {
+                    mapValue = data.Substring(valueStart, valueLength);
+                    return true;
+                }
+                break;
+            }
+
+            if (fieldEnd == data.Length)
+            {
+                break;
+            }
+            fieldStart = fieldEnd + 1;
+        }
+
+        if (hasLastPair
+            && lastKeyLength == discardValue.Length
+            && string.Compare(data, lastKeyStart, discardValue, 0, lastKeyLength, StringComparison.Ordinal) == 0)
+        {
+            mapValue = data.Substring(lastValueStart, lastValueLength);
+            return true;
+        }
+
+        mapValue = string.Empty;
+        return false;
     }
 
     internal MapCommand() { }

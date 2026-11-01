@@ -10,12 +10,12 @@ public class InterpolatedStringExpanderMapCommandTests
     {
         settings = StringTokenFormatterSettings.Default with
         {
-            Commands = new List<IExpanderCommand>
-            {
+            Commands =
+            [
                 ExpanderCommandFactory.Map,
                 ExpanderCommandFactory.Loop,
                 ExpanderCommandFactory.Standard,
-            }
+            ]
         };
     }
 
@@ -151,6 +151,64 @@ public class InterpolatedStringExpanderMapCommandTests
         var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal(string.Empty, actual);
+    }
+
+    [Fact]
+    public void MapValue_SkipsMalformedEntriesAndPreservesEqualsInMappedValue()
+    {
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "=ignored,broken,Last=left=right")
+            .Build();
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("TestCase", "Last");
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("left=right", actual);
+    }
+
+    [Fact]
+    public void MapValue_UsesInvariantCultureComparison()
+    {
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "caf\u00E9=matched")
+            .Build();
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("TestCase", "cafe\u0301");
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("matched", actual);
+    }
+
+    [Fact]
+    public void EmptyMapWithLeaveUnformatted_OutputsConvertedValue()
+    {
+        var customSettings = settings with
+        {
+            InvalidFormatBehavior = InvalidFormatBehavior.LeaveUnformatted,
+        };
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", string.Empty)
+            .Build();
+        var interpolatedString = new InterpolatedString(segments, customSettings);
+        valuesContainer.Add("TestCase", "unmapped");
+
+        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal("unmapped", actual);
+    }
+
+    [Fact]
+    public void MapDiscardValue_IsUsedOnlyWhenItIsLastValidEntry()
+    {
+        var segments = new SegmentBuilder()
+            .Command("map", "TestCase", "_=fallback,Other=actual,broken")
+            .Build();
+        var interpolatedString = new InterpolatedString(segments, settings);
+        valuesContainer.Add("TestCase", "Missing");
+
+        Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
 
     [Fact]
