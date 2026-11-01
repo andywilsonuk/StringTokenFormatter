@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+    <File Path="migration-v9.md" />
+    <File Path="LICENCE.md" />
+  </Folder>
+  <Project Path="StringTokenFormatter.Tests/StringTokenFormatter.Tests.csproj" />
+  <Project Path="StringTokenFormatter/StringTokenFormatter.csproj" />
+</Solution>
