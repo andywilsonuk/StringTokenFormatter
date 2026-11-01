@@ -10,6 +10,11 @@ public static class TokenSyntaxExtensions
     public static string Tokenize(this TokenSyntax syntax, string tokenName) => $"{syntax.Start}{tokenName}{syntax.End}";
 
     /// <summary>
+    /// Escapes token start markers in the text so they are treated as literal text.
+    /// </summary>
+    public static string Escape(this TokenSyntax syntax, string value) => value.Replace(syntax.Start, syntax.EscapedStart);
+
+    /// <summary>
     /// Asserts that the syntax is properly configured
     /// </summary>
     public static TokenSyntax Validate(this TokenSyntax syntax)
