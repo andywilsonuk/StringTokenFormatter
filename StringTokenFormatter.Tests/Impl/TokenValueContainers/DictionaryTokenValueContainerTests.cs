@@ -126,7 +126,6 @@ public class DictionaryTokenValueContainerTests
     }
 
 
-#if NET8_0_OR_GREATER
     [Fact]
     public void TryMap_FrozenDictionary_ReturnsSuccess()
     {
@@ -147,5 +146,4 @@ public class DictionaryTokenValueContainerTests
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = 1 }, actual);
     }
-#endif
 }

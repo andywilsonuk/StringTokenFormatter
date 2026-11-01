@@ -789,9 +789,9 @@ Instances of [settings](#settings) and parsed `InterpolatedString`s can be reuse
 
 It should be noted that [expanding](#how-token-resolution-works) tokens to values, internally creates context state and is subject to garbage collection; at this time, there is no pool for reusing spent context state.
 
-# Frozen Dictionary support in .NET 8
+# Frozen Dictionary support
 
-When compiling against the .NET 8 version of the library, a method `Frozen` is available on `DictionaryTokenValueContainer` and `ObjectTokenValueContainer` instances which sets the backing dictionary and can provide a significant performance boost when reusing instances.
+The `Frozen` method is available on `DictionaryTokenValueContainer` and `ObjectTokenValueContainer` instances for all target frameworks. On .NET 8 or later, it uses a `FrozenDictionary` for faster read access when reusing instances; on earlier target frameworks, it has no effect.
 
 # Async loading of token values
 

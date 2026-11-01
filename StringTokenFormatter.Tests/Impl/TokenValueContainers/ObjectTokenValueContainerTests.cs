@@ -82,7 +82,6 @@ public class ObjectTokenValueContainerTests
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = value }, actual);
     }
 
-#if NET8_0_OR_GREATER
     [Fact]
     public void TryMap_FrozenDictionary_ReturnsSuccess()
     {
@@ -100,6 +99,4 @@ public class ObjectTokenValueContainerTests
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = value }, actual);
     }
-
-#endif
 }

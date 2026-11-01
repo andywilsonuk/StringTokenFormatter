@@ -1,8 +1,4 @@
-﻿#if NET8_0_OR_GREATER
-using System.Collections.Frozen;
-#endif
-
-namespace StringTokenFormatter.Impl;
+﻿namespace StringTokenFormatter.Impl;
 
 public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
 {
@@ -36,14 +32,13 @@ public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
 
     public TryGetResult TryMap(string token) => pairs.TryGetValue(token, out var value) ? TryGetResult.Success(value) : default;
 
-#if NET8_0_OR_GREATER
     /// <summary>
-    /// Converts the inner dictionary to a FrozenDictionary for faster read performance if reused.
+    /// Converts the inner dictionary to a FrozenDictionary for faster read performance if reused on .NET 8 or later.
+    /// This method has no effect on earlier target frameworks.
     /// </summary>
     public DictionaryTokenValueContainer<T> Frozen()
     {
-        pairs = pairs.ToFrozenDictionary();
+        pairs = pairs.ToFrozenDictionaryIfSupported();
         return this;
     }
-#endif
 }
