@@ -4,7 +4,7 @@ public class InterpolatedStringResolver(StringTokenFormatterSettings settings)
 {
     public static InterpolatedStringResolver Default { get; } = new(StringTokenFormatterSettings.Default);
 
-    private readonly ExpanderValueFormatter formatter = new ExpanderValueFormatter(settings.FormatterDefinitions, settings.NameComparer);
+    private readonly ExpanderValueFormatter formatter = new(settings.FormatterDefinitions, settings.NameComparer);
 
     public StringTokenFormatterSettings Settings { get; } = Guard.NotNull(settings, nameof(settings)).Validate();
 
