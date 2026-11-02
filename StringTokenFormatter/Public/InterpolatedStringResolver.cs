@@ -1,18 +1,12 @@
 ﻿namespace StringTokenFormatter;
 
-public class InterpolatedStringResolver
+public class InterpolatedStringResolver(StringTokenFormatterSettings settings)
 {
     public static InterpolatedStringResolver Default { get; } = new(StringTokenFormatterSettings.Default);
 
-    private readonly ExpanderValueFormatter formatter;
+    private readonly ExpanderValueFormatter formatter = new ExpanderValueFormatter(settings.FormatterDefinitions, settings.NameComparer);
 
-    public StringTokenFormatterSettings Settings { get; }
-
-    public InterpolatedStringResolver(StringTokenFormatterSettings settings)
-    {
-        Settings = Guard.NotNull(settings, nameof(settings)).Validate();
-        formatter = new ExpanderValueFormatter(settings.FormatterDefinitions, settings.NameComparer);
-    }
+    public StringTokenFormatterSettings Settings { get; } = Guard.NotNull(settings, nameof(settings)).Validate();
 
     /// <summary>
     /// Resolves the interpolated string where a single token name and value is required.

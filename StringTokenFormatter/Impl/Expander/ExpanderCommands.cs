@@ -1,13 +1,8 @@
 namespace StringTokenFormatter.Impl;
 
-public class ExpanderCommands
+public class ExpanderCommands(IReadOnlyCollection<IExpanderCommand> commands)
 {
-    private readonly IReadOnlyCollection<IExpanderCommand> commands;
-
-    public ExpanderCommands(IReadOnlyCollection<IExpanderCommand> commands)
-    {
-        this.commands = commands;
-    }
+    private readonly IReadOnlyCollection<IExpanderCommand> commands = commands;
 
     public void Init(ExpanderContext context) => commands.ForEach(c => c.Init(context));
 

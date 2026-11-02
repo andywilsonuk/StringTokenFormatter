@@ -1,7 +1,6 @@
 namespace StringTokenFormatter.Tests;
 
-public class ComplexClass
+public class ComplexClass(string Value)
 {
-    public ComplexClass(string Value) => this.Value = Value;
-    public string Value { get; }
+    public string Value { get; } = Value;
 }

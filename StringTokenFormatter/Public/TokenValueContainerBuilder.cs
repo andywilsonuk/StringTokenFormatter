@@ -1,16 +1,11 @@
 namespace StringTokenFormatter;
 
-public class TokenValueContainerBuilder
+public class TokenValueContainerBuilder(StringTokenFormatterSettings settings)
 {
     private readonly List<ITokenValueContainer> innerList = [];
 
-    public StringTokenFormatterSettings Settings { get; }
+    public StringTokenFormatterSettings Settings { get; } = Guard.NotNull(settings, nameof(settings)).Validate();
     public IReadOnlyCollection<ITokenValueContainer> Containers => innerList;
-
-    public TokenValueContainerBuilder(StringTokenFormatterSettings settings)
-    {
-        Settings = Guard.NotNull(settings, nameof(settings)).Validate();
-    }
 
     public TokenValueContainerBuilder AddSingle<T>(string token, T value) where T : notnull =>
         FluentAdd(TokenValueContainerFactory.FromSingle(Settings, token, value));

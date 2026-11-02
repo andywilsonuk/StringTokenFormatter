@@ -2,17 +2,11 @@ using System.Text;
 
 namespace StringTokenFormatter.Impl;
 
-public sealed class ExpandedStringBuilder
+public sealed class ExpandedStringBuilder(ExpanderValueFormatter valueFormatter, IFormatProvider formatProvider)
 {
     private readonly StringBuilder sb = new();
-    private readonly ExpanderValueFormatter valueFormatter;
-    private readonly IFormatProvider formatProvider;
-
-    public ExpandedStringBuilder(ExpanderValueFormatter valueFormatter, IFormatProvider formatProvider)
-    {
-        this.valueFormatter = Guard.NotNull(valueFormatter, nameof(valueFormatter));
-        this.formatProvider = Guard.NotNull(formatProvider, nameof(formatProvider));
-    }
+    private readonly ExpanderValueFormatter valueFormatter = Guard.NotNull(valueFormatter, nameof(valueFormatter));
+    private readonly IFormatProvider formatProvider = Guard.NotNull(formatProvider, nameof(formatProvider));
 
     public void AppendLiteral(string literal)
     {

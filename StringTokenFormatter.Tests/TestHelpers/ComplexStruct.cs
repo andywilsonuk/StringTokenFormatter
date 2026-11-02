@@ -1,7 +1,6 @@
 namespace StringTokenFormatter.Tests;
 
-public readonly struct ComplexStruct
+public readonly struct ComplexStruct(string Value)
 {
-    public ComplexStruct(string Value) => this.Value = Value;
-    public string Value { get; }
+    public string Value { get; } = Value;
 }

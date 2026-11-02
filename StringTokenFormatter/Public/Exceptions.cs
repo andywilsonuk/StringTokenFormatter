@@ -10,35 +10,20 @@ public abstract class StringTokenFormatterException : Exception
     {
     }
 }
-public class TokenContainerException : StringTokenFormatterException
+public class TokenContainerException(string message) : StringTokenFormatterException(message)
 {
-    public TokenContainerException(string message) : base(message)
-    {
-    }
 }
-public class ParserException : StringTokenFormatterException
+public class ParserException(string message) : StringTokenFormatterException(message)
 {
-    public ParserException(string message) : base(message)
-    {
-    }
 }
-public class ExpanderException : StringTokenFormatterException
+public class ExpanderException(string message) : StringTokenFormatterException(message)
 {
-    public ExpanderException(string message) : base(message)
-    {
-    }
 }
-public class UnresolvedTokenException : StringTokenFormatterException
+public class UnresolvedTokenException(string message) : StringTokenFormatterException(message)
 {
-    public UnresolvedTokenException(string message) : base(message)
-    {
-    }
 }
-public class MissingValueConverterException : StringTokenFormatterException
+public class MissingValueConverterException(string message) : StringTokenFormatterException(message)
 {
-    public MissingValueConverterException(string message) : base(message)
-    {
-    }
 }
 public class TokenValueFormatException : StringTokenFormatterException
 {
