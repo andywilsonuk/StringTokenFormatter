@@ -10,7 +10,7 @@ public class StringTokenFormatterSettingsValidationTests
     [InlineData("{", "{", "{{")]
     public void BadSyntax_Throws(string start, string end, string escape)
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             Syntax = new TokenSyntax(start, end, escape),
         };
@@ -21,7 +21,7 @@ public class StringTokenFormatterSettingsValidationTests
     [Fact]
     public void BadUnresolvedTokenBehavior_Throws()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = (UnresolvedTokenBehavior)100,
         };
@@ -32,7 +32,7 @@ public class StringTokenFormatterSettingsValidationTests
     [Fact]
     public void EmptyValueConverters_Throws()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             ValueConverters = [],
         };
@@ -43,7 +43,7 @@ public class StringTokenFormatterSettingsValidationTests
     [Fact]
     public void BadInvalidFormatBehavior_Throws()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             InvalidFormatBehavior = (InvalidFormatBehavior)100,
         };
@@ -54,7 +54,7 @@ public class StringTokenFormatterSettingsValidationTests
     [Fact]
     public void BadTokenResolutionPolicy_Throws()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             TokenResolutionPolicy = (TokenResolutionPolicy)100,
         };
@@ -65,7 +65,7 @@ public class StringTokenFormatterSettingsValidationTests
     [Fact]
     public void BadHierarchicalDelimiter_Throws()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             HierarchicalDelimiter = string.Empty,
         };
@@ -76,7 +76,7 @@ public class StringTokenFormatterSettingsValidationTests
     [Fact]
     public void DuplicateFormatDefinition_Throws()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions = [
                 FormatterDefinition.ForType<int>((_1, _2) => "1"),

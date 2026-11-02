@@ -17,7 +17,8 @@ public class StringExtensionsTests
     public void FormatFromSingle_WithSettings_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
+        StringTokenFormatterSettings settings = new()
+        {
             Syntax = CommonTokenSyntax.Round,
         };
 
@@ -31,7 +32,7 @@ public class StringExtensionsTests
     public void FormatFromPairs_WithDefaultSettings_ReturnsExpandedString()
     {
         string source = "first {two} third";
-        var tokenValues = new Dictionary<string, object> { { "two", 2 } };
+        Dictionary<string, object> tokenValues = new() { { "two", 2 } };
 
         string actual = source.FormatFromPairs(tokenValues);
 
@@ -43,10 +44,11 @@ public class StringExtensionsTests
     public void FormatFromPairs_WithSettings_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
+        StringTokenFormatterSettings settings = new()
+        {
             Syntax = CommonTokenSyntax.Round,
         };
-        var tokenValues = new Dictionary<string, object> { { "two", 2 } };
+        Dictionary<string, object> tokenValues = new() { { "two", 2 } };
 
         string actual = source.FormatFromPairs(tokenValues, settings);
 
@@ -58,7 +60,7 @@ public class StringExtensionsTests
     public void FormatFromTuples_WithDefaultSettings_ReturnsExpandedString()
     {
         string source = "first {two} third";
-        var tokenValues = new [] { ("two", 2) };
+        (string, int)[] tokenValues = [("two", 2)];
 
         string actual = source.FormatFromTuples(tokenValues);
 
@@ -70,10 +72,11 @@ public class StringExtensionsTests
     public void FormatFromTuples_WithSettings_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
+        StringTokenFormatterSettings settings = new()
+        {
             Syntax = CommonTokenSyntax.Round,
         };
-        var tokenValues = new [] { ("two", 2) };
+        (string, int)[] tokenValues = [("two", 2)];
 
         string actual = source.FormatFromTuples(tokenValues, settings);
 
@@ -97,7 +100,8 @@ public class StringExtensionsTests
     public void FormatFromObject_WithSettings_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
+        StringTokenFormatterSettings settings = new()
+        {
             Syntax = CommonTokenSyntax.Round,
         };
         var valuesObject = new { Two = 2 };
@@ -123,7 +127,8 @@ public class StringExtensionsTests
     public void FormatFromFunc_WithSettings_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
+        StringTokenFormatterSettings settings = new()
+        {
             Syntax = CommonTokenSyntax.Round,
         };
 
@@ -137,7 +142,7 @@ public class StringExtensionsTests
     public void FormatFromContainer_WithDefaultSettings_ReturnsExpandedString()
     {
         string source = "first {two} third";
-        var valuesContainer = new BasicContainer().Add("two", 2);
+        BasicContainer valuesContainer = new BasicContainer().Add("two", 2);
 
         string actual = source.FormatFromContainer(valuesContainer);
 
@@ -149,10 +154,11 @@ public class StringExtensionsTests
     public void FormatFromContainer_WithSettings_ReturnsExpandedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings {
+        StringTokenFormatterSettings settings = new()
+        {
             Syntax = CommonTokenSyntax.Round,
         };
-        var valuesContainer = new BasicContainer().Add("two", 2);
+        BasicContainer valuesContainer = new BasicContainer().Add("two", 2);
 
         string actual = source.FormatFromContainer(valuesContainer, settings);
 

@@ -20,20 +20,20 @@ public sealed class StandardCommand : IExpanderCommand
     private static void EvaluateTokenSegment(ExpanderContext context, InterpolatedStringTokenSegment segment)
     {
         string tokenName = segment.Token;
-        var tokenValueResult = context.TryGetTokenValue(tokenName);
+        TryGetResult tokenValueResult = context.TryGetTokenValue(tokenName);
         if (!tokenValueResult.IsSuccess)
         {
             context.StringBuilder.AppendLiteral(segment.Raw);
             return;
         }
-        var convertedValue = context.ApplyValueConverter(tokenValueResult.Value, tokenName);
+        object? convertedValue = context.ApplyValueConverter(tokenValueResult.Value, tokenName);
         if (convertedValue == null) { return; }
         AppendTokenValue(context, segment, convertedValue);
     }
 
     private static void AppendTokenValue(ExpanderContext context, InterpolatedStringTokenSegment tokenSegment, object tokenValue)
     {
-        var builder = context.StringBuilder;
+        ExpandedStringBuilder builder = context.StringBuilder;
         try
         {
             builder.AppendFormat(tokenValue, tokenSegment.Token, tokenSegment.Alignment, tokenSegment.Format);

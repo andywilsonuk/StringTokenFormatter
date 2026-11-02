@@ -6,8 +6,8 @@ public class TokenSyntaxExtensionsTests
     public void Tokenize_SimpleTokenName_ReturnsWrappedToken()
     {
         string tokenName = "abc";
-        var syntax = CommonTokenSyntax.Curly;
-        
+        TokenSyntax syntax = CommonTokenSyntax.Curly;
+
         string actual = syntax.Tokenize(tokenName);
 
         Assert.Equal("{abc}", actual);
@@ -17,10 +17,10 @@ public class TokenSyntaxExtensionsTests
     public void Escape_TokenStartMarkers_ReturnsLiteralText()
     {
         string value = "literal {token} and {{value}";
-        var syntax = CommonTokenSyntax.Curly;
+        TokenSyntax syntax = CommonTokenSyntax.Curly;
 
         string escaped = syntax.Escape(value);
-        var parsed = InterpolatedStringParser.Parse(escaped, new StringTokenFormatterSettings { Syntax = syntax });
+        InterpolatedString parsed = InterpolatedStringParser.Parse(escaped, new StringTokenFormatterSettings { Syntax = syntax });
 
         Assert.All(parsed.Segments, segment => Assert.IsType<InterpolatedStringLiteralSegment>(segment));
         Assert.Equal(value, string.Concat(parsed.Segments.Cast<InterpolatedStringLiteralSegment>().Select(segment => segment.Raw)));

@@ -6,15 +6,15 @@ public class ObjectTokenValueContainerTests
     public void TryMap_MatchingTokenCaseInsensitive_ReturnsSuccess()
     {
         string value = "1";
-        var source = new ComplexClass(value);
-        var settings = new StringTokenFormatterSettings
+        ComplexClass source = new(value);
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = TokenValueContainerFactory.FromObject(settings, source);
+        ObjectTokenValueContainer<ComplexClass> container = TokenValueContainerFactory.FromObject(settings, source);
 
-        var actual = container.TryMap("value");
+        TryGetResult actual = container.TryMap("value");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = value }, actual);
     }
@@ -23,15 +23,15 @@ public class ObjectTokenValueContainerTests
     public void TryMap_MismatchedTokenCasing_ReturnsDefault()
     {
         string value = "1";
-        var source = new ComplexClass(value);
-        var settings = new StringTokenFormatterSettings
+        ComplexClass source = new(value);
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = TokenValueContainerFactory.FromObject(settings, source);
+        ObjectTokenValueContainer<ComplexClass> container = TokenValueContainerFactory.FromObject(settings, source);
 
-        var actual = container.TryMap("value");
+        TryGetResult actual = container.TryMap("value");
 
         Assert.Equal(default, actual);
     }
@@ -40,15 +40,15 @@ public class ObjectTokenValueContainerTests
     public void TryMap_MatchingTokenPolicyViolation_ReturnsDefault()
     {
         string? value = null;
-        var source = new ComplexClass(value!);
-        var settings = new StringTokenFormatterSettings
+        ComplexClass source = new(value!);
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNull,
         };
-        var container = TokenValueContainerFactory.FromObject(settings, source);
+        ObjectTokenValueContainer<ComplexClass> container = TokenValueContainerFactory.FromObject(settings, source);
 
-        var actual = container.TryMap("a");
+        TryGetResult actual = container.TryMap("a");
 
         Assert.Equal(default, actual);
     }
@@ -56,8 +56,8 @@ public class ObjectTokenValueContainerTests
     [Fact]
     public void Constructor_EmptySource_Throws()
     {
-        var source = new {};
-        var settings = new StringTokenFormatterSettings
+        var source = new { };
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.Ordinal,
         };
@@ -69,15 +69,15 @@ public class ObjectTokenValueContainerTests
     public void TryMap_Struct_ReturnsSuccess()
     {
         string value = "1";
-        var source = new ComplexStruct(value);
-        var settings = new StringTokenFormatterSettings
+        ComplexStruct source = new(value);
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = TokenValueContainerFactory.FromObject(settings, source);
+        ObjectTokenValueContainer<ComplexStruct> container = TokenValueContainerFactory.FromObject(settings, source);
 
-        var actual = container.TryMap("value");
+        TryGetResult actual = container.TryMap("value");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = value }, actual);
     }
@@ -86,16 +86,16 @@ public class ObjectTokenValueContainerTests
     public void TryMap_FrozenDictionary_ReturnsSuccess()
     {
         string value = "1";
-        var source = new ComplexClass(value);
-        var settings = new StringTokenFormatterSettings
+        ComplexClass source = new(value);
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = TokenValueContainerFactory.FromObject(settings, source);
+        ObjectTokenValueContainer<ComplexClass> container = TokenValueContainerFactory.FromObject(settings, source);
         container.Frozen();
 
-        var actual = container.TryMap("Value");
+        TryGetResult actual = container.TryMap("Value");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = value }, actual);
     }

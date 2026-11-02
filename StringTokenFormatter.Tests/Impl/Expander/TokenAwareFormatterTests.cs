@@ -11,10 +11,10 @@ public class TokenAwareFormatterTests
     [InlineData("TokenNameAndFormatString")]
     public void TokenAwareFactory_ReceivesValueFormatStringAndActualTokenName(string factory)
     {
-        var definition = CreateDefinition(factory, (int value, string formatString, string tokenName) =>
+        FormatterDefinition definition = CreateDefinition(factory, (int value, string formatString, string tokenName) =>
             $"{value}:{formatString}:{tokenName}");
 
-        var actual = Expand(definition);
+        string actual = Expand(definition);
 
         Assert.Equal("42:custom:amount", actual);
     }
@@ -26,9 +26,9 @@ public class TokenAwareFormatterTests
     [InlineData("TokenNameAndFormatString")]
     public void LegacyFactory_StillReceivesValueAndFormatString(string factory)
     {
-        var definition = CreateDefinition(factory, (int value, string formatString) => $"{value}:{formatString}");
+        FormatterDefinition definition = CreateDefinition(factory, (int value, string formatString) => $"{value}:{formatString}");
 
-        var actual = Expand(definition);
+        string actual = Expand(definition);
 
         Assert.Equal("42:custom", actual);
     }
@@ -47,10 +47,10 @@ public class TokenAwareFormatterTests
     [Fact]
     public void TokenAwareCallback_ReceivesEmptyFormatString()
     {
-        var definition = FormatterDefinition.ForType((int value, string formatString, string tokenName) =>
+        FormatterDefinition definition = FormatterDefinition.ForType((int value, string formatString, string tokenName) =>
             $"{value}:{formatString}:{tokenName}");
 
-        var actual = Expand(definition, tokenName: "other", formatString: string.Empty);
+        string actual = Expand(definition, tokenName: "other", formatString: string.Empty);
 
         Assert.Equal("42::other", actual);
     }
@@ -62,7 +62,7 @@ public class TokenAwareFormatterTests
     [InlineData("TokenNameAndFormatString")]
     public void TokenAwareCallbackReturningNull_ProducesEmptyString(string factory)
     {
-        var definition = CreateDefinition(factory, (int value, string formatString, string tokenName) => null!);
+        FormatterDefinition definition = CreateDefinition(factory, (int value, string formatString, string tokenName) => null!);
 
         Assert.Empty(Expand(definition));
     }
@@ -70,7 +70,7 @@ public class TokenAwareFormatterTests
     [Fact]
     public void LegacyCallbackReturningNull_StillProducesEmptyString()
     {
-        var definition = FormatterDefinition.ForType((int value, string formatString) => null!);
+        FormatterDefinition definition = FormatterDefinition.ForType((int value, string formatString) => null!);
 
         Assert.Empty(Expand(definition));
     }
@@ -80,7 +80,7 @@ public class TokenAwareFormatterTests
     [InlineData(true)]
     public void MixedCallbackArities_PreserveSelectionPrecedence(bool tokenAwareSpecifics)
     {
-        var segments = new SegmentBuilder()
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("plain", string.Empty, string.Empty)
             .Literal("|")
             .Token("amount", string.Empty, string.Empty)
@@ -91,7 +91,7 @@ public class TokenAwareFormatterTests
             .Literal("|")
             .Token("amount", string.Empty, "custom")
             .Build();
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions =
             [
@@ -109,12 +109,12 @@ public class TokenAwareFormatterTests
                     : FormatterDefinition.ForTokenNameAndFormatString("amount", "special", (int value, string formatString) => "both"),
             ]
         };
-        var values = new BasicContainer();
+        BasicContainer values = new();
         values.Add("plain", 42);
         values.Add("amount", 42);
-        var interpolatedString = new InterpolatedString(segments, settings);
+        InterpolatedString interpolatedString = new(segments, settings);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, values);
+        string actual = InterpolatedStringExpander.Expand(interpolatedString, values);
 
         Assert.Equal("type|name|format|both|name", actual);
     }
@@ -124,17 +124,17 @@ public class TokenAwareFormatterTests
     [InlineData(true)]
     public void EquallySpecificLegacyAndTokenAwareDefinitions_StillFailAsDuplicates(bool tokenAwareFirst)
     {
-        var legacy = FormatterDefinition.ForType((int value, string formatString) => "legacy");
-        var tokenAware = FormatterDefinition.ForType((int value, string formatString, string tokenName) => "token-aware");
-        var settings = StringTokenFormatterSettings.Default with
+        FormatterDefinition legacy = FormatterDefinition.ForType((int value, string formatString) => "legacy");
+        FormatterDefinition tokenAware = FormatterDefinition.ForType((int value, string formatString, string tokenName) => "token-aware");
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions = tokenAwareFirst ? new[] { tokenAware, legacy } : [legacy, tokenAware],
         };
-        var segments = new SegmentBuilder().Token("amount", string.Empty, "custom").Build();
-        var values = new BasicContainer();
+        List<InterpolatedStringSegment> segments = new SegmentBuilder().Token("amount", string.Empty, "custom").Build();
+        BasicContainer values = new();
         values.Add("amount", 42);
 
-        var exception = Assert.Throws<ArgumentException>(() =>
+        ArgumentException exception = Assert.Throws<ArgumentException>(() =>
             InterpolatedStringExpander.Expand(new InterpolatedString(segments, settings), values));
 
         Assert.Contains("Duplicate Formatter Definition detected", exception.Message);
@@ -143,9 +143,9 @@ public class TokenAwareFormatterTests
     [Fact]
     public void NonMatchingTokenAwareDefinition_StillUsesFormatProvider()
     {
-        var definition = FormatterDefinition.ForTokenName("other", (int value, string formatString, string tokenName) => "wrong");
+        FormatterDefinition definition = FormatterDefinition.ForTokenName("other", (int value, string formatString, string tokenName) => "wrong");
 
-        var actual = Expand(definition, formatString: "D4");
+        string actual = Expand(definition, formatString: "D4");
 
         Assert.Equal("0042", actual);
     }
@@ -159,20 +159,20 @@ public class TokenAwareFormatterTests
     [InlineData(true, InvalidFormatBehavior.LeaveToken)]
     public void ThrowingCallback_RespectsInvalidFormatBehavior(bool tokenAware, InvalidFormatBehavior behavior)
     {
-        var failure = new InvalidOperationException("Formatter failure");
-        var definition = tokenAware
+        InvalidOperationException failure = new("Formatter failure");
+        FormatterDefinition definition = tokenAware
             ? FormatterDefinition.ForType((int value, string formatString, string tokenName) => throw failure)
             : FormatterDefinition.ForType((int value, string formatString) => throw failure);
 
         if (behavior == InvalidFormatBehavior.Throw)
         {
-            var exception = Assert.Throws<TokenValueFormatException>(() => Expand(definition, behavior));
-            var formatException = Assert.IsType<FormatException>(exception.InnerException);
+            TokenValueFormatException exception = Assert.Throws<TokenValueFormatException>(() => Expand(definition, behavior));
+            FormatException formatException = Assert.IsType<FormatException>(exception.InnerException);
             Assert.Same(failure, formatException.InnerException);
         }
         else
         {
-            var actual = Expand(definition, behavior);
+            string actual = Expand(definition, behavior);
 
             Assert.Equal(behavior == InvalidFormatBehavior.LeaveToken ? "{amount:custom}" : "42", actual);
         }
@@ -181,12 +181,12 @@ public class TokenAwareFormatterTests
     [Fact]
     public void ClosedStaticLegacyDelegate_UsesDelegateArityInsteadOfTargetMethodArity()
     {
-        var method = typeof(TokenAwareFormatterTests).GetMethod(nameof(FormatClosedStaticLegacy), BindingFlags.NonPublic | BindingFlags.Static)!;
-        var callback = (Func<int, string, string>)Delegate.CreateDelegate(typeof(Func<int, string, string>), "bound:", method);
-        var definition = FormatterDefinition.ForType(callback);
+        MethodInfo method = typeof(TokenAwareFormatterTests).GetMethod(nameof(FormatClosedStaticLegacy), BindingFlags.NonPublic | BindingFlags.Static)!;
+        Func<int, string, string> callback = (Func<int, string, string>)Delegate.CreateDelegate(typeof(Func<int, string, string>), "bound:", method);
+        FormatterDefinition definition = FormatterDefinition.ForType(callback);
         Assert.Equal(3, callback.GetMethodInfo().GetParameters().Length);
 
-        var actual = Expand(definition);
+        string actual = Expand(definition);
 
         Assert.Equal("bound:42:custom", actual);
     }
@@ -194,12 +194,12 @@ public class TokenAwareFormatterTests
     [Fact]
     public void ClosedStaticTokenAwareDelegate_UsesDelegateArityInsteadOfTargetMethodArity()
     {
-        var method = typeof(TokenAwareFormatterTests).GetMethod(nameof(FormatClosedStaticTokenAware), BindingFlags.NonPublic | BindingFlags.Static)!;
-        var callback = (Func<int, string, string, string>)Delegate.CreateDelegate(typeof(Func<int, string, string, string>), "bound:", method);
-        var definition = FormatterDefinition.ForType(callback);
+        MethodInfo method = typeof(TokenAwareFormatterTests).GetMethod(nameof(FormatClosedStaticTokenAware), BindingFlags.NonPublic | BindingFlags.Static)!;
+        Func<int, string, string, string> callback = (Func<int, string, string, string>)Delegate.CreateDelegate(typeof(Func<int, string, string, string>), "bound:", method);
+        FormatterDefinition definition = FormatterDefinition.ForType(callback);
         Assert.Equal(4, callback.GetMethodInfo().GetParameters().Length);
 
-        var actual = Expand(definition);
+        string actual = Expand(definition);
 
         Assert.Equal("bound:42:custom:amount", actual);
     }
@@ -207,18 +207,18 @@ public class TokenAwareFormatterTests
     [Fact]
     public void OpenInstanceTokenAwareDelegate_UsesDelegateArityInsteadOfTargetMethodArity()
     {
-        var method = typeof(string).GetMethod(nameof(string.Replace), [typeof(string), typeof(string)])!;
-        var callback = (Func<string, string, string, string>)Delegate.CreateDelegate(typeof(Func<string, string, string, string>), method);
-        var settings = StringTokenFormatterSettings.Default with
+        MethodInfo method = typeof(string).GetMethod(nameof(string.Replace), [typeof(string), typeof(string)])!;
+        Func<string, string, string, string> callback = (Func<string, string, string, string>)Delegate.CreateDelegate(typeof(Func<string, string, string, string>), method);
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions = [FormatterDefinition.ForType(callback)],
         };
-        var segments = new SegmentBuilder().Token("amount", string.Empty, "custom").Build();
-        var values = new BasicContainer();
+        List<InterpolatedStringSegment> segments = new SegmentBuilder().Token("amount", string.Empty, "custom").Build();
+        BasicContainer values = new();
         values.Add("amount", "replace custom");
         Assert.Equal(2, callback.GetMethodInfo().GetParameters().Length);
 
-        var actual = InterpolatedStringExpander.Expand(new InterpolatedString(segments, settings), values);
+        string actual = InterpolatedStringExpander.Expand(new InterpolatedString(segments, settings), values);
 
         Assert.Equal("replace amount", actual);
     }
@@ -242,20 +242,20 @@ public class TokenAwareFormatterTests
             4 => new Func<int, string, string, string, string>((value, formatString, tokenName, extra) => "wrong"),
             _ => throw new ArgumentOutOfRangeException(nameof(arity)),
         };
-        var definition = FormatterDefinition.ForType((int value, string formatString) => "unused");
+        FormatterDefinition definition = FormatterDefinition.ForType((int value, string formatString) => "unused");
         // The public init accessor can be assigned through reflection without the factory's typed signature.
         typeof(FormatterDefinition).GetProperty(nameof(FormatterDefinition.Formatter))!.SetValue(definition, callback);
 
         if (behavior == InvalidFormatBehavior.Throw)
         {
-            var exception = Assert.Throws<TokenValueFormatException>(() => Expand(definition, behavior));
-            var formatException = Assert.IsType<FormatException>(exception.InnerException);
+            TokenValueFormatException exception = Assert.Throws<TokenValueFormatException>(() => Expand(definition, behavior));
+            FormatException formatException = Assert.IsType<FormatException>(exception.InnerException);
             Assert.Contains("two or three arguments", formatException.Message);
             Assert.Contains($"accepts {arity}", formatException.Message);
         }
         else
         {
-            var actual = Expand(definition, behavior);
+            string actual = Expand(definition, behavior);
 
             Assert.Equal(behavior == InvalidFormatBehavior.LeaveToken ? "{amount:custom}" : "42", actual);
         }
@@ -282,15 +282,15 @@ public class TokenAwareFormatterTests
     private static string Expand(FormatterDefinition definition, InvalidFormatBehavior behavior = InvalidFormatBehavior.Throw,
         string tokenName = "amount", string formatString = "custom")
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions = [definition],
             InvalidFormatBehavior = behavior,
             FormatProvider = CultureInfo.InvariantCulture,
             NameComparer = StringComparer.OrdinalIgnoreCase,
         };
-        var segments = new SegmentBuilder().Token(tokenName, string.Empty, formatString).Build();
-        var values = new BasicContainer();
+        List<InterpolatedStringSegment> segments = new SegmentBuilder().Token(tokenName, string.Empty, formatString).Build();
+        BasicContainer values = new();
         values.Add(tokenName, 42);
 
         return InterpolatedStringExpander.Expand(new InterpolatedString(segments, settings), values);

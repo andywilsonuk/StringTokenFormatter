@@ -4,7 +4,7 @@ internal static class CollectionExtensions
 {
     public static void ForEach<T>(this IReadOnlyCollection<T> collection, Action<T> action)
     {
-        foreach (var item in collection)
+        foreach (T? item in collection)
         {
             action(item);
         }
@@ -12,7 +12,7 @@ internal static class CollectionExtensions
 
     public static void ForEach<T>(this IReadOnlyCollection<T> collection, Action<T> action, Func<bool> haltPreciate)
     {
-        foreach (var item in collection)
+        foreach (T? item in collection)
         {
             action(item);
             if (haltPreciate()) { break; }

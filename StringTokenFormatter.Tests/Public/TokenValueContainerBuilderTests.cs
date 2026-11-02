@@ -20,7 +20,7 @@ public partial class TokenValueContainerBuilderTests
         {
             Id = 2,
         };
-        var person = new Dictionary<string, string>()
+        Dictionary<string, string> person = new()
         {
             { "Name", "Eric" },
         };
@@ -28,7 +28,7 @@ public partial class TokenValueContainerBuilderTests
         builder.AddSingle("text", "message text");
         builder.AddPrefixedObject("Account", account);
         builder.AddPrefixedKeyValues("Person", person);
-        var combinedContainer = builder.CombinedResult();
+        ITokenValueContainer combinedContainer = builder.CombinedResult();
 
         string interpolatedString = "Hi {Person.Name}, {text}. Ref: {Account.Id}";
         string actual = resolver.FromContainer(interpolatedString, combinedContainer);
@@ -40,10 +40,10 @@ public partial class TokenValueContainerBuilderTests
     public void AddSequence_StringSequence_PrimativeValuesMaintained()
     {
         builder.AddSequence("Seq", ["first", "second"]);
-        var combinedContainer = builder.CombinedResult();
+        ITokenValueContainer combinedContainer = builder.CombinedResult();
 
-        var container = Assert.IsAssignableFrom<SequenceTokenValueContainer>(combinedContainer.TryMap("Seq").Value);
-        var actual = container.TryMap("Seq", 1);
+        SequenceTokenValueContainer container = Assert.IsAssignableFrom<SequenceTokenValueContainer>(combinedContainer.TryMap("Seq").Value);
+        TryGetResult actual = container.TryMap("Seq", 1);
 
         Assert.True(actual.IsSuccess);
         Assert.IsAssignableFrom<string>(actual.Value);
@@ -53,10 +53,10 @@ public partial class TokenValueContainerBuilderTests
     public void AddSequence_IntSequence_PrimativeValuesMaintained()
     {
         builder.AddSequence("Seq", [1, 2]);
-        var combinedContainer = builder.CombinedResult();
+        ITokenValueContainer combinedContainer = builder.CombinedResult();
 
-        var container = Assert.IsAssignableFrom<SequenceTokenValueContainer>(combinedContainer.TryMap("Seq").Value);
-        var actual = container.TryMap("Seq", 1);
+        SequenceTokenValueContainer container = Assert.IsAssignableFrom<SequenceTokenValueContainer>(combinedContainer.TryMap("Seq").Value);
+        TryGetResult actual = container.TryMap("Seq", 1);
 
         Assert.True(actual.IsSuccess);
         Assert.IsAssignableFrom<int>(actual.Value);
@@ -66,7 +66,7 @@ public partial class TokenValueContainerBuilderTests
     public void AddSequence_ClassSequence_ObjectValueOutput()
     {
         builder.AddSequence("Seq", [new ComplexClass("first"), new ComplexClass("second")]);
-        var combinedContainer = builder.CombinedResult();
+        ITokenValueContainer combinedContainer = builder.CombinedResult();
 
         string interpolatedString = "{:loop,Seq}{Seq.Value} {:loopend}";
         string actual = resolver.FromContainer(interpolatedString, combinedContainer);
@@ -78,7 +78,7 @@ public partial class TokenValueContainerBuilderTests
     public void AddSequence_StructSequence_ObjectValueOutput()
     {
         builder.AddSequence("Seq", [new ComplexStruct("first"), new ComplexStruct("second")]);
-        var combinedContainer = builder.CombinedResult();
+        ITokenValueContainer combinedContainer = builder.CombinedResult();
 
         string interpolatedString = "{:loop,Seq}{Seq.Value} {:loopend}";
         string actual = resolver.FromContainer(interpolatedString, combinedContainer);
@@ -90,7 +90,7 @@ public partial class TokenValueContainerBuilderTests
     public void AddSequence_AnonymousSequence_ObjectValueOutput()
     {
         builder.AddSequence("Seq", [new { Value = "first" }, new { Value = "second" }]);
-        var combinedContainer = builder.CombinedResult();
+        ITokenValueContainer combinedContainer = builder.CombinedResult();
 
         string interpolatedString = "{:loop,Seq}{Seq.Value} {:loopend}";
         string actual = resolver.FromContainer(interpolatedString, combinedContainer);
@@ -102,9 +102,9 @@ public partial class TokenValueContainerBuilderTests
     public void AddPrefixedSequence_StringSequence_PrimativeValuesMaintained()
     {
         builder.AddPrefixedSequence("prefix", "Seq", ["first", "second"]);
-        var combinedContainer = builder.CombinedResult();
+        ITokenValueContainer combinedContainer = builder.CombinedResult();
 
-        var actual = combinedContainer.TryMap("prefix.Seq");
+        TryGetResult actual = combinedContainer.TryMap("prefix.Seq");
 
         Assert.True(actual.IsSuccess);
         Assert.IsAssignableFrom<SequenceTokenValueContainer>(actual.Value);

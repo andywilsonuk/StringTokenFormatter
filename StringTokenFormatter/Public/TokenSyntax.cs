@@ -19,7 +19,7 @@ public static class TokenSyntaxExtensions
     /// </summary>
     public static TokenSyntax Validate(this TokenSyntax syntax)
     {
-        var (start, end, escapedStart) = syntax;
+        (string? start, string? end, string? escapedStart) = syntax;
         Guard.NotEmpty(start, nameof(start));
         Guard.NotEmpty(end, nameof(end));
         Guard.NotEmpty(escapedStart, nameof(escapedStart));

@@ -15,7 +15,7 @@ internal class NonLockingLazy(Func<object> creator)
         get
         {
             //Defensive copy
-            var cachedcreator = creator;
+            Func<object>? cachedcreator = creator;
 
             if (!IsValueCreated && cachedcreator is { })
             {

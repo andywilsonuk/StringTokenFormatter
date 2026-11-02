@@ -9,13 +9,13 @@ public static class InterpolatedStringExpander
         Guard.NotNull(interpolatedString, nameof(interpolatedString));
         Guard.NotNull(container, nameof(container));
 
-        var settings = Guard.NotNull(interpolatedString.Settings, nameof(interpolatedString.Settings)).Validate();
+        IInterpolatedStringSettings settings = Guard.NotNull(interpolatedString.Settings, nameof(interpolatedString.Settings)).Validate();
         formatter ??= new ExpanderValueFormatter(interpolatedString.Settings.FormatterDefinitions, interpolatedString.Settings.NameComparer);
 
-        var iterator = new ExpandedStringIterator(interpolatedString.Segments);
-        var builder = new ExpandedStringBuilder(formatter, settings.FormatProvider);
-        var commands = new ExpanderCommands(settings.Commands);
-        var context = new ExpanderContext(iterator, builder, container, settings, commands);
+        ExpandedStringIterator iterator = new(interpolatedString.Segments);
+        ExpandedStringBuilder builder = new(formatter, settings.FormatProvider);
+        ExpanderCommands commands = new(settings.Commands);
+        ExpanderContext context = new(iterator, builder, container, settings, commands);
         commands.Init(context);
         IterateSegments(context);
         commands.Finished(context);

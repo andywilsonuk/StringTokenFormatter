@@ -5,169 +5,175 @@ public class UriExtensionsTests
     [Fact]
     public void FormatFromSingle_WithDefaultSettings_ReturnsExpandedAbsoluteUri()
     {
-        var source = new Uri("http://locallhost/?q={token}");
+        Uri source = new("http://locallhost/?q={token}");
 
-        var actual = source.FormatFromSingle("token", 2);
+        Uri actual = source.FormatFromSingle("token", 2);
 
-        var expected = new Uri("http://locallhost/?q=2");
+        Uri expected = new("http://locallhost/?q=2");
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void FormatFromSingle_WithSettings_ReturnsExpandedAbsoluteUri()
     {
-        var source = new Uri("http://locallhost/?q=(token)");
-        var settings = new StringTokenFormatterSettings {
+        Uri source = new("http://locallhost/?q=(token)");
+        StringTokenFormatterSettings settings = new()
+        {
             Syntax = CommonTokenSyntax.Round,
         };
 
-        var actual = source.FormatFromSingle("token", 2, settings);
+        Uri actual = source.FormatFromSingle("token", 2, settings);
 
-        var expected = new Uri("http://locallhost/?q=2");
+        Uri expected = new("http://locallhost/?q=2");
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void FormatFromPairs_WithDefaultSettings_ReturnsExpandedAbsoluteUri()
     {
-        var source = new Uri("http://locallhost/?q={token}");
-        var tokenValues = new Dictionary<string, object> { { "token", 2 } };
+        Uri source = new("http://locallhost/?q={token}");
+        Dictionary<string, object> tokenValues = new() { { "token", 2 } };
 
-        var actual = source.FormatFromPairs(tokenValues);
+        Uri actual = source.FormatFromPairs(tokenValues);
 
-        var expected = new Uri("http://locallhost/?q=2");
+        Uri expected = new("http://locallhost/?q=2");
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void FormatFromPairs_WithSettings_ReturnsExpandedAbsoluteUri()
     {
-        var source = new Uri("http://locallhost/?q=(token)");
-        var settings = new StringTokenFormatterSettings {
+        Uri source = new("http://locallhost/?q=(token)");
+        StringTokenFormatterSettings settings = new()
+        {
             Syntax = CommonTokenSyntax.Round,
         };
-        var tokenValues = new Dictionary<string, object> { { "token", 2 } };
+        Dictionary<string, object> tokenValues = new() { { "token", 2 } };
 
-        var actual = source.FormatFromPairs(tokenValues, settings);
+        Uri actual = source.FormatFromPairs(tokenValues, settings);
 
-        var expected = new Uri("http://locallhost/?q=2");
+        Uri expected = new("http://locallhost/?q=2");
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void FormatFromTuples_WithDefaultSettings_ReturnsExpandedAbsoluteUri()
     {
-        var source = new Uri("http://locallhost/?q={token}");
-        var tokenValues = new [] { ("token", 2) };
+        Uri source = new("http://locallhost/?q={token}");
+        (string, int)[] tokenValues = [("token", 2)];
 
-        var actual = source.FormatFromTuples(tokenValues);
+        Uri actual = source.FormatFromTuples(tokenValues);
 
-        var expected = new Uri("http://locallhost/?q=2");
+        Uri expected = new("http://locallhost/?q=2");
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void FormatFromTuples_WithSettings_ReturnsExpandedAbsoluteUri()
     {
-        var source = new Uri("http://locallhost/?q=(token)");
-        var settings = new StringTokenFormatterSettings {
+        Uri source = new("http://locallhost/?q=(token)");
+        StringTokenFormatterSettings settings = new()
+        {
             Syntax = CommonTokenSyntax.Round,
         };
-        var tokenValues = new [] { ("token", 2) };
+        (string, int)[] tokenValues = [("token", 2)];
 
-        var actual = source.FormatFromTuples(tokenValues, settings);
+        Uri actual = source.FormatFromTuples(tokenValues, settings);
 
-        var expected = new Uri("http://locallhost/?q=2");
+        Uri expected = new("http://locallhost/?q=2");
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void FormatFromFunc_WithDefaultSettings_ReturnsExpandedAbsoluteUri()
     {
-        var source = new Uri("http://locallhost/?q={token}");
+        Uri source = new("http://locallhost/?q={token}");
 
-        var actual = source.FormatFromFunc((string _token) => 2);
+        Uri actual = source.FormatFromFunc((string _token) => 2);
 
-        var expected = new Uri("http://locallhost/?q=2");
+        Uri expected = new("http://locallhost/?q=2");
         Assert.Equal(expected, actual);
     }
-    
+
     [Fact]
     public void FormatFromFunc_WithSettings_ReturnsExpandedAbsoluteUri()
     {
-        var source = new Uri("http://locallhost/?q=(token)");
-        var settings = new StringTokenFormatterSettings {
+        Uri source = new("http://locallhost/?q=(token)");
+        StringTokenFormatterSettings settings = new()
+        {
             Syntax = CommonTokenSyntax.Round,
         };
 
-        var actual = source.FormatFromFunc((string _token) => 2, settings);
+        Uri actual = source.FormatFromFunc((string _token) => 2, settings);
 
-        var expected = new Uri("http://locallhost/?q=2");
+        Uri expected = new("http://locallhost/?q=2");
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void FormatFromObject_WithDefaultSettings_ReturnsExpandedAbsoluteUri()
     {
-        var source = new Uri("http://locallhost/?q={token}");
+        Uri source = new("http://locallhost/?q={token}");
         var valuesObject = new { Token = 2 };
 
-        var actual = source.FormatFromObject(valuesObject);
+        Uri actual = source.FormatFromObject(valuesObject);
 
-        var expected = new Uri("http://locallhost/?q=2");
+        Uri expected = new("http://locallhost/?q=2");
         Assert.Equal(expected, actual);
     }
-    
+
     [Fact]
     public void FormatFromObject_WithSettings_ReturnsExpandedAbsoluteUri()
     {
-        var source = new Uri("http://locallhost/?q=(token)");
-        var settings = new StringTokenFormatterSettings {
+        Uri source = new("http://locallhost/?q=(token)");
+        StringTokenFormatterSettings settings = new()
+        {
             Syntax = CommonTokenSyntax.Round,
         };
         var valuesObject = new { Token = 2 };
 
-        var actual = source.FormatFromObject(valuesObject, settings);
+        Uri actual = source.FormatFromObject(valuesObject, settings);
 
-        var expected = new Uri("http://locallhost/?q=2");
+        Uri expected = new("http://locallhost/?q=2");
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void FormatFromContainer_WithDefaultSettings_ReturnsExpandedAbsoluteUri()
     {
-        var source = new Uri("http://locallhost/?q={token}");
-        var valuesContainer = new BasicContainer().Add("token", 2);
+        Uri source = new("http://locallhost/?q={token}");
+        BasicContainer valuesContainer = new BasicContainer().Add("token", 2);
 
-        var actual = source.FormatFromContainer(valuesContainer);
+        Uri actual = source.FormatFromContainer(valuesContainer);
 
-        var expected = new Uri("http://locallhost/?q=2");
+        Uri expected = new("http://locallhost/?q=2");
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void FormatFromContainer_WithSettings_ReturnsExpandedAbsoluteUri()
     {
-        var source = new Uri("http://locallhost/?q=(token)");
-        var settings = new StringTokenFormatterSettings {
+        Uri source = new("http://locallhost/?q=(token)");
+        StringTokenFormatterSettings settings = new()
+        {
             Syntax = CommonTokenSyntax.Round,
         };
-        var valuesContainer = new BasicContainer().Add("token", 2);
+        BasicContainer valuesContainer = new BasicContainer().Add("token", 2);
 
-        var actual = source.FormatFromContainer(valuesContainer, settings);
+        Uri actual = source.FormatFromContainer(valuesContainer, settings);
 
-        var expected = new Uri("http://locallhost/?q=2");
+        Uri expected = new("http://locallhost/?q=2");
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public void FormatFromSingle_RelativeUri_ReturnsRelativeUri()
     {
-        var source = new Uri("/?q={token}", UriKind.Relative);
+        Uri source = new("/?q={token}", UriKind.Relative);
 
-        var actual = source.FormatFromSingle("token", 2);
+        Uri actual = source.FormatFromSingle("token", 2);
 
-        var expected = new Uri("/?q=2", UriKind.Relative);
+        Uri expected = new("/?q=2", UriKind.Relative);
         Assert.Equal(expected, actual);
     }
 }

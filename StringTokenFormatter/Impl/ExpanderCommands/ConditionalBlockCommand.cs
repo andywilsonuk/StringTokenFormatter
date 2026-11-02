@@ -12,7 +12,7 @@ public sealed class ConditionalBlockCommand : IExpanderCommand
 
     public void Evaluate(ExpanderContext context)
     {
-        var segment = context.SegmentIterator.Current;
+        InterpolatedStringSegment segment = context.SegmentIterator.Current;
         if (segment is InterpolatedStringCommandSegment CommandSegment)
         {
             if (CommandSegment.IsCommandEqual(startCommandName))
@@ -33,7 +33,7 @@ public sealed class ConditionalBlockCommand : IExpanderCommand
 
     private static void Start(ExpanderContext context, InterpolatedStringCommandSegment segment)
     {
-        var data = GetData(context);
+        ConditionalBlockData data = GetData(context);
         data.NestedCount += 1;
         SetData(context, data);
 
@@ -48,13 +48,13 @@ public sealed class ConditionalBlockCommand : IExpanderCommand
         bool isNegated = tokenName[0] == '!';
         string conditionalTokenName = isNegated ? tokenName[1..] : tokenName;
 
-        var tokenValueResult = context.TryGetTokenValue(conditionalTokenName);
+        TryGetResult tokenValueResult = context.TryGetTokenValue(conditionalTokenName);
         if (!tokenValueResult.IsSuccess)
         {
             context.StringBuilder.AppendLiteral(segment.Raw);
             return;
         }
-        var convertedValue = context.ApplyValueConverter(tokenValueResult.Value, conditionalTokenName);
+        object? convertedValue = context.ApplyValueConverter(tokenValueResult.Value, conditionalTokenName);
         if (convertedValue is not bool conditionEnabled)
         {
             throw new ExpanderException($"Conditional token value '{conditionalTokenName}' is not a boolean");
@@ -67,7 +67,7 @@ public sealed class ConditionalBlockCommand : IExpanderCommand
 
     private static void End(ExpanderContext context)
     {
-        var data = GetData(context);
+        ConditionalBlockData data = GetData(context);
         data.NestedCount -= 1;
         data.DisabledCount = Math.Max(0, data.DisabledCount - 1);
         SetData(context, data);

@@ -6,13 +6,13 @@ public class FuncTokenValueContainerTests
     public void TryMap_FuncReturnsObject_ReturnsSuccess()
     {
         static int? func(string token) => 1;
-        var settings = new StringTokenFormatterSettings
+        StringTokenFormatterSettings settings = new()
         {
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = TokenValueContainerFactory.FromFunc(settings, func);
+        FuncTokenValueContainer<int?> container = TokenValueContainerFactory.FromFunc(settings, func);
 
-        var actual = container.TryMap("a");
+        TryGetResult actual = container.TryMap("a");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = 1 }, actual);
     }
@@ -21,13 +21,13 @@ public class FuncTokenValueContainerTests
     public void TryMap_FuncReturnsNull_ReturnsSuccess()
     {
         static int? func(string token) => null;
-        var settings = new StringTokenFormatterSettings
+        StringTokenFormatterSettings settings = new()
         {
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = TokenValueContainerFactory.FromFunc(settings, func);
+        FuncTokenValueContainer<int?> container = TokenValueContainerFactory.FromFunc(settings, func);
 
-        var actual = container.TryMap("a");
+        TryGetResult actual = container.TryMap("a");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = null }, actual);
     }

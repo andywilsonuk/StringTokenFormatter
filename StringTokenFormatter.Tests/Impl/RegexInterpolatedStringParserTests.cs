@@ -6,12 +6,12 @@ public class RegexInterpolatedStringParserTests
     public void OutputWithToken_ReturnsInterpolatedString()
     {
         string source = "first (two) third";
-        var settings = new StringTokenFormatterSettings
+        StringTokenFormatterSettings settings = new()
         {
             Syntax = CommonTokenSyntax.Round,
         };
 
-        var actual = RegexInterpolatedStringParser.Parse(source, settings);
+        InterpolatedString actual = RegexInterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
             a => Assert.Equal(new InterpolatedStringLiteralSegment("first "), a),
@@ -25,12 +25,12 @@ public class RegexInterpolatedStringParserTests
     public void OutputWithoutToken_ReturnsSingleValueInterpolatedString()
     {
         string source = "first two third";
-        var settings = new StringTokenFormatterSettings
+        StringTokenFormatterSettings settings = new()
         {
             Syntax = CommonTokenSyntax.Round,
         };
 
-        var actual = RegexInterpolatedStringParser.Parse(source, settings);
+        InterpolatedString actual = RegexInterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
             a => Assert.Equal(new InterpolatedStringLiteralSegment(source), a)
@@ -41,9 +41,9 @@ public class RegexInterpolatedStringParserTests
     public void OutputWithFormattedToken_ReturnsInterpolatedString()
     {
         string source = "{two:D}";
-        var settings = new StringTokenFormatterSettings();
+        StringTokenFormatterSettings settings = new();
 
-        var actual = RegexInterpolatedStringParser.Parse(source, settings);
+        InterpolatedString actual = RegexInterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
             a => Assert.Equal(new InterpolatedStringTokenSegment(source, "two", string.Empty, "D"), a)
@@ -54,9 +54,9 @@ public class RegexInterpolatedStringParserTests
     public void OutputWithFormattedAndPaddedToken_ReturnsInterpolatedString()
     {
         string source = "{two,10:D}";
-        var settings = new StringTokenFormatterSettings();
+        StringTokenFormatterSettings settings = new();
 
-        var actual = RegexInterpolatedStringParser.Parse(source, settings);
+        InterpolatedString actual = RegexInterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
             a => Assert.Equal(new InterpolatedStringTokenSegment(source, "two", "10", "D"), a)
@@ -67,12 +67,12 @@ public class RegexInterpolatedStringParserTests
     public void OutputWithEscapedToken_ReturnsInterpolatedString()
     {
         string source = "first ((two) third";
-        var settings = new StringTokenFormatterSettings
+        StringTokenFormatterSettings settings = new()
         {
             Syntax = CommonTokenSyntax.Round,
         };
 
-        var actual = RegexInterpolatedStringParser.Parse(source, settings);
+        InterpolatedString actual = RegexInterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
             a => Assert.Equal(new InterpolatedStringLiteralSegment("first "), a),
@@ -85,7 +85,7 @@ public class RegexInterpolatedStringParserTests
     public void OutputWithBlankToken_Throws()
     {
         string source = "first {} third";
-        var settings = new StringTokenFormatterSettings
+        StringTokenFormatterSettings settings = new()
         {
             Syntax = CommonTokenSyntax.Curly,
         };
@@ -97,7 +97,7 @@ public class RegexInterpolatedStringParserTests
     public void OutputWithInvalidSyntax_Throws()
     {
         string source = "first {a} third";
-        var settings = new StringTokenFormatterSettings
+        StringTokenFormatterSettings settings = new()
         {
             Syntax = new TokenSyntax(string.Empty, "}", "{{"),
         };
@@ -109,9 +109,9 @@ public class RegexInterpolatedStringParserTests
     public void OutputWithCommand_ReturnsCommandSegment()
     {
         string source = "{:cmd}";
-        var settings = new StringTokenFormatterSettings();
+        StringTokenFormatterSettings settings = new();
 
-        var actual = RegexInterpolatedStringParser.Parse(source, settings);
+        InterpolatedString actual = RegexInterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
             a => Assert.Equal(new InterpolatedStringCommandSegment(source, "cmd", string.Empty, string.Empty), a)
@@ -122,9 +122,9 @@ public class RegexInterpolatedStringParserTests
     public void OutputWithCommandToken_ReturnsCommandSegmentWithToken()
     {
         string source = "{:cmd,token}";
-        var settings = new StringTokenFormatterSettings();
+        StringTokenFormatterSettings settings = new();
 
-        var actual = RegexInterpolatedStringParser.Parse(source, settings);
+        InterpolatedString actual = RegexInterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
             a => Assert.Equal(new InterpolatedStringCommandSegment(source, "cmd", "token", string.Empty), a)
@@ -135,9 +135,9 @@ public class RegexInterpolatedStringParserTests
     public void OutputWithCommandData_ReturnsCommandSegmentWithData()
     {
         string source = "{:cmd:4}";
-        var settings = new StringTokenFormatterSettings();
+        StringTokenFormatterSettings settings = new();
 
-        var actual = RegexInterpolatedStringParser.Parse(source, settings);
+        InterpolatedString actual = RegexInterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
             a => Assert.Equal(new InterpolatedStringCommandSegment(source, "cmd", string.Empty, "4"), a)
@@ -148,9 +148,9 @@ public class RegexInterpolatedStringParserTests
     public void PseudoTokenTreatedAsTokenNotCommand_PseudoTokenSegment()
     {
         string source = "{::special,10:D}";
-        var settings = new StringTokenFormatterSettings();
+        StringTokenFormatterSettings settings = new();
 
-        var actual = RegexInterpolatedStringParser.Parse(source, settings);
+        InterpolatedString actual = RegexInterpolatedStringParser.Parse(source, settings);
 
         Assert.Collection(actual.Segments,
             a => Assert.Equal(new InterpolatedStringPseudoTokenSegment(source, "::special", "10", "D"), a)

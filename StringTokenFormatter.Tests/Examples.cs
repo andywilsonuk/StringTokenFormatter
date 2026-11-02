@@ -31,11 +31,11 @@ public class Examples
     public void FormattingParityWithStringFormat()
     {
         string templateString = "Today is {outlook} with a temperature of {temperature:N1}°C and {humidity:P1} humidity";
-        var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default with
+        InterpolatedStringResolver resolver = new(StringTokenFormatterSettings.Default with
         {
             FormatProvider = CultureInfo.GetCultureInfo("en-US"),
         });
-        var tokenValues = new (string, object)[] { ("temperature", 23), ("humidity", 0.6m), ("outlook", "sunny") };
+        (string, object)[] tokenValues = [("temperature", 23), ("humidity", 0.6m), ("outlook", "sunny")];
 
         string actual = resolver.FromTuples(templateString, tokenValues);
 
@@ -59,13 +59,13 @@ public class Examples
             .Append("</table>")
             .ToString();
         int rowIndex = 0;
-        var listValues = new List<string> { "Apple", "Banana", "Cherry", "Damson", "Elderberry" };
-        var tokenValues = new Dictionary<string, object>()
+        List<string> listValues = ["Apple", "Banana", "Cherry", "Damson", "Elderberry"];
+        Dictionary<string, object> tokenValues = new()
         {
             ["IsEven"] = () => rowIndex++ % 2 == 1,
         };
 
-        var combinedContainer = new TokenValueContainerBuilder(StringTokenFormatterSettings.Default)
+        ITokenValueContainer combinedContainer = new TokenValueContainerBuilder(StringTokenFormatterSettings.Default)
             .AddKeyValues(tokenValues)
             .AddSequence("ListValue", listValues)
             .CombinedResult();
@@ -93,24 +93,24 @@ public class Examples
     {
         static string intFormatter(int value, string formatString) => value.ToString("D3");
         static string nameFormatter(string value, string formatString) => formatString == "titleCase" ? $"{value.Substring(0, 1).ToUpper()}{value.Substring(1).ToLower()}" : value;
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions = [
                 FormatterDefinition.ForType<int>(intFormatter),
                 FormatterDefinition.ForTokenName<string>("Account.Name", nameFormatter)
             ],
         };
-        var resolver = new InterpolatedStringResolver(settings);
+        InterpolatedStringResolver resolver = new(settings);
         var account = new
         {
             Id = 2,
             Name = "Savings Account",
         };
-        var combinedContainer = resolver.Builder()
+        ITokenValueContainer combinedContainer = resolver.Builder()
             .AddPrefixedObject("Account", account)
             .AddSingle("text", "It has come to our attention that...")
             .CombinedResult();
-        var interpolatedString = resolver.Interpolate("Ref: {Account.Id}, {Account.Name:titleCase}. {text}");
+        InterpolatedString interpolatedString = resolver.Interpolate("Ref: {Account.Id}, {Account.Name:titleCase}. {text}");
 
         string actual = resolver.FromContainer(interpolatedString, combinedContainer);
 
@@ -123,12 +123,12 @@ public class Examples
     [Fact]
     public void ConditionalCommand_MapCommand()
     {
-        var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default);
+        InterpolatedStringResolver resolver = new(StringTokenFormatterSettings.Default);
         string templateString = new StringBuilder()
             .Append("{:if,travelledToWork}{:map,mode:Bike=Self propelled,Car=Combustion engine,Bus=Electric,_=Not set}{:ifend}")
             .Append("{:if,!travelledToWork}Did not travel{:ifend}")
             .ToString();
-        var combinedContainer = resolver.Builder()
+        ITokenValueContainer combinedContainer = resolver.Builder()
             .AddSingle("travelledToWork", true)
             .AddSingle("mode", ModeOfTransport.Bike)
             .CombinedResult();
@@ -149,7 +149,7 @@ public class Examples
         static string GuidFormatter(Guid guid, string format) =>
             format == "Initial" ? guid.ToString("D").Split('-')[0].ToUpperInvariant() : guid.ToString();
 
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatProvider = CultureInfo.GetCultureInfo("en-US"),
             FormatterDefinitions = [
@@ -157,7 +157,7 @@ public class Examples
                 FormatterDefinition.ForType<Guid>(GuidFormatter),
             ],
         };
-        var resolver = new InterpolatedStringResolver(settings);
+        InterpolatedStringResolver resolver = new(settings);
         string templateString = new StringBuilder()
             .AppendLine("Hi {Customer.Name},")
             .AppendLine("Thank you for {:map,Customer.IsFirstOrder:true=your first order,false=your order}.")
@@ -173,27 +173,27 @@ public class Examples
             .AppendLine("Total: {OrderTotal:C}")
             .Append("Ref: {MessageId:Initial}")
             .ToString();
-        var interpolatedString = resolver.Interpolate(templateString);
+        InterpolatedString interpolatedString = resolver.Interpolate(templateString);
 
         var customer = new
         {
             Name = "Jane Strong",
             IsFirstOrder = true,
         };
-        var order = new Dictionary<string, object>()
+        Dictionary<string, object> order = new()
         {
             ["Id"] = 8321,
             ["PaymentMethod"] = "CreditCard",
             ["Delivery"] = "Next day",
             ["DeliveryComment"] = "Please leave if no one in",
         };
-        var orderLines = new[]
-        {
+        OrderLine[] orderLines =
+        [
             new OrderLine(product: "T-shirt", price: 25.5),
             new OrderLine(product: "Coat", price: 40.0),
             new OrderLine(product: "Socks", price: 14.0),
-        };
-        var combinedContainer = resolver.Builder()
+        ];
+        ITokenValueContainer combinedContainer = resolver.Builder()
             .AddPrefixedObject("Customer", customer)
             .AddPrefixedKeyValues("Order", order)
             .AddPrefixedSingle("Order", "HasDeliveryComment", order["DeliveryComment"] is not null)
@@ -225,7 +225,7 @@ public class Examples
     [Fact]
     public void TokenAwarePhoneFormatter()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions =
             [
@@ -236,7 +236,7 @@ public class Examples
                             : value),
             ],
         };
-        var resolver = new InterpolatedStringResolver(settings);
+        InterpolatedStringResolver resolver = new(settings);
 
         string actual = resolver.FromObject("{Phone} / {Reference}", new
         {
@@ -250,12 +250,12 @@ public class Examples
     [Fact]
     public void MissingTokenReplacement()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
             UnresolvedTokenReplacement = "N/A",
         };
-        var resolver = new InterpolatedStringResolver(settings);
+        InterpolatedStringResolver resolver = new(settings);
 
         Assert.Equal("Hello N/A", resolver.FromObject("Hello {Name}", new { Other = "value" }));
     }
@@ -263,7 +263,7 @@ public class Examples
     [Fact]
     public void MissingCustomerTokensAreReplacedAndOtherPlaceholdersArePreserved()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
             UnresolvedTokenReplacement = "N/A",
@@ -272,8 +272,8 @@ public class Examples
                     ? UnresolvedTokenBehavior.Replace
                     : defaultBehavior,
         };
-        var resolver = new InterpolatedStringResolver(settings);
-        var container = resolver.Builder().AddSingle("Other", "value").CombinedResult();
+        InterpolatedStringResolver resolver = new(settings);
+        ITokenValueContainer container = resolver.Builder().AddSingle("Other", "value").CombinedResult();
 
         string actual = resolver.FromContainer("{Customer.Name} / {OtherMissing}", container);
 

@@ -21,15 +21,15 @@ public static class SpanInterpolatedStringParser
             return new InterpolatedString([], settings);
         }
 
-        var (startToken, endToken, escapedStartToken) = settings.Syntax;
-        var matches = GetTokenMatches(source, startToken, endToken, escapedStartToken);
-        var segments = ConvertToSegments(source, matches, startToken, endToken, escapedStartToken);
+        (string? startToken, string? endToken, string? escapedStartToken) = settings.Syntax;
+        List<TokenMatch> matches = GetTokenMatches(source, startToken, endToken, escapedStartToken);
+        IEnumerable<InterpolatedStringSegment> segments = ConvertToSegments(source, matches, startToken, endToken, escapedStartToken);
         return new InterpolatedString(segments.ToList().AsReadOnly(), settings);
     }
 
     private static List<TokenMatch> GetTokenMatches(string source, string startToken, string endToken, string escapedStartToken)
     {
-        var matches = new List<TokenMatch>();
+        List<TokenMatch> matches = [];
         ReadOnlySpan<char> sourceSpan = source.AsSpan();
         ReadOnlySpan<char> startSpan = startToken.AsSpan();
         ReadOnlySpan<char> endSpan = endToken.AsSpan();
@@ -72,15 +72,10 @@ public static class SpanInterpolatedStringParser
         return matches;
     }
 
-    private static IEnumerable<InterpolatedStringSegment> ConvertToSegments(
-        string source,
-        IEnumerable<TokenMatch> matches,
-        string startToken,
-        string endToken,
-        string escapedStartToken)
+    private static IEnumerable<InterpolatedStringSegment> ConvertToSegments(string source, IEnumerable<TokenMatch> matches, string startToken, string endToken, string escapedStartToken)
     {
         int index = 0;
-        foreach (var match in matches)
+        foreach (TokenMatch match in matches)
         {
             string segment = source.Substring(match.Index, match.Length);
             if (index != match.Index)

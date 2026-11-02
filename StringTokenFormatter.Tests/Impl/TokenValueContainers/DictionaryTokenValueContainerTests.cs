@@ -5,19 +5,19 @@ public class DictionaryTokenValueContainerTests
     [Fact]
     public void TryMap_MatchingTokenCaseInsensitive_ReturnsSuccess()
     {
-        var pairs = new (string, int?)[]
-        {
+        (string, int?)[] pairs =
+        [
             ("a", 1),
             ("b", 2),
-        };
-        var settings = new StringTokenFormatterSettings
+        ];
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = TokenValueContainerFactory.FromTuples(settings, pairs);
+        DictionaryTokenValueContainer<int?> container = TokenValueContainerFactory.FromTuples(settings, pairs);
 
-        var actual = container.TryMap("A");
+        TryGetResult actual = container.TryMap("A");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = 1 }, actual);
     }
@@ -25,19 +25,19 @@ public class DictionaryTokenValueContainerTests
     [Fact]
     public void TryMap_MismatchedTokenCasing_ReturnsDefault()
     {
-         var pairs = new (string, int?)[]
-        {
+        (string, int?)[] pairs =
+       [
             ("a", 1),
             ("b", 2),
-        };
-        var settings = new StringTokenFormatterSettings
+       ];
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = TokenValueContainerFactory.FromTuples(settings, pairs);
+        DictionaryTokenValueContainer<int?> container = TokenValueContainerFactory.FromTuples(settings, pairs);
 
-        var actual = container.TryMap("A");
+        TryGetResult actual = container.TryMap("A");
 
         Assert.Equal(default, actual);
     }
@@ -45,19 +45,19 @@ public class DictionaryTokenValueContainerTests
     [Fact]
     public void TryMap_MatchingTokenCaseSensitive_ReturnsSuccess()
     {
-         var pairs = new (string, int?)[]
-        {
+        (string, int?)[] pairs =
+       [
             ("a", 1),
             ("A", 2),
-        };
-        var settings = new StringTokenFormatterSettings
+       ];
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = TokenValueContainerFactory.FromTuples(settings, pairs);
+        DictionaryTokenValueContainer<int?> container = TokenValueContainerFactory.FromTuples(settings, pairs);
 
-        var actual = container.TryMap("a");
+        TryGetResult actual = container.TryMap("a");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = 1 }, actual);
     }
@@ -65,28 +65,28 @@ public class DictionaryTokenValueContainerTests
     [Fact]
     public void Constructor_CaseInsensitiveWithPreviousEquivalent_Throws()
     {
-         var pairs = new (string, int?)[]
-        {
+        (string, int?)[] pairs =
+       [
             ("a", 1),
             ("A", 2),
-        };
-        var settings = new StringTokenFormatterSettings
+       ];
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.OrdinalIgnoreCase,
         };
 
         Assert.Throws<TokenContainerException>(() => TokenValueContainerFactory.FromTuples(settings, pairs));
     }
-    
+
     [Fact]
     public void Constructor_EmptyTokenName_Throws()
     {
-        var pairs = new (string, int?)[]
-        {
+        (string, int?)[] pairs =
+        [
             (string.Empty, 1),
             ("b", 2),
-        };
-        var settings = new StringTokenFormatterSettings
+        ];
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.Ordinal,
         };
@@ -97,8 +97,8 @@ public class DictionaryTokenValueContainerTests
     [Fact]
     public void Constructor_EmptySource_Throws()
     {
-        var pairs = Array.Empty<(string, int?)>();
-        var settings = new StringTokenFormatterSettings
+        (string, int?)[] pairs = Array.Empty<(string, int?)>();
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.Ordinal,
         };
@@ -109,18 +109,18 @@ public class DictionaryTokenValueContainerTests
     [Fact]
     public void TryMap_UsingKeyValuePairs_ReturnsSuccess()
     {
-        var pairs = new[]
-        {
+        KeyValuePair<string, int>[] pairs =
+        [
             new KeyValuePair<string, int>("a", 1),
             new KeyValuePair<string, int>("b", 2),
-        };
-        var settings = new StringTokenFormatterSettings
+        ];
+        StringTokenFormatterSettings settings = new()
         {
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = TokenValueContainerFactory.FromPairs(settings, pairs);
+        DictionaryTokenValueContainer<int> container = TokenValueContainerFactory.FromPairs(settings, pairs);
 
-        var actual = container.TryMap("a");
+        TryGetResult actual = container.TryMap("a");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = 1 }, actual);
     }
@@ -129,20 +129,20 @@ public class DictionaryTokenValueContainerTests
     [Fact]
     public void TryMap_FrozenDictionary_ReturnsSuccess()
     {
-        var pairs = new (string, int?)[]
-        {
+        (string, int?)[] pairs =
+        [
             ("a", 1),
             ("b", 2),
-        };
-        var settings = new StringTokenFormatterSettings
+        ];
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = TokenValueContainerFactory.FromTuples(settings, pairs);
+        DictionaryTokenValueContainer<int?> container = TokenValueContainerFactory.FromTuples(settings, pairs);
         container.Frozen();
 
-        var actual = container.TryMap("a");
+        TryGetResult actual = container.TryMap("a");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = 1 }, actual);
     }

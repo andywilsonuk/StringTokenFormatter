@@ -13,21 +13,21 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithTypeOnlyFormatter_OutputXTwice()
     {
-        var segments = new SegmentBuilder()
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("one", string.Empty, string.Empty)
             .Token("two", string.Empty, "x")
             .Build();
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions =
             [
                 FormatterDefinition.ForType((decimal value, string formatString) => new string(formatString[0], (int)value)),
             ]
         };
-        var interpolatedString = new InterpolatedString(segments, settings);
+        InterpolatedString interpolatedString = new(segments, settings);
         valuesContainer.Add("two", (decimal)2);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+        string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("1xx", actual);
     }
@@ -35,20 +35,20 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithTokenNameFormatter_OutputXTwice()
     {
-        var segments = new SegmentBuilder()
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("one", string.Empty, string.Empty)
             .Token("two", string.Empty, "x")
             .Build();
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions =
             [
                 FormatterDefinition.ForTokenName("two", (int value, string formatString) => new string(formatString[0], value)),
             ]
         };
-        var interpolatedString = new InterpolatedString(segments, settings);
+        InterpolatedString interpolatedString = new(segments, settings);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+        string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("1xx", actual);
     }
@@ -56,19 +56,19 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithFormatStringFormatter_OutputXTwice()
     {
-        var segments = new SegmentBuilder()
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, "x")
             .Build();
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions =
             [
                 FormatterDefinition.ForFormatString("x", (int value, string formatString) => new string(formatString[0], value)),
             ]
         };
-        var interpolatedString = new InterpolatedString(segments, settings);
+        InterpolatedString interpolatedString = new(segments, settings);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+        string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("xx", actual);
     }
@@ -76,19 +76,19 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithTokenNameAndFormatStringFormatter_OutputXTwice()
     {
-        var segments = new SegmentBuilder()
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, "x")
             .Build();
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions =
             [
                 FormatterDefinition.ForTokenNameAndFormatString("two", "x", (int value, string formatString) => new string(formatString[0], value)),
             ]
         };
-        var interpolatedString = new InterpolatedString(segments, settings);
+        InterpolatedString interpolatedString = new(segments, settings);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+        string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("xx", actual);
     }
@@ -96,13 +96,13 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void OrderOfPrecedence_OutputABCD()
     {
-        var segments = new SegmentBuilder()
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("tok0", string.Empty, string.Empty)
             .Token("tok1", string.Empty, string.Empty)
             .Token("tok0", string.Empty, "x")
             .Token("tok2", string.Empty, "x")
             .Build();
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions =
             [
@@ -112,12 +112,12 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForTokenNameAndFormatString("tok2", "x", (int value, string formatString) => "d"),
             ]
         };
-        var interpolatedString = new InterpolatedString(segments, settings);
+        InterpolatedString interpolatedString = new(segments, settings);
         valuesContainer.Add("tok0", 0);
         valuesContainer.Add("tok1", 1);
         valuesContainer.Add("tok2", 2);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+        string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("abcd", actual);
     }
@@ -125,10 +125,10 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void DifferingTypes_OutputXTwice()
     {
-        var segments = new SegmentBuilder()
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, "x")
             .Build();
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions =
             [
@@ -136,10 +136,10 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForType((decimal value, string formatString) => new string(formatString[0], (int)value)),
             ]
         };
-        var interpolatedString = new InterpolatedString(segments, settings);
+        InterpolatedString interpolatedString = new(segments, settings);
         valuesContainer.Add("two", (decimal)2);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+        string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("xx", actual);
     }
@@ -147,19 +147,19 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithAlignment_OutputPaddedXTwice()
     {
-        var segments = new SegmentBuilder()
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", "5", "x")
             .Build();
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions =
             [
                 FormatterDefinition.ForTokenName("two", (int value, string formatString) => new string(formatString[0], value)),
             ]
         };
-        var interpolatedString = new InterpolatedString(segments, settings);
+        InterpolatedString interpolatedString = new(segments, settings);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+        string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("   xx", actual);
     }
@@ -167,17 +167,17 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithInvalidAlignment_Throws()
     {
-        var segments = new SegmentBuilder()
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", "bad", string.Empty)
             .Build();
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions =
             [
                 FormatterDefinition.ForType((int value, string formatString) => "a"),
             ]
         };
-        var interpolatedString = new InterpolatedString(segments, settings);
+        InterpolatedString interpolatedString = new(segments, settings);
 
         Assert.Throws<TokenValueFormatException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
@@ -185,17 +185,17 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void WithThrowingFormatter_Throws()
     {
-        var segments = new SegmentBuilder()
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", "bad", string.Empty)
             .Build();
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions =
             [
                 FormatterDefinition.ForType((int value, string formatString) => throw new Exception()),
             ]
         };
-        var interpolatedString = new InterpolatedString(segments, settings);
+        InterpolatedString interpolatedString = new(segments, settings);
 
         Assert.Throws<TokenValueFormatException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
@@ -203,10 +203,10 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void SpecificTypeNotObject_OutputXTwice()
     {
-        var segments = new SegmentBuilder()
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, "x")
             .Build();
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             FormatterDefinitions =
             [
@@ -214,10 +214,10 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForType((int value, string formatString) => new string(formatString[0], value)),
             ]
         };
-        var interpolatedString = new InterpolatedString(segments, settings);
+        InterpolatedString interpolatedString = new(segments, settings);
         valuesContainer.Add("two", 2);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+        string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("xx", actual);
     }
@@ -225,7 +225,7 @@ public class InterpolatedStringExpanderFormatterTests
     [Fact]
     public void NoMatchingDefinition_FormatsWithProvider()
     {
-        var settings = new StringTokenFormatterSettings
+        StringTokenFormatterSettings settings = new()
         {
             FormatProvider = CultureInfo.CreateSpecificCulture("en-GB"),
             FormatterDefinitions =
@@ -233,13 +233,13 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForType((int value, string formatString) => "wrong"),
             ]
         };
-        var segments = new SegmentBuilder()
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, string.Empty)
             .Build();
-        var interpolatedString = new InterpolatedString(segments, settings);
+        InterpolatedString interpolatedString = new(segments, settings);
         valuesContainer.Add("two", -16325.62m);
 
-        var actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+        string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
         Assert.Equal("-16325.62", actual);
     }

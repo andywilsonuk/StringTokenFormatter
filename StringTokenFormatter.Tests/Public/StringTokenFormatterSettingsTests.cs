@@ -5,7 +5,7 @@ public class StringTokenFormatterSettingsTests : IDisposable
     [Fact]
     public void Default_DefinedDefault_ReturnsDefaultValues()
     {
-        var actual = StringTokenFormatterSettings.Default;
+        StringTokenFormatterSettings actual = StringTokenFormatterSettings.Default;
 
         Assert.Equal(StringComparer.OrdinalIgnoreCase, actual.NameComparer);
         Assert.Equal(TokenResolutionPolicy.ResolveAll, actual.TokenResolutionPolicy);
@@ -18,7 +18,7 @@ public class StringTokenFormatterSettingsTests : IDisposable
     [Fact]
     public void Constructor_CustomSettings_ReturnsCustomValues()
     {
-        var actual = new StringTokenFormatterSettings
+        StringTokenFormatterSettings actual = new()
         {
             ValueConverters =
             [
@@ -32,7 +32,7 @@ public class StringTokenFormatterSettingsTests : IDisposable
     [Fact]
     public void Global_OverrideGlobal_ReturnsDefaultValues()
     {
-        var actual = StringTokenFormatterSettings.Global with
+        StringTokenFormatterSettings actual = StringTokenFormatterSettings.Global with
         {
             NameComparer = StringComparer.CurrentCulture,
             TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNull,
@@ -57,8 +57,8 @@ public class StringTokenFormatterSettingsTests : IDisposable
     [Fact]
     public void Global_ComparedWithDefault_Same()
     {
-        var actual = StringTokenFormatterSettings.Global;
-        var expected = StringTokenFormatterSettings.Default;
+        StringTokenFormatterSettings actual = StringTokenFormatterSettings.Global;
+        StringTokenFormatterSettings expected = StringTokenFormatterSettings.Default;
 
         Assert.Equal(expected, actual);
     }
@@ -66,7 +66,7 @@ public class StringTokenFormatterSettingsTests : IDisposable
     [Fact]
     public void Global_ModifiedGlobal_NotSameAsDefault()
     {
-        var defaultSyntax = StringTokenFormatterSettings.Default.Syntax;
+        TokenSyntax defaultSyntax = StringTokenFormatterSettings.Default.Syntax;
 
         StringTokenFormatterSettings.Global = StringTokenFormatterSettings.Default with
         {

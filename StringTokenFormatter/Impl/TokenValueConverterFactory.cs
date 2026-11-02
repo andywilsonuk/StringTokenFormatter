@@ -1,4 +1,6 @@
-﻿namespace StringTokenFormatter.Impl;
+﻿using System.Reflection;
+
+namespace StringTokenFormatter.Impl;
 
 public delegate TryGetResult TokenValueConverter(object? value, string tokenName);
 
@@ -24,8 +26,8 @@ public static class TokenValueConverterFactory
     {
         if (valueType.IsGenericType && valueType.GetGenericTypeDefinition() == funcType)
         {
-            var invoker = valueType.GetMethod("Invoke");
-            var convertedValue = invoker!.Invoke(value, parameters);
+            MethodInfo? invoker = valueType.GetMethod("Invoke");
+            object convertedValue = invoker!.Invoke(value, parameters)!;
             return TryGetResult.Success(convertedValue);
         }
         return default;

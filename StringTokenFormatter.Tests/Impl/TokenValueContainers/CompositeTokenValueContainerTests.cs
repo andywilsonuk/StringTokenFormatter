@@ -8,9 +8,9 @@ public class CompositeTokenValueContainerTests
     [Fact]
     public void TryMap_TokenInFirst_ReturnsSuccess()
     {
-        var container = TokenValueContainerFactory.FromCombination(StringTokenFormatterSettings.Default, innerContainer1, innerContainer2);
+        CompositeTokenValueContainer container = TokenValueContainerFactory.FromCombination(StringTokenFormatterSettings.Default, innerContainer1, innerContainer2);
 
-        var actual = container.TryMap("a");
+        TryGetResult actual = container.TryMap("a");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = "1" }, actual);
     }
@@ -18,9 +18,9 @@ public class CompositeTokenValueContainerTests
     [Fact]
     public void TryMap_TokenInSecond_ReturnsSuccess()
     {
-        var container = TokenValueContainerFactory.FromCombination(StringTokenFormatterSettings.Default, innerContainer1, innerContainer2);
+        CompositeTokenValueContainer container = TokenValueContainerFactory.FromCombination(StringTokenFormatterSettings.Default, innerContainer1, innerContainer2);
 
-        var actual = container.TryMap("b");
+        TryGetResult actual = container.TryMap("b");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = "2" }, actual);
     }
@@ -37,12 +37,12 @@ public class CompositeTokenValueContainerTests
     [InlineData(TokenResolutionPolicy.IgnoreNullOrEmpty, "")]
     public void TryMap_RejectedValue_ContinuesToNextContainer(TokenResolutionPolicy policy, string? firstValue)
     {
-        var settings = StringTokenFormatterSettings.Default with { TokenResolutionPolicy = policy };
-        var first = new BasicContainer().Add("value", firstValue);
-        var second = new BasicContainer().Add("value", "fallback");
-        var container = TokenValueContainerFactory.FromCombination(settings, first, second);
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with { TokenResolutionPolicy = policy };
+        BasicContainer first = new BasicContainer().Add("value", firstValue);
+        BasicContainer second = new BasicContainer().Add("value", "fallback");
+        CompositeTokenValueContainer container = TokenValueContainerFactory.FromCombination(settings, first, second);
 
-        var actual = container.TryMap("value");
+        TryGetResult actual = container.TryMap("value");
 
         Assert.True(actual.IsSuccess);
         Assert.Equal("fallback", actual.Value);
@@ -54,11 +54,11 @@ public class CompositeTokenValueContainerTests
     [InlineData(TokenResolutionPolicy.IgnoreNullOrEmpty, "")]
     public void TryMap_AllValuesRejected_ReturnsUnresolved(TokenResolutionPolicy policy, string? value)
     {
-        var settings = StringTokenFormatterSettings.Default with { TokenResolutionPolicy = policy };
-        var container = TokenValueContainerFactory.FromCombination(settings,
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with { TokenResolutionPolicy = policy };
+        CompositeTokenValueContainer container = TokenValueContainerFactory.FromCombination(settings,
             new BasicContainer().Add("value", value), new BasicContainer().Add("other", "unrelated"));
 
-        var actual = container.TryMap("value");
+        TryGetResult actual = container.TryMap("value");
 
         Assert.False(actual.IsSuccess);
     }
@@ -70,11 +70,11 @@ public class CompositeTokenValueContainerTests
     [InlineData(TokenResolutionPolicy.IgnoreNullOrEmpty, "first")]
     public void TryMap_AcceptedValue_PreservesFirstMatch(TokenResolutionPolicy policy, string? firstValue)
     {
-        var settings = StringTokenFormatterSettings.Default with { TokenResolutionPolicy = policy };
-        var container = TokenValueContainerFactory.FromCombination(settings,
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with { TokenResolutionPolicy = policy };
+        CompositeTokenValueContainer container = TokenValueContainerFactory.FromCombination(settings,
             new BasicContainer().Add("value", firstValue), new UnexpectedContainer());
 
-        var actual = container.TryMap("value");
+        TryGetResult actual = container.TryMap("value");
 
         Assert.True(actual.IsSuccess);
         Assert.Equal(firstValue, actual.Value);
@@ -83,7 +83,7 @@ public class CompositeTokenValueContainerTests
     [Fact]
     public void TryMap_NoMatchingToken_ReturnsUnresolved()
     {
-        var container = TokenValueContainerFactory.FromCombination(StringTokenFormatterSettings.Default,
+        CompositeTokenValueContainer container = TokenValueContainerFactory.FromCombination(StringTokenFormatterSettings.Default,
             innerContainer1, innerContainer2);
 
         Assert.False(container.TryMap("missing").IsSuccess);

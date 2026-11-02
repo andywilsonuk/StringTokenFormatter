@@ -23,7 +23,7 @@ public sealed class ExpanderValueFormatter
         {
             if (TryGetBestDefinition(valueType, tokenName, formatString, out FormatterDefinition? definition))
             {
-                var formatter = definition.Formatter;
+                Delegate formatter = definition.Formatter;
                 int parameterCount = formatter.GetType().GetMethod("Invoke")!.GetParameters().Length;
                 formattedValue = (parameterCount switch
                 {
@@ -51,7 +51,7 @@ public sealed class ExpanderValueFormatter
         }
         int matchScore = int.MinValue;
         FormatterDefinition? matchDefinition = null;
-        foreach (var candidate in definitions[valueType])
+        foreach (FormatterDefinition candidate in definitions[valueType])
         {
             int candidateScore = 0;
             if (candidate.RequiredTokenName == string.Empty)
@@ -74,7 +74,7 @@ public sealed class ExpanderValueFormatter
             {
                 candidateScore += 10;
             }
-            else 
+            else
             {
                 continue;
             }

@@ -7,14 +7,14 @@ public class SingleTokenValueContainerTests
     {
         string tokenName = "a";
         int value = 1;
-        var settings = new StringTokenFormatterSettings
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.OrdinalIgnoreCase,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = TokenValueContainerFactory.FromSingle(settings, tokenName, value);
+        SingleTokenValueContainer<int> container = TokenValueContainerFactory.FromSingle(settings, tokenName, value);
 
-        var actual = container.TryMap("A");
+        TryGetResult actual = container.TryMap("A");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = value }, actual);
     }
@@ -24,14 +24,14 @@ public class SingleTokenValueContainerTests
     {
         string tokenName = "a";
         int value = 1;
-        var settings = new StringTokenFormatterSettings
+        StringTokenFormatterSettings settings = new()
         {
             NameComparer = StringComparer.Ordinal,
             TokenResolutionPolicy = TokenResolutionPolicy.ResolveAll,
         };
-        var container = TokenValueContainerFactory.FromSingle(settings, tokenName, value);
+        SingleTokenValueContainer<int> container = TokenValueContainerFactory.FromSingle(settings, tokenName, value);
 
-        var actual = container.TryMap("A");
+        TryGetResult actual = container.TryMap("A");
 
         Assert.Equal(default, actual);
     }

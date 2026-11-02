@@ -19,26 +19,26 @@ public static class RegexInterpolatedStringParser
         {
             return new InterpolatedString([], settings);
         }
-        var matches = GetRegexMatches(source, settings.Syntax);
-        var segments = ConvertToSegments(source, matches, settings.Syntax);
+        IEnumerable<Match> matches = GetRegexMatches(source, settings.Syntax);
+        IEnumerable<InterpolatedStringSegment> segments = ConvertToSegments(source, matches, settings.Syntax);
         return new InterpolatedString(segments.ToList().AsReadOnly(), settings);
     }
 
     private static IEnumerable<Match> GetRegexMatches(string source, TokenSyntax syntax)
     {
-        var (startToken, endToken, escapedStartToken) = syntax;
-        var regexEscapedStartToken = Regex.Escape(startToken);
-        var regexEscapedEscapedStartToken = Regex.Escape(escapedStartToken);
-        var regexEscapedEndToken = Regex.Escape(endToken);
+        (string? startToken, string? endToken, string? escapedStartToken) = syntax;
+        string regexEscapedStartToken = Regex.Escape(startToken);
+        string regexEscapedEscapedStartToken = Regex.Escape(escapedStartToken);
+        string regexEscapedEndToken = Regex.Escape(endToken);
         string segmentPattern = $"({regexEscapedEscapedStartToken})|({regexEscapedStartToken}.*?{regexEscapedEndToken})";
         return Regex.Matches(source, segmentPattern, regexOptions).Cast<Match>();
     }
 
     private static IEnumerable<InterpolatedStringSegment> ConvertToSegments(string source, IEnumerable<Match> matches, TokenSyntax syntax)
     {
-        var (startToken, endToken, escapedStartToken) = syntax;
+        (string? startToken, string? endToken, string? escapedStartToken) = syntax;
         int index = 0;
-        foreach (var match in matches)
+        foreach (Match match in matches)
         {
             string segment = match.Value;
             int captureIndex = match.Index;

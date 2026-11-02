@@ -19,8 +19,8 @@ public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
 
     private Dictionary<string, T> CreateDictionary(IEnumerable<(string TokenName, T Value)> source)
     {
-        var d = new Dictionary<string, T>(settings.NameComparer);
-        foreach (var (tokenName, value) in source)
+        Dictionary<string, T> d = new(settings.NameComparer);
+        foreach ((string? tokenName, T? value) in source)
         {
             if (d.ContainsKey(tokenName)) { throw new TokenContainerException($"The container already has a token with name '{tokenName}'"); }
             d.Add(tokenName, value);
@@ -30,7 +30,7 @@ public sealed class DictionaryTokenValueContainer<T> : ITokenValueContainer
         return d;
     }
 
-    public TryGetResult TryMap(string token) => pairs.TryGetValue(token, out var value) ? TryGetResult.Success(value) : default;
+    public TryGetResult TryMap(string token) => pairs.TryGetValue(token, out T? value) ? TryGetResult.Success(value) : default;
 
     /// <summary>
     /// Converts the inner dictionary to a FrozenDictionary for faster read performance if reused on .NET 8 or later.

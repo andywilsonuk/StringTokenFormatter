@@ -7,7 +7,7 @@ public sealed class MapCommand : IExpanderCommand
 
     public void Evaluate(ExpanderContext context)
     {
-        var segment = context.SegmentIterator.Current;
+        InterpolatedStringSegment segment = context.SegmentIterator.Current;
         if (segment is not InterpolatedStringCommandSegment commandSegment || !commandSegment.IsCommandEqual(commandName))
         {
             return;
@@ -19,13 +19,13 @@ public sealed class MapCommand : IExpanderCommand
     private static void MapValue(ExpanderContext context, InterpolatedStringCommandSegment segment)
     {
         string tokenName = segment.Token;
-        var tokenValueResult = context.TryGetTokenValue(tokenName);
+        TryGetResult tokenValueResult = context.TryGetTokenValue(tokenName);
         if (!tokenValueResult.IsSuccess)
         {
             context.StringBuilder.AppendLiteral(segment.Raw);
             return;
         }
-        var convertedValue = context.ApplyValueConverter(tokenValueResult.Value, tokenName);
+        object? convertedValue = context.ApplyValueConverter(tokenValueResult.Value, tokenName);
         string convertedValueString = convertedValue?.ToString() ?? string.Empty;
 
         if (TryFindMapValue(segment.Data, convertedValueString, out string mapValue))

@@ -5,7 +5,7 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void DefaultSettings_UnresolvedTokenStillThrows()
     {
-        var settings = StringTokenFormatterSettings.Default;
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default;
 
         Assert.Equal(UnresolvedTokenBehavior.Throw, settings.UnresolvedTokenBehavior);
         Assert.Empty(settings.UnresolvedTokenReplacement);
@@ -18,7 +18,7 @@ public class UnresolvedTokenReplacementTests
     [InlineData(UnresolvedTokenBehavior.Replace)]
     public void DefaultSelector_ReturnsConfiguredBehavior(UnresolvedTokenBehavior behavior)
     {
-        var selector = StringTokenFormatterSettings.Default.UnresolvedTokenReplacementFormatter;
+        Func<string, UnresolvedTokenBehavior, UnresolvedTokenBehavior?> selector = StringTokenFormatterSettings.Default.UnresolvedTokenReplacementFormatter;
 
         Assert.Equal<UnresolvedTokenBehavior?>(behavior, selector("missing", behavior));
     }
@@ -26,12 +26,12 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void ReplaceWithDefaultReplacement_OutputsEmptyString()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
         };
 
-        var actual = Expand("before {missing} after", settings);
+        string actual = Expand("before {missing} after", settings);
 
         Assert.Equal("before  after", actual);
     }
@@ -41,13 +41,13 @@ public class UnresolvedTokenReplacementTests
     [InlineData("{another}")]
     public void ReplaceWithCustomReplacement_OutputsReplacementLiterally(string replacement)
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
             UnresolvedTokenReplacement = replacement,
         };
 
-        var actual = Expand("before {missing} after", settings);
+        string actual = Expand("before {missing} after", settings);
 
         Assert.Equal("before " + replacement + " after", actual);
     }
@@ -58,8 +58,8 @@ public class UnresolvedTokenReplacementTests
     [InlineData("throw", null)]
     public void PerTokenSelector_ChoosesReplacementLeaveOrThrow(string tokenName, string? expected)
     {
-        var calls = new List<string>();
-        var settings = StringTokenFormatterSettings.Default with
+        List<string> calls = [];
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
             UnresolvedTokenReplacement = "fallback",
@@ -79,7 +79,7 @@ public class UnresolvedTokenReplacementTests
 
         if (expected == null)
         {
-            var exception = Assert.Throws<UnresolvedTokenException>(() => Expand("{" + tokenName + "}", settings));
+            UnresolvedTokenException exception = Assert.Throws<UnresolvedTokenException>(() => Expand("{" + tokenName + "}", settings));
             Assert.Contains(tokenName, exception.Message);
         }
         else
@@ -92,7 +92,7 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void PerTokenSelector_OverridesGlobalReplaceWithinOneTemplate()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
             UnresolvedTokenReplacement = "fallback",
@@ -101,7 +101,7 @@ public class UnresolvedTokenReplacementTests
                 : null,
         };
 
-        var actual = Expand("{replace}|{leave}", settings);
+        string actual = Expand("{replace}|{leave}", settings);
 
         Assert.Equal("fallback|{leave}", actual);
     }
@@ -112,8 +112,8 @@ public class UnresolvedTokenReplacementTests
     [InlineData(UnresolvedTokenBehavior.Replace, "fallback")]
     public void NullSelectorResult_UsesConfiguredDefault(UnresolvedTokenBehavior behavior, string? expected)
     {
-        var calls = 0;
-        var settings = StringTokenFormatterSettings.Default with
+        int calls = 0;
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = behavior,
             UnresolvedTokenReplacement = "fallback",
@@ -143,14 +143,14 @@ public class UnresolvedTokenReplacementTests
     [InlineData("resolved")]
     public void ResolvedToken_DoesNotInvokeSelector(string? value)
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
             UnresolvedTokenReplacementFormatter = (_, _) => throw new InvalidOperationException("Selector must not run"),
         };
-        var container = new BasicContainer().Add("value", value);
+        BasicContainer container = new BasicContainer().Add("value", value);
 
-        var actual = Expand("{value}", settings, container);
+        string actual = Expand("{value}", settings, container);
 
         Assert.Equal(value ?? string.Empty, actual);
     }
@@ -159,9 +159,9 @@ public class UnresolvedTokenReplacementTests
     public void LegacySettings_ResolvedTokensRenderWithoutReplacementProperties()
     {
         IInterpolatedStringSettings settings = new LegacySettings();
-        var container = new BasicContainer().Add("value", 42);
+        BasicContainer container = new BasicContainer().Add("value", 42);
 
-        var actual = Expand("{value:D4}", settings, container);
+        string actual = Expand("{value:D4}", settings, container);
 
         Assert.False(settings is IUnresolvedTokenReplacementSettings);
         Assert.Equal("0042", actual);
@@ -176,7 +176,7 @@ public class UnresolvedTokenReplacementTests
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
         };
 
-        var actual = Expand("{missing,8:format}", settings);
+        string actual = Expand("{missing,8:format}", settings);
 
         Assert.Equal("{missing,8:format}", actual);
     }
@@ -189,7 +189,7 @@ public class UnresolvedTokenReplacementTests
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
         };
 
-        var actual = Expand("before {missing} after", settings);
+        string actual = Expand("before {missing} after", settings);
 
         Assert.False(settings is IUnresolvedTokenReplacementSettings);
         Assert.Equal("before  after", actual);
@@ -204,7 +204,7 @@ public class UnresolvedTokenReplacementTests
             UnresolvedTokenReplacementFormatter = (_, _) => UnresolvedTokenBehavior.Replace,
         };
 
-        var actual = Expand("{missing}", settings);
+        string actual = Expand("{missing}", settings);
 
         Assert.Equal("custom", actual);
     }
@@ -212,13 +212,13 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void NullReplacement_ValidationThrowsForConcreteAndInterfaceSettings()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenReplacement = null!,
         };
 
-        var concreteException = Assert.Throws<ArgumentException>(() => settings.Validate());
-        var interfaceException = Assert.Throws<ArgumentException>(() => ((IInterpolatedStringSettings)settings).Validate());
+        ArgumentException concreteException = Assert.Throws<ArgumentException>(() => settings.Validate());
+        ArgumentException interfaceException = Assert.Throws<ArgumentException>(() => ((IInterpolatedStringSettings)settings).Validate());
 
         Assert.Equal(nameof(settings.UnresolvedTokenReplacement), concreteException.ParamName);
         Assert.Equal(nameof(settings.UnresolvedTokenReplacement), interfaceException.ParamName);
@@ -227,13 +227,13 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void NullSelector_ValidationThrowsForConcreteAndInterfaceSettings()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenReplacementFormatter = null!,
         };
 
-        var concreteException = Assert.Throws<ArgumentException>(() => settings.Validate());
-        var interfaceException = Assert.Throws<ArgumentException>(() => ((IInterpolatedStringSettings)settings).Validate());
+        ArgumentException concreteException = Assert.Throws<ArgumentException>(() => settings.Validate());
+        ArgumentException interfaceException = Assert.Throws<ArgumentException>(() => ((IInterpolatedStringSettings)settings).Validate());
 
         Assert.Equal(nameof(settings.UnresolvedTokenReplacementFormatter), concreteException.ParamName);
         Assert.Equal(nameof(settings.UnresolvedTokenReplacementFormatter), interfaceException.ParamName);
@@ -250,7 +250,7 @@ public class UnresolvedTokenReplacementTests
             UnresolvedTokenReplacementFormatter = nullReplacement ? (_, behavior) => behavior : null!,
         };
 
-        var exception = Assert.Throws<ArgumentException>(() => settings.Validate());
+        ArgumentException exception = Assert.Throws<ArgumentException>(() => settings.Validate());
 
         Assert.Equal(expectedParameter, exception.ParamName);
     }
@@ -258,7 +258,7 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void Validation_DoesNotInvokeSelector()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenReplacementFormatter = (_, _) => throw new InvalidOperationException("Selector must not run"),
         };
@@ -271,12 +271,12 @@ public class UnresolvedTokenReplacementTests
     [InlineData(100)]
     public void InvalidSelectorResult_ThrowsArgumentException(int value)
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenReplacementFormatter = (_, _) => (UnresolvedTokenBehavior)value,
         };
 
-        var exception = Assert.Throws<ArgumentException>(() => Expand("{missing}", settings));
+        ArgumentException exception = Assert.Throws<ArgumentException>(() => Expand("{missing}", settings));
 
         Assert.Equal(nameof(settings.UnresolvedTokenReplacementFormatter), exception.ParamName);
     }
@@ -287,13 +287,13 @@ public class UnresolvedTokenReplacementTests
     [InlineData("{missing:any}", "x")]
     public void Replacement_UsesStandardFormattingAndAlignment(string source, string expected)
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
             UnresolvedTokenReplacement = "x",
         };
 
-        var actual = Expand(source, settings);
+        string actual = Expand(source, settings);
 
         Assert.Equal(expected, actual);
     }
@@ -301,7 +301,7 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void Replacement_UsesCustomFormatterBeforeAlignment()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
             UnresolvedTokenReplacement = "fallback",
@@ -312,7 +312,7 @@ public class UnresolvedTokenReplacementTests
             ],
         };
 
-        var actual = Expand("{missing,10:upper}", settings);
+        string actual = Expand("{missing,10:upper}", settings);
 
         Assert.Equal("  FALLBACK", actual);
     }
@@ -320,12 +320,12 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void EmptyReplacement_IsStillAlignedAsResolvedValue()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
         };
 
-        var actual = Expand("before{missing,4}after", settings);
+        string actual = Expand("before{missing,4}after", settings);
 
         Assert.Equal("before    after", actual);
     }
@@ -341,8 +341,8 @@ public class UnresolvedTokenReplacementTests
     public void CompositeFiltering_InvokesSelectorOnlyWhenNoValueSatisfiesPolicy(
         TokenResolutionPolicy policy, string? value, string expected, int expectedCalls)
     {
-        var calls = new List<string>();
-        var settings = StringTokenFormatterSettings.Default with
+        List<string> calls = [];
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             TokenResolutionPolicy = policy,
             UnresolvedTokenReplacement = "fallback",
@@ -352,10 +352,10 @@ public class UnresolvedTokenReplacementTests
                 return UnresolvedTokenBehavior.Replace;
             },
         };
-        var container = TokenValueContainerFactory.FromCombination(settings,
+        CompositeTokenValueContainer container = TokenValueContainerFactory.FromCombination(settings,
             new BasicContainer().Add("value", value), new BasicContainer());
 
-        var actual = Expand("{value}", settings, container);
+        string actual = Expand("{value}", settings, container);
 
         Assert.Equal(expected, actual);
         Assert.Equal(expectedCalls, calls.Count);
@@ -365,17 +365,17 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void CompositeFiltering_LaterValidContainerPrecedesReplacement()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNullOrEmpty,
             UnresolvedTokenReplacementFormatter = (_, _) => throw new InvalidOperationException("Selector must not run"),
         };
-        var container = TokenValueContainerFactory.FromCombination(settings,
+        CompositeTokenValueContainer container = TokenValueContainerFactory.FromCombination(settings,
             new BasicContainer().Add("value", null),
             new BasicContainer().Add("value", string.Empty),
             new BasicContainer().Add("value", "last"));
 
-        var actual = Expand("{value}", settings, container);
+        string actual = Expand("{value}", settings, container);
 
         Assert.Equal("last", actual);
     }
@@ -383,8 +383,8 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void CompositeFiltering_SelectorRunsAfterEveryContainerIsTried()
     {
-        var attempts = new List<string>();
-        var settings = StringTokenFormatterSettings.Default with
+        List<string> attempts = [];
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             TokenResolutionPolicy = TokenResolutionPolicy.IgnoreNull,
             UnresolvedTokenReplacement = "fallback",
@@ -394,19 +394,19 @@ public class UnresolvedTokenReplacementTests
                 return UnresolvedTokenBehavior.Replace;
             },
         };
-        var first = TokenValueContainerFactory.FromFunc<object?>(settings, _ =>
+        FuncTokenValueContainer<object?> first = TokenValueContainerFactory.FromFunc<object?>(settings, _ =>
         {
             attempts.Add("first");
             return null;
         });
-        var second = TokenValueContainerFactory.FromFunc<object?>(settings, _ =>
+        FuncTokenValueContainer<object?> second = TokenValueContainerFactory.FromFunc<object?>(settings, _ =>
         {
             attempts.Add("second");
             return null;
         });
-        var container = TokenValueContainerFactory.FromCombination(settings, first, second);
+        CompositeTokenValueContainer container = TokenValueContainerFactory.FromCombination(settings, first, second);
 
-        var actual = Expand("{missing}", settings, container);
+        string actual = Expand("{missing}", settings, container);
 
         Assert.Equal("fallback", actual);
         Assert.Equal(new[] { "first", "second", "selector" }, attempts);
@@ -415,8 +415,8 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void LoopSequenceAndPseudoTokens_InvokeSelectorOnlyForMissingChild()
     {
-        var calls = new List<string>();
-        var settings = StringTokenFormatterSettings.Default with
+        List<string> calls = [];
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenReplacement = "fallback",
             UnresolvedTokenReplacementFormatter = (token, _) =>
@@ -425,14 +425,14 @@ public class UnresolvedTokenReplacementTests
                 return UnresolvedTokenBehavior.Replace;
             },
         };
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator",
+        SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator",
         [
             new BasicContainer().Add("Name", "first"),
             new BasicContainer(),
         ]);
-        var container = TokenValueContainerFactory.FromCombination(settings, sequence);
+        CompositeTokenValueContainer container = TokenValueContainerFactory.FromCombination(settings, sequence);
 
-        var actual = Expand("{:loop,Iterator}{::loopiteration}{Iterator.Name};{:loopend}", settings, container);
+        string actual = Expand("{:loop,Iterator}{::loopiteration}{Iterator.Name};{:loopend}", settings, container);
 
         Assert.Equal("1first;2fallback;", actual);
         Assert.Equal(new[] { "Iterator.Name" }, calls);
@@ -441,8 +441,8 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void UnknownPseudoToken_UsesSelectorWithFullTokenName()
     {
-        var calls = new List<string>();
-        var settings = StringTokenFormatterSettings.Default with
+        List<string> calls = [];
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenReplacement = "fallback",
             UnresolvedTokenReplacementFormatter = (token, _) =>
@@ -452,7 +452,7 @@ public class UnresolvedTokenReplacementTests
             },
         };
 
-        var actual = Expand("{::unknown}", settings);
+        string actual = Expand("{::unknown}", settings);
 
         Assert.Equal("fallback", actual);
         Assert.Equal(new[] { "::unknown" }, calls);
@@ -461,13 +461,13 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void MapCommand_UsesReplacementAsInputToMapping()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
             UnresolvedTokenReplacement = "fallback",
         };
 
-        var actual = Expand("{:map,missing:fallback=matched}", settings);
+        string actual = Expand("{:map,missing:fallback=matched}", settings);
 
         Assert.Equal("matched", actual);
     }
@@ -475,13 +475,13 @@ public class UnresolvedTokenReplacementTests
     [Fact]
     public void UnresolvedLoopHeader_PreservesExistingCommandBehavior()
     {
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
             UnresolvedTokenReplacementFormatter = (_, _) => throw new InvalidOperationException("Selector must not run"),
         };
 
-        var actual = Expand("{:loop,missing}body{:loopend}", settings);
+        string actual = Expand("{:loop,missing}body{:loopend}", settings);
 
         Assert.Equal("{:loop,missing}", actual);
     }
@@ -491,8 +491,8 @@ public class UnresolvedTokenReplacementTests
     [InlineData("false", "|no")]
     public void ConditionalCommands_ConvertReplacementBeforeApplyingNegation(string replacement, string expected)
     {
-        var selectorCalls = new List<string>();
-        var converterCalls = new List<string>();
+        List<string> selectorCalls = [];
+        List<string> converterCalls = [];
         TokenValueConverter converter = (value, tokenName) =>
         {
             Assert.Equal("missing", tokenName);
@@ -500,7 +500,7 @@ public class UnresolvedTokenReplacementTests
             converterCalls.Add(tokenName);
             return TryGetResult.Success(bool.Parse((string)value!));
         };
-        var settings = StringTokenFormatterSettings.Default with
+        StringTokenFormatterSettings settings = StringTokenFormatterSettings.Default with
         {
             UnresolvedTokenReplacement = replacement,
             UnresolvedTokenReplacementFormatter = (tokenName, _) =>
@@ -511,7 +511,7 @@ public class UnresolvedTokenReplacementTests
             ValueConverters = [converter],
         };
 
-        var actual = Expand("{:if,missing}yes{:ifend}|{:if,!missing}no{:ifend}", settings);
+        string actual = Expand("{:if,missing}yes{:ifend}|{:if,!missing}no{:ifend}", settings);
 
         Assert.Equal(expected, actual);
         Assert.Equal(new[] { "missing", "missing" }, selectorCalls);

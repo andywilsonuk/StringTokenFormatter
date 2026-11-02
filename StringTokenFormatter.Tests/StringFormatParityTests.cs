@@ -36,7 +36,7 @@ public class StringFormatParityTests
     public void DateTimePatternParsing_EqualsStringFormat(string pattern)
     {
         string source = $"{{num{pattern}}}";
-        var value = new DateTime(2000, 1, 2, 3, 4, 5);
+        DateTime value = new(2000, 1, 2, 3, 4, 5);
         valuesContainer.Add("num", value);
         string expected = string.Format($"{{0{pattern}}}", value);
 

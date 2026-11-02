@@ -13,8 +13,8 @@ public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T 
 
     private Dictionary<string, NonLockingLazy> CreateDictionary(T source)
     {
-        var d = new Dictionary<string, NonLockingLazy>(settings.NameComparer);
-        foreach (var (propertyName, getValue) in PropertyCache<T>.Properties)
+        Dictionary<string, NonLockingLazy> d = new(settings.NameComparer);
+        foreach ((string? propertyName, Func<T, object>? getValue) in PropertyCache<T>.Properties)
         {
             d.Add(propertyName, new NonLockingLazy(() => getValue(source)));
         }
@@ -22,7 +22,7 @@ public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T 
         return d;
     }
 
-    public TryGetResult TryMap(string token) => pairs.TryGetValue(token, out var lazy) ? TryGetResult.Success(lazy.Value) : default;
+    public TryGetResult TryMap(string token) => pairs.TryGetValue(token, out NonLockingLazy? lazy) ? TryGetResult.Success(lazy.Value) : default;
 
     /// <summary>
     /// Converts the inner dictionary to a FrozenDictionary for faster read performance if reused on .NET 8 or later.
