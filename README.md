@@ -147,6 +147,7 @@ More [examples](https://github.com/andywilsonuk/StringTokenFormatter/blob/main/S
 - [Exceptions](#exceptions)
 - [Custom Value Containers](#custom-value-containers)
 - [Value Converters](#value-converters)
+- [Tracing](#tracing)
 - [Performance tuning](#performance-tuning)
 - [Thread safety](#thread-safety)
 - [Frozen Dictionary support in .NET 8](#frozen-dictionary-support-in-net-8)
@@ -161,6 +162,7 @@ Within an application there’s likely to be only one or a small number of defin
 - Methods `FromSingle`, `FromPairs`, `FromTuples`, `FromObject`, `FromFunc` and `FromContainer` take in a template `string` or `InterpolatedString` as well as relevant mapping values 
 - The `Builder` method creates a new instance of the `TokenValueContainerBuilder` class which is used to construct [complex value containers](#building-composite-token-value-containers)
 - Template strings can be converted into `InterpolatedString`s created once and stored ahead of time; the `Interpolate` method parses the template string ready for resolving using token values
+- Pass an `InterpolatedStringResolverTrace` to `FromContainer` to collect segment-processing and token-lookup events; see [Tracing](#tracing) for a report example
 
 The resolver contains the standard token resolving methods and is the preferred mechanism over changing the global settings and using the `string` extension methods.
 
@@ -517,6 +519,8 @@ Three methods are available:
 - `Evaluate` is called for each segment, unless it has been handled by setting `context.SegmentHandled` to true
 - `Finished` can be used for validation such as the number of end commands match the start commands
 
+Commands can add custom text to an explicitly supplied trace by calling `context.Trace.Record("message")`. Without an explicitly supplied trace, the context exposes a no-op trace.
+
 For pseudo command and additional interface `IExpanderPseudoCommands` can be implemented which works in the same way as for [value containers](#value-containers).
 
 Commands in this form were introduced in version 9 and therefore are considered beta and might be subject to interface changes are more use cases are identified.
@@ -771,6 +775,33 @@ They can be useful to provide post-token match functionality; a great example is
 All token value types must be handled by a Value Converter otherwise an exception is thrown.
 
 By design `ToString()` is not used as a value converter because calling it on a custom object will yield the `object.ToString()` result which is often not the intended behavior. For scenarios when the `ToString()` has been overridden, the result of calling `StringTokenFormatter.Impl.TokenValueConverterFactory.ToStringConverter<T>()` can be added to the settings list of `ValueConverters` so that the `ToString()` method for that specific type will be used as a valid value conversion.
+
+# Tracing
+
+Pass an `InterpolatedStringResolverTrace` to either `FromContainer` overload to collect segment-processing and token-lookup events. Tracing covers expansion, not parsing. Events include the segment index, raw template segment, the command that handled it, and lookup purpose, source, and result. Resolved token values are not included.
+
+```C#
+var resolver = new InterpolatedStringResolver(StringTokenFormatterSettings.Default);
+var container = resolver.Builder()
+    .AddSingle("name", "Ada")
+    .CombinedResult();
+var trace = new InterpolatedStringResolverTrace();
+
+string result = resolver.FromContainer("Hello {name}", container, trace);
+string report = trace.ToReport();
+```
+
+The report starts like this:
+
+```text
+Segment 0 Started [Literal]: "Hello "
+Segment 0 Completed [Literal, StandardCommand]: "Hello "
+Segment 1 Started [Token]: "{name}"
+Lookup TokenValue "name" via Container: succeeded
+...
+```
+
+Events are appended to the trace instance and can be removed with `Clear()`. Use a separate trace instance for each expansion, especially for concurrent expansions.
 
 # Performance tuning
 

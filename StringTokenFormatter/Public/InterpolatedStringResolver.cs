@@ -89,10 +89,20 @@ public class InterpolatedStringResolver(StringTokenFormatterSettings settings)
     public string FromContainer(string interpolatedString, ITokenValueContainer tokenValueContainer) =>
        FromContainer(Interpolate(interpolatedString), tokenValueContainer);
     /// <summary>
+    /// Resolves the interpolated string and collects trace events.
+    /// </summary>
+    public string FromContainer(string interpolatedString, ITokenValueContainer tokenValueContainer, InterpolatedStringResolverTrace trace) =>
+        FromContainer(Interpolate(interpolatedString), tokenValueContainer, trace);
+    /// <summary>
     /// Resolves the interpolated string by searching child containers in order added for the first valid token value. 
     /// </summary>
     public string FromContainer(InterpolatedString segments, ITokenValueContainer tokenValueContainer) =>
         InterpolatedStringExpander.Expand(segments, tokenValueContainer, formatter);
+    /// <summary>
+    /// Resolves the interpolated string and collects trace events.
+    /// </summary>
+    public string FromContainer(InterpolatedString segments, ITokenValueContainer tokenValueContainer, InterpolatedStringResolverTrace trace) =>
+        InterpolatedStringExpander.Expand(segments, tokenValueContainer, formatter, Guard.NotNull(trace, nameof(trace)));
 
     /// <summary>
     /// Parses the raw string into an `InterpolatedString`.

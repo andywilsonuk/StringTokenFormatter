@@ -5,14 +5,19 @@ public static class ExpanderContextExtensions
     public static TryGetResult TryGetTokenValue(this ExpanderContext context, string tokenName)
     {
         TryGetResult pseudoMatch = context.Commands.TryMapPseudo(context, tokenName);
+        if (OrdinalValueHelper.StartsWith(tokenName, Constants.PseudoPrefix))
+        {
+            context.Trace.RecordTokenLookup(tokenName, TokenLookupPurpose.TokenValue, TokenLookupSource.PseudoCommand, pseudoMatch.IsSuccess);
+        }
         if (pseudoMatch.IsSuccess) { return pseudoMatch; }
 
-        TryGetResult containerMatch = context.Container.TryMap(tokenName);
+        TryGetResult containerMatch = context.TryMapContainerToken(tokenName);
         if (containerMatch.IsSuccess)
         {
             if (containerMatch.Value is not ISequenceTokenValueContainer sequence) { return containerMatch; }
 
             TryGetResult sequenceMatch = sequence.TryMap(tokenName, GetLoopIteration(context, sequence));
+            context.Trace.RecordTokenLookup(tokenName, TokenLookupPurpose.TokenValue, TokenLookupSource.Sequence, sequenceMatch.IsSuccess);
             if (sequenceMatch.IsSuccess) { return sequenceMatch; }
 
         }
@@ -22,12 +27,15 @@ public static class ExpanderContextExtensions
         Guard.IsDefined(behavior, nameof(IUnresolvedTokenReplacementSettings.UnresolvedTokenReplacementFormatter));
         if (behavior == UnresolvedTokenBehavior.Throw)
         {
+            context.Trace.RecordTokenLookup(tokenName, TokenLookupPurpose.TokenValue, TokenLookupSource.Unresolved, false);
             throw new UnresolvedTokenException($"Token '{tokenName}' was not found within the container");
         }
         if (behavior == UnresolvedTokenBehavior.Replace)
         {
+            context.Trace.RecordTokenLookup(tokenName, TokenLookupPurpose.TokenValue, TokenLookupSource.Replacement, true);
             return TryGetResult.Success(replacementSettings?.UnresolvedTokenReplacement ?? string.Empty);
         }
+        context.Trace.RecordTokenLookup(tokenName, TokenLookupPurpose.TokenValue, TokenLookupSource.Unresolved, false);
         return default;
     }
 

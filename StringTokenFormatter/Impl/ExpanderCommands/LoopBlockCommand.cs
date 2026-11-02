@@ -48,7 +48,7 @@ public sealed class LoopBlockCommand : IExpanderCommand, IExpanderPseudoCommands
 
         if (tokenName != string.Empty)
         {
-            TryGetResult tokenValueResult = context.Container.TryMap(tokenName);
+            TryGetResult tokenValueResult = context.TryMapContainerToken(tokenName, TokenLookupPurpose.Loop);
             if (!tokenValueResult.IsSuccess)
             {
                 context.StringBuilder.AppendLiteral(segment.Raw);

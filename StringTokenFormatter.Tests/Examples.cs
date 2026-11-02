@@ -43,6 +43,26 @@ public class Examples
     }
 
     /// <summary>
+    /// A resolver trace can be rendered as a human-readable report.
+    /// </summary>
+    [Fact]
+    public void InterpolatedStringResolverTraceReport()
+    {
+        InterpolatedStringResolver resolver = new(StringTokenFormatterSettings.Default);
+        ITokenValueContainer container = resolver.Builder()
+            .AddSingle("name", "Ada")
+            .CombinedResult();
+        InterpolatedStringResolverTrace trace = new();
+
+        string actual = resolver.FromContainer("Hello {name}", container, trace);
+        string report = trace.ToReport();
+
+        Assert.Equal("Hello Ada", actual);
+        Assert.StartsWith("Segment 0 Started [Literal]: \"Hello \"", report);
+        Assert.Contains("Lookup TokenValue \"name\" via Container: succeeded", report);
+    }
+
+    /// <summary>
     /// Loop commands can use list of primatives, in this case `string`.
     /// Map commands can use `Func` expressions.
     /// Container builder for ease of use.
