@@ -95,10 +95,10 @@ public class Examples
         static string nameFormatter(string value, string formatString) => formatString == "titleCase" ? $"{value.Substring(0, 1).ToUpper()}{value.Substring(1).ToLower()}" : value;
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new[] {
+            FormatterDefinitions = [
                 FormatterDefinition.ForType<int>(intFormatter),
                 FormatterDefinition.ForTokenName<string>("Account.Name", nameFormatter)
-            },
+            ],
         };
         var resolver = new InterpolatedStringResolver(settings);
         var account = new
@@ -152,10 +152,10 @@ public class Examples
         var settings = StringTokenFormatterSettings.Default with
         {
             FormatProvider = CultureInfo.GetCultureInfo("en-US"),
-            FormatterDefinitions = new[] {
+            FormatterDefinitions = [
                 FormatterDefinition.ForTokenName<int>("Order.Id", OrderIdFormatter),
                 FormatterDefinition.ForType<Guid>(GuidFormatter),
-            },
+            ],
         };
         var resolver = new InterpolatedStringResolver(settings);
         string templateString = new StringBuilder()
@@ -227,14 +227,14 @@ public class Examples
     {
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new[]
-            {
+            FormatterDefinitions =
+            [
                 FormatterDefinition.ForType<string>((value, format, tokenName) =>
                     tokenName.EndsWith("Phone", StringComparison.OrdinalIgnoreCase)
                         && value.Length == 10 && value.All(char.IsDigit)
                             ? $"({value.Substring(0, 3)}) {value.Substring(3, 3)}-{value.Substring(6)}"
                             : value),
-            },
+            ],
         };
         var resolver = new InterpolatedStringResolver(settings);
 

@@ -128,7 +128,7 @@ public class TokenAwareFormatterTests
         var tokenAware = FormatterDefinition.ForType((int value, string formatString, string tokenName) => "token-aware");
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = tokenAwareFirst ? new[] { tokenAware, legacy } : new[] { legacy, tokenAware },
+            FormatterDefinitions = tokenAwareFirst ? new[] { tokenAware, legacy } : [legacy, tokenAware],
         };
         var segments = new SegmentBuilder().Token("amount", string.Empty, "custom").Build();
         var values = new BasicContainer();
@@ -207,11 +207,11 @@ public class TokenAwareFormatterTests
     [Fact]
     public void OpenInstanceTokenAwareDelegate_UsesDelegateArityInsteadOfTargetMethodArity()
     {
-        var method = typeof(string).GetMethod(nameof(string.Replace), new[] { typeof(string), typeof(string) })!;
+        var method = typeof(string).GetMethod(nameof(string.Replace), [typeof(string), typeof(string)])!;
         var callback = (Func<string, string, string, string>)Delegate.CreateDelegate(typeof(Func<string, string, string, string>), method);
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new[] { FormatterDefinition.ForType(callback) },
+            FormatterDefinitions = [FormatterDefinition.ForType(callback)],
         };
         var segments = new SegmentBuilder().Token("amount", string.Empty, "custom").Build();
         var values = new BasicContainer();
@@ -284,7 +284,7 @@ public class TokenAwareFormatterTests
     {
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new[] { definition },
+            FormatterDefinitions = [definition],
             InvalidFormatBehavior = behavior,
             FormatProvider = CultureInfo.InvariantCulture,
             NameComparer = StringComparer.OrdinalIgnoreCase,

@@ -267,7 +267,7 @@ public class InterpolatedStringExpanderMapCommandTests
             .Command("loopend", string.Empty, string.Empty)
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { TestEnum.First, TestEnum.Second });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [TestEnum.First, TestEnum.Second]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -286,7 +286,7 @@ public class InterpolatedStringExpanderMapCommandTests
         var interpolatedString = new InterpolatedString(segments, settings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { Name = TestEnum.First });
         var o2 = TokenValueContainerFactory.FromObject(settings, new { Name = TestEnum.Second });
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { o1, o2 });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [o1, o2]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -303,7 +303,7 @@ public class InterpolatedStringExpanderMapCommandTests
             .Command("loopend", string.Empty, string.Empty)
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b", "c" });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", ["a", "b", "c"]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -320,7 +320,7 @@ public class InterpolatedStringExpanderMapCommandTests
             .Command("loopend", string.Empty, string.Empty)
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b", "c" });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", ["a", "b", "c"]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);

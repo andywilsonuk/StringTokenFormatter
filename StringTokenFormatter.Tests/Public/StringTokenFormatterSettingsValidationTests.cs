@@ -78,10 +78,10 @@ public class StringTokenFormatterSettingsValidationTests
     {
         var settings = StringTokenFormatterSettings.Default with
         {
-            FormatterDefinitions = new[] {
+            FormatterDefinitions = [
                 FormatterDefinition.ForType<int>((_1, _2) => "1"),
                 FormatterDefinition.ForType<int>((_1, _2) => "2"),
-            },
+            ],
         };
 
         Assert.Throws<ArgumentException>(() => settings.Validate());

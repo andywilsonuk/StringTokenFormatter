@@ -152,7 +152,7 @@ public class InterpolatedStringExpanderTests
             .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
-            ValueConverters = new TokenValueConverter[] { base2Converter },
+            ValueConverters = [base2Converter],
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", 2);
@@ -173,7 +173,7 @@ public class InterpolatedStringExpanderTests
 
         var settings = new StringTokenFormatterSettings
         {
-            ValueConverters = StringTokenFormatterSettings.Default.ValueConverters.Concat(new TokenValueConverter[] { converter }).ToList().AsReadOnly()
+            ValueConverters = StringTokenFormatterSettings.Default.ValueConverters.Concat([converter]).ToList().AsReadOnly()
         };
         var segments = new SegmentBuilder()
             .Token("two", string.Empty, string.Empty)
@@ -194,7 +194,7 @@ public class InterpolatedStringExpanderTests
             .Build();
         var settings = StringTokenFormatterSettings.Default with
         {
-            ValueConverters = new[] { TokenValueConverterFactory.NullConverter() },
+            ValueConverters = [TokenValueConverterFactory.NullConverter()],
         };
         var interpolatedString = new InterpolatedString(segments, settings);
         valuesContainer.Add("two", "2");

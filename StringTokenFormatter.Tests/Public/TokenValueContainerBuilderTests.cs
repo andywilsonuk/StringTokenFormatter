@@ -39,7 +39,7 @@ public partial class TokenValueContainerBuilderTests
     [Fact]
     public void AddSequence_StringSequence_PrimativeValuesMaintained()
     {
-        builder.AddSequence("Seq", new string[] { "first", "second" });
+        builder.AddSequence("Seq", ["first", "second"]);
         var combinedContainer = builder.CombinedResult();
 
         var container = Assert.IsAssignableFrom<SequenceTokenValueContainer>(combinedContainer.TryMap("Seq").Value);
@@ -52,7 +52,7 @@ public partial class TokenValueContainerBuilderTests
     [Fact]
     public void AddSequence_IntSequence_PrimativeValuesMaintained()
     {
-        builder.AddSequence("Seq", new int[] { 1, 2 });
+        builder.AddSequence("Seq", [1, 2]);
         var combinedContainer = builder.CombinedResult();
 
         var container = Assert.IsAssignableFrom<SequenceTokenValueContainer>(combinedContainer.TryMap("Seq").Value);
@@ -65,7 +65,7 @@ public partial class TokenValueContainerBuilderTests
     [Fact]
     public void AddSequence_ClassSequence_ObjectValueOutput()
     {
-        builder.AddSequence("Seq", new[] { new ComplexClass("first"), new ComplexClass("second") });
+        builder.AddSequence("Seq", [new ComplexClass("first"), new ComplexClass("second")]);
         var combinedContainer = builder.CombinedResult();
 
         string interpolatedString = "{:loop,Seq}{Seq.Value} {:loopend}";
@@ -77,7 +77,7 @@ public partial class TokenValueContainerBuilderTests
     [Fact]
     public void AddSequence_StructSequence_ObjectValueOutput()
     {
-        builder.AddSequence("Seq", new[] { new ComplexStruct("first"), new ComplexStruct("second") });
+        builder.AddSequence("Seq", [new ComplexStruct("first"), new ComplexStruct("second")]);
         var combinedContainer = builder.CombinedResult();
 
         string interpolatedString = "{:loop,Seq}{Seq.Value} {:loopend}";
@@ -89,7 +89,7 @@ public partial class TokenValueContainerBuilderTests
     [Fact]
     public void AddSequence_AnonymousSequence_ObjectValueOutput()
     {
-        builder.AddSequence("Seq", new[] { new { Value = "first" }, new { Value = "second" } });
+        builder.AddSequence("Seq", [new { Value = "first" }, new { Value = "second" }]);
         var combinedContainer = builder.CombinedResult();
 
         string interpolatedString = "{:loop,Seq}{Seq.Value} {:loopend}";
@@ -101,7 +101,7 @@ public partial class TokenValueContainerBuilderTests
     [Fact]
     public void AddPrefixedSequence_StringSequence_PrimativeValuesMaintained()
     {
-        builder.AddPrefixedSequence("prefix", "Seq", new string[] { "first", "second" });
+        builder.AddPrefixedSequence("prefix", "Seq", ["first", "second"]);
         var combinedContainer = builder.CombinedResult();
 
         var actual = combinedContainer.TryMap("prefix.Seq");

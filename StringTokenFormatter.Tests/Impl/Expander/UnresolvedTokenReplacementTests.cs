@@ -305,11 +305,11 @@ public class UnresolvedTokenReplacementTests
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.Replace,
             UnresolvedTokenReplacement = "fallback",
-            FormatterDefinitions = new[]
-            {
+            FormatterDefinitions =
+            [
                 FormatterDefinition.ForTokenNameAndFormatString("missing", "upper",
                     (string value, string _) => value.ToUpperInvariant()),
-            },
+            ],
         };
 
         var actual = Expand("{missing,10:upper}", settings);
@@ -425,11 +425,11 @@ public class UnresolvedTokenReplacementTests
                 return UnresolvedTokenBehavior.Replace;
             },
         };
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[]
-        {
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator",
+        [
             new BasicContainer().Add("Name", "first"),
             new BasicContainer(),
-        });
+        ]);
         var container = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = Expand("{:loop,Iterator}{::loopiteration}{Iterator.Name};{:loopend}", settings, container);
@@ -508,7 +508,7 @@ public class UnresolvedTokenReplacementTests
                 selectorCalls.Add(tokenName);
                 return UnresolvedTokenBehavior.Replace;
             },
-            ValueConverters = new[] { converter },
+            ValueConverters = [converter],
         };
 
         var actual = Expand("{:if,missing}yes{:ifend}|{:if,!missing}no{:ifend}", settings);

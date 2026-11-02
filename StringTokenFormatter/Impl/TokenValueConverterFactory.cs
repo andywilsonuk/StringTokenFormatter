@@ -16,8 +16,8 @@ public static class TokenValueConverterFactory
 
     public static TokenValueConverter FuncConverterNonGeneric() => (v, _n) => v is not null ? InvokeNonGenericFuncOrDefault(v.GetType(), typeof(Func<>), v, null) : default;
 
-    public static TokenValueConverter TokenFuncConverterNonGeneric() => (v, n) => v is not null ? InvokeNonGenericFuncOrDefault(v.GetType(), typeof(Func<,>), v, new[] { n }) : default;
-    
+    public static TokenValueConverter TokenFuncConverterNonGeneric() => (v, n) => v is not null ? InvokeNonGenericFuncOrDefault(v.GetType(), typeof(Func<,>), v, [n]) : default;
+
     public static TokenValueConverter ToStringConverter<T>() => (v, _n) => v is not null && v is T ? TryGetResult.Success(v.ToString()) : default;
 
     private static TryGetResult InvokeNonGenericFuncOrDefault(Type valueType, Type funcType, object value, object[]? parameters)

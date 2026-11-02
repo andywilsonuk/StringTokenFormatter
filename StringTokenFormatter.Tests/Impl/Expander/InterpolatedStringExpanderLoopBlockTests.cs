@@ -204,7 +204,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Command("loopend", string.Empty, string.Empty)
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b" });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", ["a", "b"]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -223,7 +223,7 @@ public class InterpolatedStringExpanderLoopBlockTests
         var interpolatedString = new InterpolatedString(segments, settings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { Name = "a" });
         var o2 = TokenValueContainerFactory.FromObject(settings, new { Name = "b" });
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { o1, o2 });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [o1, o2]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -257,7 +257,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Command("loopend", string.Empty, string.Empty)
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b" });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", ["a", "b"]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -320,7 +320,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { NotName = "a" });
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { o1 });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [o1]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         Assert.Throws<UnresolvedTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer));
@@ -335,7 +335,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Command("loopend", string.Empty, string.Empty)
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { new object() });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [new object()]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         Assert.Throws<MissingValueConverterException>(() => InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer));
@@ -351,7 +351,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { Name = new object() });
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { o1 });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [o1]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         Assert.Throws<MissingValueConverterException>(() => InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer));
@@ -372,7 +372,7 @@ public class InterpolatedStringExpanderLoopBlockTests
         var interpolatedString = new InterpolatedString(segments, customSettings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { NotName = "a" });
         var o2 = TokenValueContainerFactory.FromObject(settings, new { NotName = "b" });
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { o1, o2 });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [o1, o2]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -387,7 +387,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Token("Iterator", string.Empty, string.Empty)
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { new object() });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [new object()]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer));
@@ -400,7 +400,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Pseudo("loopiteration", string.Empty, string.Empty)
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { new object() });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [new object()]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer));
@@ -438,8 +438,8 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Command("loopend", string.Empty, string.Empty)
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence1 = TokenValueContainerFactory.FromSequence(settings, "S1", new[] { "a", "b" });
-        var sequence2 = TokenValueContainerFactory.FromSequence(settings, "S2", new[] { "c" });
+        var sequence1 = TokenValueContainerFactory.FromSequence(settings, "S1", ["a", "b"]);
+        var sequence2 = TokenValueContainerFactory.FromSequence(settings, "S2", ["c"]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence1, sequence2);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -464,7 +464,7 @@ public class InterpolatedStringExpanderLoopBlockTests
         var interpolatedString = new InterpolatedString(segments, customSettings);
         var o1 = TokenValueContainerFactory.FromObject(customSettings, new { IsValue = false, Name = "a" });
         var o2 = TokenValueContainerFactory.FromObject(customSettings, new { IsValue = true, Name = "b" });
-        var sequence = TokenValueContainerFactory.FromSequence(customSettings, "Iterator", new[] { o1, o2 });
+        var sequence = TokenValueContainerFactory.FromSequence(customSettings, "Iterator", [o1, o2]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(customSettings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -481,7 +481,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Command("loopend", string.Empty, string.Empty)
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b" });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", ["a", "b"]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
@@ -498,7 +498,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Command("loopend", string.Empty, string.Empty)
             .Build();
         var interpolatedString = new InterpolatedString(segments, settings);
-        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", new[] { "a", "b" });
+        var sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", ["a", "b"]);
         var wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
         var actual = InterpolatedStringExpander.Expand(interpolatedString, wrapperContainer);
