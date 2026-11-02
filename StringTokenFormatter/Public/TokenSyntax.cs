@@ -4,26 +4,29 @@ public readonly record struct TokenSyntax(string Start, string End, string Escap
 
 public static class TokenSyntaxExtensions
 {
-    /// <summary>
-    /// Returns the token name wrapped within the start and end syntax.
-    /// </summary>
-    public static string Tokenize(this TokenSyntax syntax, string tokenName) => $"{syntax.Start}{tokenName}{syntax.End}";
-
-    /// <summary>
-    /// Escapes token start markers in the text so they are treated as literal text.
-    /// </summary>
-    public static string Escape(this TokenSyntax syntax, string value) => value.Replace(syntax.Start, syntax.EscapedStart);
-
-    /// <summary>
-    /// Asserts that the syntax is properly configured
-    /// </summary>
-    public static TokenSyntax Validate(this TokenSyntax syntax)
+    extension(TokenSyntax syntax)
     {
-        (string? start, string? end, string? escapedStart) = syntax;
-        Guard.NotEmpty(start, nameof(start));
-        Guard.NotEmpty(end, nameof(end));
-        Guard.NotEmpty(escapedStart, nameof(escapedStart));
-        if (new HashSet<string> { start, syntax.End, escapedStart }.Count != 3) { throw new ArgumentException($"Duplicate token marker detected for syntax {syntax}"); }
-        return syntax;
+        /// <summary>
+        /// Returns the token name wrapped within the start and end syntax.
+        /// </summary>
+        public string Tokenize(string tokenName) => $"{syntax.Start}{tokenName}{syntax.End}";
+
+        /// <summary>
+        /// Escapes token start markers in the text so they are treated as literal text.
+        /// </summary>
+        public string Escape(string value) => value.Replace(syntax.Start, syntax.EscapedStart);
+
+        /// <summary>
+        /// Asserts that the syntax is properly configured
+        /// </summary>
+        public TokenSyntax Validate()
+        {
+            (string? start, string? end, string? escapedStart) = syntax;
+            Guard.NotEmpty(start, nameof(start));
+            Guard.NotEmpty(end, nameof(end));
+            Guard.NotEmpty(escapedStart, nameof(escapedStart));
+            if (new HashSet<string> { start, syntax.End, escapedStart }.Count != 3) { throw new ArgumentException($"Duplicate token marker detected for syntax {syntax}"); }
+            return syntax;
+        }
     }
 }

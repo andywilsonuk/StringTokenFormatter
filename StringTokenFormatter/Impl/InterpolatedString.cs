@@ -4,17 +4,20 @@ public record InterpolatedString(IReadOnlyCollection<InterpolatedStringSegment> 
 
 public static class InterpolatedStringExtensions
 {
-    /// <summary>
-    /// Returns the distinct tokens present within the `InterpolatedString`
-    /// </summary>
-    public static HashSet<string> Tokens(this InterpolatedString interpolatedString) =>
-        new(interpolatedString.Segments.OfType<InterpolatedStringTokenOnlySegment>().Select(x => x.Token).Where(x => x != string.Empty), interpolatedString.Settings.NameComparer);
+    extension(InterpolatedString interpolatedString)
+    {
+        /// <summary>
+        /// Returns the distinct tokens present within the `InterpolatedString`
+        /// </summary>
+        public HashSet<string> Tokens() =>
+            new(interpolatedString.Segments.OfType<InterpolatedStringTokenOnlySegment>().Select(x => x.Token).Where(x => x != string.Empty), interpolatedString.Settings.NameComparer);
 
-    /// <summary>
-    /// Combines the `InterpolatedString` segments into a `string` instance
-    /// </summary>
-    public static string ToRawString(this InterpolatedString interpolatedString) =>
-        string.Join(null, interpolatedString.Segments.Select(x => x.Raw));
+        /// <summary>
+        /// Combines the `InterpolatedString` segments into a `string` instance
+        /// </summary>
+        public string ToRawString() =>
+            string.Join(null, interpolatedString.Segments.Select(x => x.Raw));
+    }
 }
 
 public abstract record InterpolatedStringSegment(string Raw);
@@ -27,6 +30,13 @@ public record InterpolatedStringCommandSegment(string Raw, string Command, strin
 
 public static class InterpolatedStringSegmentExtensions
 {
-    public static bool IsCommandEqual(this InterpolatedStringCommandSegment segment, string command) => OrdinalValueHelper.AreEqual(segment.Command, command);
-    public static bool IsPseudoEqual(this InterpolatedStringTokenSegment segment, string pseudoTokenCommand) => OrdinalValueHelper.AreEqual(segment.Token, pseudoTokenCommand);
+    extension(InterpolatedStringCommandSegment segment)
+    {
+        public bool IsCommandEqual(string command) => OrdinalValueHelper.AreEqual(segment.Command, command);
+    }
+
+    extension(InterpolatedStringTokenSegment segment)
+    {
+        public bool IsPseudoEqual(string pseudoTokenCommand) => OrdinalValueHelper.AreEqual(segment.Token, pseudoTokenCommand);
+    }
 }
