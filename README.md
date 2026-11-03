@@ -236,6 +236,22 @@ string result = templateString.FormatFromObject(tokenValues);
 Assert.Equal("start center end", result);
 ```
 
+Nested object properties and child values in dictionaries can be resolved by opting in through settings. The configured `HierarchicalDelimiter` separates each property or key name.
+
+```C#
+var settings = StringTokenFormatterSettings.Default with { ResolveNestedValues = NestedValueResolution.Nested };
+var resolver = new InterpolatedStringResolver(settings);
+var account = new { Customer = new { Name = "Ada" } };
+var container = resolver.Builder()
+    .AddPrefixedObject("Account", account)
+    .CombinedResult();
+
+string result = resolver.FromContainer("{Account.Customer.Name}", container);
+Assert.Equal("Ada", result);
+```
+
+The [ResolveNestedValues setting defaults](#resolvenestedvalues) to `NestedValueResolution.Direct`, preserving direct-property only lookup behavior.
+
 Using a dictionary of values or other implementation of `IEnumerable<KeyValuePair<string, object>>` to resolve tokens:
 ```C#
 string templateString = "start {middle} end";
@@ -636,6 +652,10 @@ For more information see the [formatter definitions](#formatter-definitions) sec
 
 The comparer used by `ITokenValueContainer` when performing token to value look-ups. Takes a standard `StringComparer`. Default `StringComparer.OrdinalIgnoreCase`.
 
+### `ResolveNestedValues`
+
+A `NestedValueResolution` enum controlling how object and dictionary value containers resolve child values. `Nested` enables resolving nested child values, such as object properties and string-keyed dictionary entries, for example `Customer.Name`. The default is `Direct`, preserving direct child-only lookup.
+
 ### `Commands`
 
 The collection of `IExpanderCommand` implementations to be used by the `InterpolatedStringExpander`. Default collection from `ExpanderCommandFactory`: `Conditional`, `Loop`, `Map`, `Standard`.
@@ -809,6 +829,7 @@ Events are appended to the trace instance and can be removed with `Clear()`. Use
 - Remove unused commands from the [settings](#settings)
 - Remove unused Value Converters from the [settings](#settings)
 - Reuse [Value Containers](#value-containers) where possible
+- Ensure [ResolveNestedValues setting](#resolvenestedvalues) is `Direct`.
 - Use .NET 6 or above for improved parsing performance
 - Use .NET 8 Frozen Dictionary for faster read access, see the [Frozen Dictionary section](#frozen-dictionary-support-in-net-8)
 

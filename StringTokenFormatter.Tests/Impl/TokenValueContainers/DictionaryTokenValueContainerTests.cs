@@ -1,3 +1,5 @@
+using System.Collections.Frozen;
+
 namespace StringTokenFormatter.Tests;
 
 public class DictionaryTokenValueContainerTests
@@ -145,5 +147,59 @@ public class DictionaryTokenValueContainerTests
         TryGetResult actual = container.TryMap("a");
 
         Assert.Equal(new TryGetResult { IsSuccess = true, Value = 1 }, actual);
+    }
+
+    [Fact]
+    public void TryMap_NestedObjectValue_WhenEnabled_ReturnsSuccess()
+    {
+        (string, object)[] pairs = [("Customer", new { Name = "Ada" })];
+        StringTokenFormatterSettings settings = new() { ResolveNestedValues = NestedValueResolution.Nested };
+        DictionaryTokenValueContainer<object> container = TokenValueContainerFactory.FromTuples(settings, pairs);
+
+        TryGetResult actual = container.TryMap("Customer.Name");
+
+        Assert.Equal(new TryGetResult { IsSuccess = true, Value = "Ada" }, actual);
+    }
+
+    [Fact]
+    public void TryMap_NestedDictionaryValue_WhenEnabled_ReturnsSuccess()
+    {
+        (string, object)[] pairs =
+        [
+            ("Customer", new Dictionary<string, object> { ["Name"] = "Ada" }),
+        ];
+        StringTokenFormatterSettings settings = new() { ResolveNestedValues = NestedValueResolution.Nested };
+        DictionaryTokenValueContainer<object> container = TokenValueContainerFactory.FromTuples(settings, pairs);
+
+        TryGetResult actual = container.TryMap("Customer.Name");
+
+        Assert.Equal(new TryGetResult { IsSuccess = true, Value = "Ada" }, actual);
+    }
+
+    [Fact]
+    public void TryMap_NestedFrozenDictionaryValue_WhenEnabled_ReturnsSuccess()
+    {
+        (string, object)[] pairs =
+        [
+            ("Customer", new Dictionary<string, object> { ["Name"] = "Ada" }.ToFrozenDictionary()),
+        ];
+        StringTokenFormatterSettings settings = new() { ResolveNestedValues = NestedValueResolution.Nested };
+        DictionaryTokenValueContainer<object> container = TokenValueContainerFactory.FromTuples(settings, pairs);
+
+        TryGetResult actual = container.TryMap("Customer.Name");
+
+        Assert.Equal(new TryGetResult { IsSuccess = true, Value = "Ada" }, actual);
+    }
+
+    [Fact]
+    public void TryMap_NestedUnknownChildValue_WhenEnabled_ReturnsDefault()
+    {
+        (string, object)[] pairs = [("Customer", new { Name = "Ada" })];
+        StringTokenFormatterSettings settings = new() { ResolveNestedValues = NestedValueResolution.Nested };
+        DictionaryTokenValueContainer<object> container = TokenValueContainerFactory.FromTuples(settings, pairs);
+
+        TryGetResult actual = container.TryMap("Customer.Bogus");
+
+        Assert.Equal(default, actual);
     }
 }

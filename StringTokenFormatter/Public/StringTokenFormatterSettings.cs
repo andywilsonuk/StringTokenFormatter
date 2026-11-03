@@ -88,6 +88,31 @@ public interface ITokenValueContainerSettings
     public StringComparer NameComparer { get; }
 }
 /// <summary>
+/// Determines how value containers resolve child values.
+/// </summary>
+public enum NestedValueResolution
+{
+    /// <summary>
+    /// Only direct child values are resolved; tokens are matched as whole names.
+    /// </summary>
+    Direct,
+    /// <summary>
+    /// Nested child values, such as object properties and string-keyed dictionary entries,
+    /// are resolved using the hierarchical delimiter, for example `Customer.Name`.
+    /// </summary>
+    Nested,
+}
+/// <summary>
+/// Optional settings for resolving nested child values.
+/// </summary>
+public interface INestedTokenValueContainerSettings
+{
+    /// <summary>
+    /// Gets how containers resolve child values. Default <see cref="NestedValueResolution.Direct"/>.
+    /// </summary>
+    public NestedValueResolution ResolveNestedValues { get; }
+}
+/// <summary>
 /// Optional settings for replacing unresolved tokens, used alongside <see cref="IInterpolatedStringSettings"/>.
 /// </summary>
 public interface IUnresolvedTokenReplacementSettings
@@ -118,7 +143,7 @@ public interface IHierarchicalTokenValueContainerSettings : ITokenValueContainer
     public string HierarchicalDelimiter { get; }
 }
 public record StringTokenFormatterSettings
-    : ITokenValueContainerSettings, IInterpolatedStringSettings, ICompositeTokenValueContainerSettings, IHierarchicalTokenValueContainerSettings, IUnresolvedTokenReplacementSettings
+    : ITokenValueContainerSettings, IInterpolatedStringSettings, ICompositeTokenValueContainerSettings, IHierarchicalTokenValueContainerSettings, IUnresolvedTokenReplacementSettings, INestedTokenValueContainerSettings
 {
     /// <summary>
     /// Initial settings from which custom settings can be derived.
@@ -152,6 +177,12 @@ public record StringTokenFormatterSettings
     }
 
     public string HierarchicalDelimiter { get; init; } = ".";
+    /// <summary>
+    /// Gets how containers resolve child values, such as object properties and
+    /// string-keyed dictionary entries, for example `Customer.Name`.
+    /// Defaults to <see cref="NestedValueResolution.Direct"/>.
+    /// </summary>
+    public NestedValueResolution ResolveNestedValues { get; init; }
 
     public IReadOnlyCollection<FormatterDefinition> FormatterDefinitions
     {

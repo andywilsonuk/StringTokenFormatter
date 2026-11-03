@@ -3,12 +3,18 @@
 public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T : notnull
 {
     private readonly ITokenValueContainerSettings settings;
+    private readonly T source;
+    private readonly bool resolveNestedValues;
+    private readonly string hierarchicalDelimiter;
     private IDictionary<string, NonLockingLazy> pairs;
 
     internal ObjectTokenValueContainer(ITokenValueContainerSettings settings, T source)
     {
         this.settings = Guard.NotNull(settings, nameof(settings)).Validate();
-        this.pairs = CreateDictionary(Guard.NotNull(source, nameof(source)));
+        this.source = Guard.NotNull(source, nameof(source));
+        resolveNestedValues = NestedTokenValueResolver.IsEnabled(this.settings);
+        hierarchicalDelimiter = NestedTokenValueResolver.GetDelimiter(this.settings);
+        this.pairs = CreateDictionary(this.source);
     }
 
     private Dictionary<string, NonLockingLazy> CreateDictionary(T source)
@@ -22,7 +28,31 @@ public sealed class ObjectTokenValueContainer<T> : ITokenValueContainer where T 
         return d;
     }
 
-    public TryGetResult TryMap(string token) => pairs.TryGetValue(token, out NonLockingLazy? lazy) ? TryGetResult.Success(lazy.Value) : default;
+    public TryGetResult TryMap(string token)
+    {
+        if (pairs.TryGetValue(token, out NonLockingLazy? lazy)) { return TryGetResult.Success(lazy.Value); }
+        return resolveNestedValues ? TryMapNested(token) : default;
+    }
+
+    private TryGetResult TryMapNested(string token)
+    {
+        int delimiterIndex = token.IndexOf(hierarchicalDelimiter, StringComparison.Ordinal);
+        if (delimiterIndex < 0) { return default; }
+
+        // The root segment is resolved from the pre-built property pairs, falling back to
+        // direct child resolution for sources such as dictionaries whose entries are not properties.
+        object? rootValue;
+        string rootSegment = token[..delimiterIndex];
+        if (pairs.TryGetValue(rootSegment, out NonLockingLazy? rootLazy))
+        {
+            rootValue = rootLazy.Value;
+        }
+        else if (!NestedPropertyCache.TryGetChildValue(source, rootSegment, settings.NameComparer, out rootValue))
+        {
+            return default;
+        }
+        return NestedTokenValueResolver.TryMapSegments(token, delimiterIndex + hierarchicalDelimiter.Length, rootValue, hierarchicalDelimiter, settings.NameComparer);
+    }
 
     /// <summary>
     /// Converts the inner dictionary to a FrozenDictionary for faster read performance if reused on .NET 8 or later.

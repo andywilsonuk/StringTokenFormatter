@@ -37,6 +37,21 @@ public partial class TokenValueContainerBuilderTests
     }
 
     [Fact]
+    public void AddPrefixedObject_NestedProperties_WhenEnabled_AreResolved()
+    {
+        StringTokenFormatterSettings nestedSettings = settings with { ResolveNestedValues = NestedValueResolution.Nested };
+        InterpolatedStringResolver nestedResolver = new(nestedSettings);
+        var account = new { Customer = new { Name = "Ada" } };
+        ITokenValueContainer combinedContainer = nestedResolver.Builder()
+            .AddPrefixedObject("Account", account)
+            .CombinedResult();
+
+        string actual = nestedResolver.FromContainer("{Account.Customer.Name}", combinedContainer);
+
+        Assert.Equal("Ada", actual);
+    }
+
+    [Fact]
     public void AddSequence_StringSequence_PrimativeValuesMaintained()
     {
         builder.AddSequence("Seq", ["first", "second"]);

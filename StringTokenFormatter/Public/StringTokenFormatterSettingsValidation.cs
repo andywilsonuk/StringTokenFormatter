@@ -37,6 +37,10 @@ public static class StringTokenFormatterSettingsExtensions
         {
             Guard.NotNull(settings, nameof(settings));
             Guard.NotNull(settings.NameComparer, nameof(settings.NameComparer));
+            if (settings is INestedTokenValueContainerSettings nestedSettings)
+            {
+                Guard.IsDefined(nestedSettings.ResolveNestedValues, nameof(nestedSettings.ResolveNestedValues));
+            }
             return settings;
         }
     }
