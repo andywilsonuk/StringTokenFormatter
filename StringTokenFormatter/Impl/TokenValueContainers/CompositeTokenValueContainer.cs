@@ -13,6 +13,16 @@ public sealed class CompositeTokenValueContainer : ITokenValueContainer
         Guard.NotEmpty(this.containers, nameof(containers));
     }
 
-    public TryGetResult TryMap(string token) =>
-        containers.Select(c => c.TryMap(token)).FirstOrDefault(value => value.IsSuccess && settings.TokenResolutionPolicy.Satisfies(value.Value));
+    public TryGetResult TryMap(string token)
+    {
+        foreach (ITokenValueContainer container in containers)
+        {
+            TryGetResult value = container.TryMap(token);
+            if (value.IsSuccess && settings.TokenResolutionPolicy.Satisfies(value.Value))
+            {
+                return value;
+            }
+        }
+        return default;
+    }
 }
