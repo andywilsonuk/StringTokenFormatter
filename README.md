@@ -782,6 +782,8 @@ See also [Token Value Container Builder](#building-composite-token-value-contain
 
 Applies to token values after matching but before formatting. Converters are attempted in order so that once one has successfully converted the value then no further conversions take place. Default collection (from `TokenValueConverterFactory`):
 
+A converter is a `TokenValueConverter` delegate that receives the value and token name and returns a `TryGetResult`. Return `TryGetResult.Success(value)` when handled, or `default` to let the next converter try.
+
 | Value                       | Result                                                   |
 | :-------------------------: | :------------------------------------------------------: |
 | Null                        | no conversion                                            |
@@ -794,7 +796,7 @@ They can be useful to provide post-token match functionality; a great example is
 
 All token value types must be handled by a Value Converter otherwise an exception is thrown.
 
-By design `ToString()` is not used as a value converter because calling it on a custom object will yield the `object.ToString()` result which is often not the intended behavior. For scenarios when the `ToString()` has been overridden, the result of calling `StringTokenFormatter.Impl.TokenValueConverterFactory.ToStringConverter<T>()` can be added to the settings list of `ValueConverters` so that the `ToString()` method for that specific type will be used as a valid value conversion.
+By design `ToString()` is not used as a value converter because calling it on a custom object will yield the `object.ToString()` result which is often not the intended behavior. For scenarios when the `ToString()` has been overridden, add `TokenValueConverterExtras.ToStringConverter<T>()` to the settings list of `ValueConverters` so that the `ToString()` method for that specific type will be used as a valid value conversion.
 
 # Tracing
 
