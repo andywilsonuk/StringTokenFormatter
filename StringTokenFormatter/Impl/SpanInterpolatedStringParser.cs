@@ -1,17 +1,10 @@
 #if NET6_0_OR_GREATER
-using System.Text.RegularExpressions;
-
 namespace StringTokenFormatter.Impl;
 
 public static class SpanInterpolatedStringParser
 {
     private const string commandPrefix = Constants.CommandPrefix;
     private const string pseudoPrefix = Constants.PseudoPrefix;
-    private const string paddingSeparator = ",";
-    private const string formattingSeparator = ":";
-    private const string tokenComponentsPattern = $"^({pseudoPrefix}|{commandPrefix})?([^{paddingSeparator}{formattingSeparator}]*){paddingSeparator}?([^{formattingSeparator}]*){formattingSeparator}?(.*)$";
-    private static readonly RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant;
-    private static readonly Regex tokenComponentsRegex = new(tokenComponentsPattern, regexOptions);
 
     public static InterpolatedString Parse(string source, IInterpolatedStringSettings settings)
     {
@@ -23,7 +16,7 @@ public static class SpanInterpolatedStringParser
 
         (string? startToken, string? endToken, string? escapedStartToken) = settings.Syntax;
         List<TokenMatch> matches = GetTokenMatches(source, startToken, endToken, escapedStartToken);
-        IEnumerable<InterpolatedStringSegment> segments = ConvertToSegments(source, matches, startToken, endToken, escapedStartToken);
+        IEnumerable<InterpolatedStringSegment> segments = ConvertToSegments(source, matches, startToken, endToken);
         return new InterpolatedString(segments.ToList().AsReadOnly(), settings);
     }
 
@@ -72,7 +65,7 @@ public static class SpanInterpolatedStringParser
         return matches;
     }
 
-    private static IEnumerable<InterpolatedStringSegment> ConvertToSegments(string source, IEnumerable<TokenMatch> matches, string startToken, string endToken, string escapedStartToken)
+    private static IEnumerable<InterpolatedStringSegment> ConvertToSegments(string source, IEnumerable<TokenMatch> matches, string startToken, string endToken)
     {
         int index = 0;
         foreach (TokenMatch match in matches)
@@ -107,16 +100,68 @@ public static class SpanInterpolatedStringParser
 
     private static InterpolatedStringSegment ParseComponents(string segment, string startToken, string endToken)
     {
-        string componentPartsString = segment[startToken.Length..^endToken.Length];
-        string[] components = tokenComponentsRegex.Split(componentPartsString);
-        InterpolatedStringTokenOnlySegment parsedSegment = components switch
+        ReadOnlySpan<char> components = segment.AsSpan(startToken.Length, segment.Length - startToken.Length - endToken.Length);
+        ReadOnlySpan<char> prefix = ReadOnlySpan<char>.Empty;
+
+        if (components.StartsWith(pseudoPrefix.AsSpan(), StringComparison.Ordinal))
         {
-            [_, commandPrefix, string commandName, string tokenName, string data, _] => new InterpolatedStringCommandSegment(segment, commandName, tokenName, data),
-            [_, pseudoPrefix, string tokenName, string alignment, string format, _] when tokenName != string.Empty => new InterpolatedStringPseudoTokenSegment(segment, pseudoPrefix + tokenName, alignment, format),
-            [_, string tokenName, string alignment, string format, _] when tokenName != string.Empty => new InterpolatedStringTokenSegment(segment, tokenName, alignment, format),
-            _ => throw new ParserException($"Unable to parse segment: {segment}"),
-        };
-        return parsedSegment;
+            prefix = pseudoPrefix.AsSpan();
+            components = components[prefix.Length..];
+        }
+        else if (components.StartsWith(commandPrefix.AsSpan(), StringComparison.Ordinal))
+        {
+            prefix = commandPrefix.AsSpan();
+            components = components[prefix.Length..];
+        }
+
+        int tokenEnd = components.IndexOfAny(',', ':');
+        if (tokenEnd < 0)
+        {
+            tokenEnd = components.Length;
+        }
+
+        ReadOnlySpan<char> tokenName = components[..tokenEnd];
+        ReadOnlySpan<char> remaining = components[tokenEnd..];
+        ReadOnlySpan<char> alignment = ReadOnlySpan<char>.Empty;
+        ReadOnlySpan<char> formatOrData = ReadOnlySpan<char>.Empty;
+
+        if (!remaining.IsEmpty && remaining[0] == ',')
+        {
+            remaining = remaining[1..];
+            int formatSeparator = remaining.IndexOf(':');
+            if (formatSeparator < 0)
+            {
+                alignment = remaining;
+                remaining = ReadOnlySpan<char>.Empty;
+            }
+            else
+            {
+                alignment = remaining[..formatSeparator];
+                remaining = remaining[formatSeparator..];
+            }
+        }
+
+        if (!remaining.IsEmpty && remaining[0] == ':')
+        {
+            formatOrData = remaining[1..];
+        }
+
+        if (prefix.SequenceEqual(commandPrefix.AsSpan()))
+        {
+            return new InterpolatedStringCommandSegment(segment, tokenName.ToString(), alignment.ToString(), formatOrData.ToString());
+        }
+
+        if (prefix.SequenceEqual(pseudoPrefix.AsSpan()) && !tokenName.IsEmpty)
+        {
+            return new InterpolatedStringPseudoTokenSegment(segment, pseudoPrefix + tokenName.ToString(), alignment.ToString(), formatOrData.ToString());
+        }
+
+        if (prefix.IsEmpty && !tokenName.IsEmpty)
+        {
+            return new InterpolatedStringTokenSegment(segment, tokenName.ToString(), alignment.ToString(), formatOrData.ToString());
+        }
+
+        throw new ParserException($"Unable to parse segment: {segment}");
     }
 
     private readonly record struct TokenMatch(int Index, int Length, bool IsEscaped);
