@@ -1,4 +1,5 @@
 using System.Reflection;
+using FormatterAdapter = System.Func<object, string, string, string>;
 
 namespace StringTokenFormatter.Impl;
 
@@ -7,11 +8,14 @@ public sealed class ExpanderValueFormatter
     private readonly StringComparer tokenNameComparer;
     private readonly StringComparer formatStringComparer = StringComparer.OrdinalIgnoreCase;
     private readonly ILookup<Type, FormatterDefinition> definitions;
+    private readonly FormatterAdapterFactory formatterAdapterFactory;
 
     internal ExpanderValueFormatter(IEnumerable<FormatterDefinition> definitions, StringComparer tokenNameComparer)
     {
         this.tokenNameComparer = Guard.NotNull(tokenNameComparer, nameof(tokenNameComparer));
-        this.definitions = Guard.NotNull(definitions, nameof(definitions)).ToLookup(x => x.RequiredType);
+        FormatterDefinition[] definitionsArray = [.. Guard.NotNull(definitions, nameof(definitions))];
+        this.definitions = definitionsArray.ToLookup(x => x.RequiredType);
+        formatterAdapterFactory = FormatterAdapterFactory.Create(definitionsArray);
     }
 
     public bool TryFormat(object value, string tokenName, string formatString, out string formattedValue) =>
@@ -23,14 +27,21 @@ public sealed class ExpanderValueFormatter
         {
             if (TryGetBestDefinition(valueType, tokenName, formatString, out FormatterDefinition? definition))
             {
-                Delegate formatter = definition.Formatter;
-                int parameterCount = formatter.GetType().GetMethod("Invoke")!.GetParameters().Length;
-                formattedValue = (parameterCount switch
+                if (formatterAdapterFactory.TryGetAdapter(definition, out FormatterAdapter? adapter))
                 {
-                    2 => formatter.DynamicInvoke(value, formatString),
-                    3 => formatter.DynamicInvoke(value, formatString, tokenName),
-                    _ => throw new FormatException($"Formatter must accept two or three arguments, but accepts {parameterCount}"),
-                }) as string ?? string.Empty;
+                    formattedValue = adapter(value, formatString, tokenName) ?? string.Empty;
+                }
+                else
+                {
+                    Delegate formatter = definition.Formatter;
+                    int parameterCount = formatter.GetType().GetMethod("Invoke")!.GetParameters().Length;
+                    formattedValue = (parameterCount switch
+                    {
+                        2 => formatter.DynamicInvoke(value, formatString),
+                        3 => formatter.DynamicInvoke(value, formatString, tokenName),
+                        _ => throw new FormatException($"Formatter must accept two or three arguments, but accepts {parameterCount}"),
+                    }) as string ?? string.Empty;
+                }
                 return true;
             }
             formattedValue = string.Empty;
