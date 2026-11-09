@@ -1,0 +1,658 @@
+[assembly: System.Reflection.AssemblyMetadata("RepositoryUrl", "https://github.com/andywilsonuk/StringTokenFormatter")]
+[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v10.0", FrameworkDisplayName=".NET 10.0")]
+namespace StringTokenFormatter
+{
+    public static class CommonTokenSyntax
+    {
+        public static StringTokenFormatter.TokenSyntax Curly { get; }
+        public static StringTokenFormatter.TokenSyntax DollarCurly { get; }
+        public static StringTokenFormatter.TokenSyntax DollarRound { get; }
+        public static StringTokenFormatter.TokenSyntax DollarRoundAlternative { get; }
+        public static StringTokenFormatter.TokenSyntax Round { get; }
+    }
+    public class ExpanderException : StringTokenFormatter.StringTokenFormatterException
+    {
+        public ExpanderException(string message) { }
+    }
+    public enum ExpansionSegmentStatus
+    {
+        Started = 0,
+        Completed = 1,
+        Failed = 2,
+    }
+    public enum ExpansionSegmentType
+    {
+        Literal = 0,
+        Token = 1,
+        Command = 2,
+    }
+    public sealed class FormatterDefinition
+    {
+        public System.Delegate Formatter { get; init; }
+        public string RequiredFormatString { get; init; }
+        public string RequiredTokenName { get; init; }
+        public System.Type RequiredType { get; init; }
+        public override int GetHashCode() { }
+        public override string ToString() { }
+        public static StringTokenFormatter.FormatterDefinition ForFormatString<T>(string formatString, System.Func<T, string, string> formatFunction)
+            where T :  notnull { }
+        public static StringTokenFormatter.FormatterDefinition ForFormatString<T>(string formatString, System.Func<T, string, string, string> formatFunction)
+            where T :  notnull { }
+        public static StringTokenFormatter.FormatterDefinition ForTokenName<T>(string tokenName, System.Func<T, string, string> formatFunction)
+            where T :  notnull { }
+        public static StringTokenFormatter.FormatterDefinition ForTokenName<T>(string tokenName, System.Func<T, string, string, string> formatFunction)
+            where T :  notnull { }
+        public static StringTokenFormatter.FormatterDefinition ForTokenNameAndFormatString<T>(string tokenName, string formatString, System.Func<T, string, string> formatFunction)
+            where T :  notnull { }
+        public static StringTokenFormatter.FormatterDefinition ForTokenNameAndFormatString<T>(string tokenName, string formatString, System.Func<T, string, string, string> formatFunction)
+            where T :  notnull { }
+        public static StringTokenFormatter.FormatterDefinition ForType<T>(System.Func<T, string, string> formatFunction)
+            where T :  notnull { }
+        public static StringTokenFormatter.FormatterDefinition ForType<T>(System.Func<T, string, string, string> formatFunction)
+            where T :  notnull { }
+    }
+    public interface ICompositeTokenValueContainerSettings
+    {
+        StringTokenFormatter.TokenResolutionPolicy TokenResolutionPolicy { get; }
+    }
+    public interface IHierarchicalTokenValueContainerSettings : StringTokenFormatter.ITokenValueContainerSettings
+    {
+        string HierarchicalDelimiter { get; }
+    }
+    public interface IInterpolatedStringSettings
+    {
+        System.Collections.Generic.IReadOnlyCollection<StringTokenFormatter.Impl.IExpanderCommand> Commands { get; }
+        System.IFormatProvider FormatProvider { get; }
+        System.Collections.Generic.IReadOnlyCollection<StringTokenFormatter.FormatterDefinition> FormatterDefinitions { get; }
+        StringTokenFormatter.InvalidFormatBehavior InvalidFormatBehavior { get; }
+        System.StringComparer NameComparer { get; }
+        StringTokenFormatter.TokenSyntax Syntax { get; }
+        StringTokenFormatter.UnresolvedTokenBehavior UnresolvedTokenBehavior { get; }
+        System.Collections.Generic.IReadOnlyCollection<StringTokenFormatter.Impl.TokenValueConverter> ValueConverters { get; }
+    }
+    public interface INestedTokenValueContainerSettings
+    {
+        StringTokenFormatter.NestedValueResolution ResolveNestedValues { get; }
+    }
+    public interface ITokenValueContainerSettings
+    {
+        System.StringComparer NameComparer { get; }
+    }
+    public interface IUnresolvedTokenReplacementSettings
+    {
+        string UnresolvedTokenReplacement { get; }
+        System.Func<string, StringTokenFormatter.UnresolvedTokenBehavior, StringTokenFormatter.UnresolvedTokenBehavior?> UnresolvedTokenReplacementFormatter { get; }
+    }
+    public class InterpolatedStringResolver
+    {
+        public InterpolatedStringResolver(StringTokenFormatter.StringTokenFormatterSettings settings) { }
+        public StringTokenFormatter.StringTokenFormatterSettings Settings { get; }
+        public static StringTokenFormatter.InterpolatedStringResolver Default { get; }
+        public StringTokenFormatter.TokenValueContainerBuilder Builder() { }
+        public string FromContainer(StringTokenFormatter.Impl.InterpolatedString segments, StringTokenFormatter.Impl.ITokenValueContainer tokenValueContainer) { }
+        public string FromContainer(string interpolatedString, StringTokenFormatter.Impl.ITokenValueContainer tokenValueContainer) { }
+        public string FromContainer(StringTokenFormatter.Impl.InterpolatedString segments, StringTokenFormatter.Impl.ITokenValueContainer tokenValueContainer, StringTokenFormatter.InterpolatedStringResolverTrace trace) { }
+        public string FromContainer(string interpolatedString, StringTokenFormatter.Impl.ITokenValueContainer tokenValueContainer, StringTokenFormatter.InterpolatedStringResolverTrace trace) { }
+        public string FromFunc<T>(StringTokenFormatter.Impl.InterpolatedString interpolatedString, System.Func<string, T> func) { }
+        public string FromFunc<T>(string interpolatedString, System.Func<string, T> func) { }
+        public string FromObject<T>(StringTokenFormatter.Impl.InterpolatedString interpolatedString, T containerObject)
+            where T :  class { }
+        public string FromObject<T>(string interpolatedString, T containerObject)
+            where T :  class { }
+        public string FromPairs<T>(StringTokenFormatter.Impl.InterpolatedString interpolatedString, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, T>> pairs) { }
+        public string FromPairs<T>(StringTokenFormatter.Impl.InterpolatedString interpolatedString, params System.Collections.Generic.KeyValuePair<string, T>[] pairs) { }
+        public string FromPairs<T>(string interpolatedString, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, T>> pairs) { }
+        public string FromPairs<T>(string interpolatedString, params System.Collections.Generic.KeyValuePair<string, T>[] pairs) { }
+        public string FromSingle<T>(StringTokenFormatter.Impl.InterpolatedString interpolatedString, string token, T value)
+            where T :  notnull { }
+        public string FromSingle<T>(string interpolatedString, string token, T value)
+            where T :  notnull { }
+        public string FromTuples<T>(StringTokenFormatter.Impl.InterpolatedString interpolatedString, [System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                "TokenName",
+                "Value"})] System.Collections.Generic.IEnumerable<System.ValueTuple<string, T>> tuples) { }
+        public string FromTuples<T>(StringTokenFormatter.Impl.InterpolatedString interpolatedString, [System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                "TokenName",
+                "Value"})] params System.ValueTuple<string, T>[] tuples) { }
+        public string FromTuples<T>(string interpolatedString, [System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                "TokenName",
+                "Value"})] System.Collections.Generic.IEnumerable<System.ValueTuple<string, T>> tuples) { }
+        public string FromTuples<T>(string interpolatedString, [System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                "TokenName",
+                "Value"})] params System.ValueTuple<string, T>[] tuples) { }
+        public StringTokenFormatter.Impl.InterpolatedString Interpolate(string interpolatedString) { }
+    }
+    public sealed class InterpolatedStringResolverTrace
+    {
+        public InterpolatedStringResolverTrace() { }
+        public System.Collections.Generic.IReadOnlyList<StringTokenFormatter.InterpolatedStringResolverTraceEvent> Events { get; }
+        public void Clear() { }
+        public void Record(string text) { }
+    }
+    public abstract class InterpolatedStringResolverTraceEvent : System.IEquatable<StringTokenFormatter.InterpolatedStringResolverTraceEvent> { }
+    public static class InterpolatedStringResolverTraceReport
+    {
+        public static string ToReport(this StringTokenFormatter.InterpolatedStringResolverTrace trace) { }
+    }
+    public enum InvalidFormatBehavior
+    {
+        Throw = 0,
+        LeaveUnformatted = 1,
+        LeaveToken = 2,
+    }
+    public class MissingValueConverterException : StringTokenFormatter.StringTokenFormatterException
+    {
+        public MissingValueConverterException(string message) { }
+    }
+    public enum NestedValueResolution
+    {
+        Direct = 0,
+        Nested = 1,
+    }
+    public class ParserException : StringTokenFormatter.StringTokenFormatterException
+    {
+        public ParserException(string message) { }
+    }
+    public sealed class SegmentProcessingTraceEvent : StringTokenFormatter.InterpolatedStringResolverTraceEvent, System.IEquatable<StringTokenFormatter.SegmentProcessingTraceEvent>
+    {
+        public SegmentProcessingTraceEvent(int SegmentIndex, string Segment, StringTokenFormatter.ExpansionSegmentType SegmentType, StringTokenFormatter.ExpansionSegmentStatus Status, string? Command = null, string? ExceptionType = null) { }
+        public string? Command { get; init; }
+        public string? ExceptionType { get; init; }
+        public string Segment { get; init; }
+        public int SegmentIndex { get; init; }
+        public StringTokenFormatter.ExpansionSegmentType SegmentType { get; init; }
+        public StringTokenFormatter.ExpansionSegmentStatus Status { get; init; }
+    }
+    public static class StringExtensions
+    {
+        extension(string source)
+        {
+            public string FormatFromSingle<T>(string token, T replacementValue)
+                where T :  notnull { }
+            public string FormatFromSingle<T>(string token, T replacementValue, StringTokenFormatter.StringTokenFormatterSettings settings)
+                where T :  notnull { }
+            public string FormatFromPairs<T>(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, T>> values) { }
+            public string FormatFromPairs<T>(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, T>> values, StringTokenFormatter.StringTokenFormatterSettings settings) { }
+            public string FormatFromTuples<T>([System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                    "TokenName",
+                    "Value"})] System.Collections.Generic.IEnumerable<System.ValueTuple<string, T>> values) { }
+            public string FormatFromTuples<T>([System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                    "TokenName",
+                    "Value"})] System.Collections.Generic.IEnumerable<System.ValueTuple<string, T>> values, StringTokenFormatter.StringTokenFormatterSettings settings) { }
+            public string FormatFromObject<T>(T valuesObject)
+                where T :  class { }
+            public string FormatFromObject<T>(T valuesObject, StringTokenFormatter.StringTokenFormatterSettings settings)
+                where T :  class { }
+            public string FormatFromFunc<T>(System.Func<string, T> func) { }
+            public string FormatFromFunc<T>(System.Func<string, T> func, StringTokenFormatter.StringTokenFormatterSettings settings) { }
+            public string FormatFromContainer(StringTokenFormatter.Impl.ITokenValueContainer container) { }
+            public string FormatFromContainer(StringTokenFormatter.Impl.ITokenValueContainer container, StringTokenFormatter.StringTokenFormatterSettings settings) { }
+        }
+    }
+    public abstract class StringTokenFormatterException : System.Exception
+    {
+        public StringTokenFormatterException(string message) { }
+        public StringTokenFormatterException(string message, System.Exception ex) { }
+    }
+    public class StringTokenFormatterSettings : StringTokenFormatter.ICompositeTokenValueContainerSettings, StringTokenFormatter.IHierarchicalTokenValueContainerSettings, StringTokenFormatter.IInterpolatedStringSettings, StringTokenFormatter.INestedTokenValueContainerSettings, StringTokenFormatter.ITokenValueContainerSettings, StringTokenFormatter.IUnresolvedTokenReplacementSettings, System.IEquatable<StringTokenFormatter.StringTokenFormatterSettings>
+    {
+        public StringTokenFormatterSettings() { }
+        public System.Collections.Generic.IReadOnlyCollection<StringTokenFormatter.Impl.IExpanderCommand> Commands { get; init; }
+        public System.IFormatProvider FormatProvider { get; init; }
+        public System.Collections.Generic.IReadOnlyCollection<StringTokenFormatter.FormatterDefinition> FormatterDefinitions { get; init; }
+        public string HierarchicalDelimiter { get; init; }
+        public StringTokenFormatter.InvalidFormatBehavior InvalidFormatBehavior { get; init; }
+        public System.StringComparer NameComparer { get; init; }
+        public StringTokenFormatter.NestedValueResolution ResolveNestedValues { get; init; }
+        public StringTokenFormatter.TokenSyntax Syntax { get; init; }
+        public StringTokenFormatter.TokenResolutionPolicy TokenResolutionPolicy { get; init; }
+        public StringTokenFormatter.UnresolvedTokenBehavior UnresolvedTokenBehavior { get; init; }
+        public string UnresolvedTokenReplacement { get; init; }
+        public System.Func<string, StringTokenFormatter.UnresolvedTokenBehavior, StringTokenFormatter.UnresolvedTokenBehavior?> UnresolvedTokenReplacementFormatter { get; init; }
+        public System.Collections.Generic.IReadOnlyCollection<StringTokenFormatter.Impl.TokenValueConverter> ValueConverters { get; init; }
+        public static StringTokenFormatter.StringTokenFormatterSettings Default { get; }
+        public static StringTokenFormatter.StringTokenFormatterSettings Global { get; set; }
+    }
+    public static class StringTokenFormatterSettingsExtensions
+    {
+        extension(StringTokenFormatter.IInterpolatedStringSettings settings)
+        {
+            public StringTokenFormatter.IInterpolatedStringSettings Validate() { }
+        }
+        extension(StringTokenFormatter.ITokenValueContainerSettings settings)
+        {
+            public StringTokenFormatter.ITokenValueContainerSettings Validate() { }
+        }
+        extension(StringTokenFormatter.ICompositeTokenValueContainerSettings settings)
+        {
+            public StringTokenFormatter.ICompositeTokenValueContainerSettings Validate() { }
+        }
+        extension(StringTokenFormatter.IHierarchicalTokenValueContainerSettings settings)
+        {
+            public StringTokenFormatter.IHierarchicalTokenValueContainerSettings Validate() { }
+        }
+        extension(StringTokenFormatter.StringTokenFormatterSettings settings)
+        {
+            public StringTokenFormatter.StringTokenFormatterSettings Validate() { }
+        }
+    }
+    public sealed class TextTraceEvent : StringTokenFormatter.InterpolatedStringResolverTraceEvent, System.IEquatable<StringTokenFormatter.TextTraceEvent>
+    {
+        public TextTraceEvent(string Text) { }
+        public string Text { get; init; }
+    }
+    public class TokenContainerException : StringTokenFormatter.StringTokenFormatterException
+    {
+        public TokenContainerException(string message) { }
+    }
+    public enum TokenLookupPurpose
+    {
+        TokenValue = 0,
+        Loop = 1,
+    }
+    public enum TokenLookupSource
+    {
+        PseudoCommand = 0,
+        Container = 1,
+        Sequence = 2,
+        Replacement = 3,
+        Unresolved = 4,
+    }
+    public sealed class TokenLookupTraceEvent : StringTokenFormatter.InterpolatedStringResolverTraceEvent, System.IEquatable<StringTokenFormatter.TokenLookupTraceEvent>
+    {
+        public TokenLookupTraceEvent(string TokenName, StringTokenFormatter.TokenLookupPurpose Purpose, StringTokenFormatter.TokenLookupSource Source, bool IsSuccess) { }
+        public bool IsSuccess { get; init; }
+        public StringTokenFormatter.TokenLookupPurpose Purpose { get; init; }
+        public StringTokenFormatter.TokenLookupSource Source { get; init; }
+        public string TokenName { get; init; }
+    }
+    public enum TokenResolutionPolicy
+    {
+        ResolveAll = 0,
+        IgnoreNull = 1,
+        IgnoreNullOrEmpty = 2,
+    }
+    public readonly struct TokenSyntax : System.IEquatable<StringTokenFormatter.TokenSyntax>
+    {
+        public TokenSyntax(string Start, string End, string EscapedStart) { }
+        public string End { get; init; }
+        public string EscapedStart { get; init; }
+        public string Start { get; init; }
+    }
+    public static class TokenSyntaxExtensions
+    {
+        extension(StringTokenFormatter.TokenSyntax syntax)
+        {
+            public string Tokenize(string tokenName) { }
+            public string Escape(string value) { }
+            public StringTokenFormatter.TokenSyntax Validate() { }
+        }
+    }
+    public class TokenValueContainerBuilder
+    {
+        public TokenValueContainerBuilder(StringTokenFormatter.StringTokenFormatterSettings settings) { }
+        public System.Collections.Generic.IReadOnlyCollection<StringTokenFormatter.Impl.ITokenValueContainer> Containers { get; }
+        public StringTokenFormatter.StringTokenFormatterSettings Settings { get; }
+        public StringTokenFormatter.TokenValueContainerBuilder AddContainer(StringTokenFormatter.Impl.ITokenValueContainer tokenValueContainer) { }
+        public StringTokenFormatter.TokenValueContainerBuilder AddContainers(params StringTokenFormatter.Impl.ITokenValueContainer[] containers) { }
+        public StringTokenFormatter.TokenValueContainerBuilder AddContainers(System.Collections.Generic.IEnumerable<StringTokenFormatter.Impl.ITokenValueContainer> containers) { }
+        public StringTokenFormatter.TokenValueContainerBuilder AddFunc<T>(System.Func<string, T> func) { }
+        public StringTokenFormatter.TokenValueContainerBuilder AddKeyValues<T>(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, T>> pairs) { }
+        public StringTokenFormatter.TokenValueContainerBuilder AddObject<T>(T containerObject)
+            where T :  class { }
+        public StringTokenFormatter.TokenValueContainerBuilder AddPrefixedContainer(string prefix, StringTokenFormatter.Impl.ITokenValueContainer tokenValueContainer) { }
+        public StringTokenFormatter.TokenValueContainerBuilder AddPrefixedFunc<T>(string prefix, System.Func<string, T> func) { }
+        public StringTokenFormatter.TokenValueContainerBuilder AddPrefixedKeyValues<T>(string prefix, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, T>> pairs) { }
+        public StringTokenFormatter.TokenValueContainerBuilder AddPrefixedObject<T>(string prefix, T source)
+            where T :  class { }
+        public StringTokenFormatter.TokenValueContainerBuilder AddPrefixedSingle<T>(string prefix, string token, T value)
+            where T :  notnull { }
+        public StringTokenFormatter.TokenValueContainerBuilder AddPrefixedTuples<T>(string prefix, System.Collections.Generic.IEnumerable<System.ValueTuple<string, T>> tuples) { }
+        public StringTokenFormatter.TokenValueContainerBuilder AddSingle<T>(string token, T value)
+            where T :  notnull { }
+        public StringTokenFormatter.TokenValueContainerBuilder AddTuples<T>(System.Collections.Generic.IEnumerable<System.ValueTuple<string, T>> pairs) { }
+        public StringTokenFormatter.Impl.ITokenValueContainer CombinedResult() { }
+    }
+    public static class TokenValueContainerBuilderSequenceExtensions
+    {
+        extension(StringTokenFormatter.TokenValueContainerBuilder builder)
+        {
+            public StringTokenFormatter.TokenValueContainerBuilder AddSequence<T>(string token, System.Collections.Generic.IEnumerable<T> values)
+                where T :  notnull { }
+            public StringTokenFormatter.TokenValueContainerBuilder AddSequence<T>(string token, System.Collections.Generic.IEnumerable<StringTokenFormatter.Impl.ITokenValueContainer> containers) { }
+            public StringTokenFormatter.TokenValueContainerBuilder AddPrefixedSequence<T>(string prefix, string token, System.Collections.Generic.IEnumerable<T> values)
+                where T :  notnull { }
+            public StringTokenFormatter.TokenValueContainerBuilder AddPrefixedSequence<T>(string prefix, string token, System.Collections.Generic.IEnumerable<StringTokenFormatter.Impl.ITokenValueContainer> containers) { }
+        }
+    }
+    public static class TokenValueConverterExtras
+    {
+        public static StringTokenFormatter.Impl.TokenValueConverter ToStringConverter<T>() { }
+    }
+    public class TokenValueFormatException : StringTokenFormatter.StringTokenFormatterException
+    {
+        public TokenValueFormatException(string message) { }
+        public TokenValueFormatException(string message, System.Exception ex) { }
+    }
+    public enum UnresolvedTokenBehavior
+    {
+        Throw = 0,
+        LeaveUnresolved = 1,
+        Replace = 2,
+    }
+    public class UnresolvedTokenException : StringTokenFormatter.StringTokenFormatterException
+    {
+        public UnresolvedTokenException(string message) { }
+    }
+    public static class UriExtensions
+    {
+        extension(System.Uri source)
+        {
+            public System.Uri FormatFromSingle<T>(string token, T replacementValue)
+                where T :  notnull { }
+            public System.Uri FormatFromSingle<T>(string token, T replacementValue, StringTokenFormatter.StringTokenFormatterSettings settings)
+                where T :  notnull { }
+            public System.Uri FormatFromPairs<T>(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, T>> values) { }
+            public System.Uri FormatFromPairs<T>(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, T>> values, StringTokenFormatter.StringTokenFormatterSettings settings) { }
+            public System.Uri FormatFromTuples<T>([System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                    "TokenName",
+                    "Value"})] System.Collections.Generic.IEnumerable<System.ValueTuple<string, T>> values) { }
+            public System.Uri FormatFromTuples<T>([System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                    "TokenName",
+                    "Value"})] System.Collections.Generic.IEnumerable<System.ValueTuple<string, T>> values, StringTokenFormatter.StringTokenFormatterSettings settings) { }
+            public System.Uri FormatFromObject<T>(T valuesObject)
+                where T :  class { }
+            public System.Uri FormatFromObject<T>(T valuesObject, StringTokenFormatter.StringTokenFormatterSettings settings)
+                where T :  class { }
+            public System.Uri FormatFromFunc<T>(System.Func<string, T> func) { }
+            public System.Uri FormatFromFunc<T>(System.Func<string, T> func, StringTokenFormatter.StringTokenFormatterSettings settings) { }
+            public System.Uri FormatFromContainer(StringTokenFormatter.Impl.ITokenValueContainer container) { }
+            public System.Uri FormatFromContainer(StringTokenFormatter.Impl.ITokenValueContainer container, StringTokenFormatter.StringTokenFormatterSettings settings) { }
+        }
+    }
+}
+namespace StringTokenFormatter.Impl
+{
+    public sealed class CompositeTokenValueContainer : StringTokenFormatter.Impl.ITokenValueContainer
+    {
+        public StringTokenFormatter.Impl.TryGetResult TryMap(string token) { }
+    }
+    public sealed class ConditionalBlockCommand : StringTokenFormatter.Impl.IExpanderCommand
+    {
+        public void Evaluate(StringTokenFormatter.Impl.ExpanderContext context) { }
+        public void Finished(StringTokenFormatter.Impl.ExpanderContext context) { }
+        public void Init(StringTokenFormatter.Impl.ExpanderContext context) { }
+    }
+    public static class Constants
+    {
+        public const string CommandPrefix = ":";
+        public const string PseudoPrefix = "::";
+    }
+    public sealed class DictionaryTokenValueContainer<T> : StringTokenFormatter.Impl.ITokenValueContainer
+    {
+        public StringTokenFormatter.Impl.DictionaryTokenValueContainer<T> Frozen() { }
+        public StringTokenFormatter.Impl.TryGetResult TryMap(string token) { }
+    }
+    public sealed class ExpandedStringBuilder
+    {
+        public ExpandedStringBuilder(StringTokenFormatter.Impl.ExpanderValueFormatter valueFormatter, System.IFormatProvider formatProvider) { }
+        public void AppendFormat(object value, string tokenName, string alignment, string formatString) { }
+        public void AppendLiteral(string literal) { }
+        public void AppendUnformatted(object? value) { }
+        public string ExpandedString() { }
+    }
+    public sealed class ExpandedStringIterator
+    {
+        public StringTokenFormatter.Impl.InterpolatedStringSegment Current { get; }
+        public int CurrentIndex { get; }
+        public System.Collections.Generic.IReadOnlyList<StringTokenFormatter.Impl.InterpolatedStringSegment> Segments { get; }
+        public void JumpToIndex(int index) { }
+        public bool MoveNext() { }
+    }
+    public static class ExpanderCommandFactory
+    {
+        public static StringTokenFormatter.Impl.ConditionalBlockCommand Conditional { get; }
+        public static StringTokenFormatter.Impl.LoopBlockCommand Loop { get; }
+        public static StringTokenFormatter.Impl.MapCommand Map { get; }
+        public static StringTokenFormatter.Impl.StandardCommand Standard { get; }
+    }
+    public class ExpanderCommands
+    {
+        public ExpanderCommands(System.Collections.Generic.IReadOnlyCollection<StringTokenFormatter.Impl.IExpanderCommand> commands) { }
+        public void ExecuteUntil(System.Action<StringTokenFormatter.Impl.IExpanderCommand> action, System.Func<bool> predicate) { }
+        public void Finished(StringTokenFormatter.Impl.ExpanderContext context) { }
+        public bool HasCommand<T>()
+            where T : StringTokenFormatter.Impl.IExpanderCommand { }
+        public void Init(StringTokenFormatter.Impl.ExpanderContext context) { }
+        public StringTokenFormatter.Impl.TryGetResult TryMapPseudo(StringTokenFormatter.Impl.ExpanderContext context, string tokenName) { }
+    }
+    public sealed class ExpanderContext
+    {
+        public StringTokenFormatter.Impl.ExpanderCommands Commands { get; init; }
+        public StringTokenFormatter.Impl.ITokenValueContainer Container { get; init; }
+        public StringTokenFormatter.Impl.ExpanderDataStore DataStore { get; }
+        public bool SegmentHandled { get; set; }
+        public StringTokenFormatter.Impl.ExpandedStringIterator SegmentIterator { get; init; }
+        public StringTokenFormatter.IInterpolatedStringSettings Settings { get; init; }
+        public StringTokenFormatter.Impl.ExpandedStringBuilder StringBuilder { get; init; }
+        public StringTokenFormatter.InterpolatedStringResolverTrace Trace { get; init; }
+        public StringTokenFormatter.Impl.TryGetResult TryMapContainerToken(string tokenName) { }
+    }
+    public static class ExpanderContextExtensions
+    {
+        extension(StringTokenFormatter.Impl.ExpanderContext context)
+        {
+            public StringTokenFormatter.Impl.TryGetResult TryGetTokenValue(string tokenName) { }
+            public int GetLoopIteration(StringTokenFormatter.Impl.ISequenceTokenValueContainer sequence) { }
+            public object? ApplyValueConverter(object? containerValue, string token) { }
+        }
+    }
+    public sealed class ExpanderDataStore
+    {
+        public ExpanderDataStore() { }
+        public T Get<T>(string key) { }
+        public void Set<T>(string key, T value)
+            where T :  notnull { }
+    }
+    public sealed class ExpanderValueFormatter
+    {
+        public bool TryFormat(object value, string tokenName, string formatString, out string formattedValue) { }
+    }
+    public sealed class FuncTokenValueContainer<T> : StringTokenFormatter.Impl.ITokenValueContainer
+    {
+        public StringTokenFormatter.Impl.TryGetResult TryMap(string token) { }
+    }
+    public sealed class HierarchicalTokenValueContainer : StringTokenFormatter.Impl.ITokenValueContainer
+    {
+        public StringTokenFormatter.Impl.TryGetResult TryMap(string token) { }
+    }
+    public interface IExpanderCommand
+    {
+        void Evaluate(StringTokenFormatter.Impl.ExpanderContext context);
+        void Finished(StringTokenFormatter.Impl.ExpanderContext context);
+        void Init(StringTokenFormatter.Impl.ExpanderContext context);
+    }
+    public interface IExpanderPseudoCommands
+    {
+        StringTokenFormatter.Impl.TryGetResult TryMapPseudo(StringTokenFormatter.Impl.ExpanderContext context, string tokenName);
+    }
+    public interface ISequenceTokenValueContainer
+    {
+        int Count { get; }
+        StringTokenFormatter.Impl.TryGetResult TryMap(string token, int position);
+    }
+    public interface ITokenValueContainer
+    {
+        StringTokenFormatter.Impl.TryGetResult TryMap(string token);
+    }
+    public class InterpolatedString : System.IEquatable<StringTokenFormatter.Impl.InterpolatedString>
+    {
+        public System.Collections.Generic.IReadOnlyList<StringTokenFormatter.Impl.InterpolatedStringSegment> Segments { get; }
+        public StringTokenFormatter.IInterpolatedStringSettings Settings { get; init; }
+        public static StringTokenFormatter.Impl.InterpolatedString Create(System.Collections.Generic.IEnumerable<StringTokenFormatter.Impl.InterpolatedStringSegment> segments, StringTokenFormatter.IInterpolatedStringSettings settings) { }
+        public static StringTokenFormatter.Impl.InterpolatedString CreateEmpty(StringTokenFormatter.IInterpolatedStringSettings settings) { }
+    }
+    public class InterpolatedStringCommandSegment : StringTokenFormatter.Impl.InterpolatedStringTokenOnlySegment, System.IEquatable<StringTokenFormatter.Impl.InterpolatedStringCommandSegment>
+    {
+        public InterpolatedStringCommandSegment(string Raw, string Command, string Token, string Data) { }
+        public string Command { get; init; }
+        public string Data { get; init; }
+    }
+    public static class InterpolatedStringExpander
+    {
+        public static string Expand(StringTokenFormatter.Impl.InterpolatedString interpolatedString, StringTokenFormatter.Impl.ITokenValueContainer container) { }
+        public static string Expand(StringTokenFormatter.Impl.InterpolatedString interpolatedString, StringTokenFormatter.Impl.ITokenValueContainer container, StringTokenFormatter.InterpolatedStringResolverTrace trace) { }
+    }
+    public static class InterpolatedStringExtensions
+    {
+        extension(StringTokenFormatter.Impl.InterpolatedString interpolatedString)
+        {
+            public System.Collections.Generic.HashSet<string> Tokens() { }
+            public string ToRawString() { }
+        }
+    }
+    public class InterpolatedStringLiteralSegment : StringTokenFormatter.Impl.InterpolatedStringSegment, System.IEquatable<StringTokenFormatter.Impl.InterpolatedStringLiteralSegment>
+    {
+        public InterpolatedStringLiteralSegment(string Raw) { }
+    }
+    public static class InterpolatedStringParser
+    {
+        public static StringTokenFormatter.Impl.InterpolatedString Parse(string source, StringTokenFormatter.IInterpolatedStringSettings settings) { }
+    }
+    public class InterpolatedStringPseudoTokenSegment : StringTokenFormatter.Impl.InterpolatedStringTokenSegment, System.IEquatable<StringTokenFormatter.Impl.InterpolatedStringPseudoTokenSegment>
+    {
+        public InterpolatedStringPseudoTokenSegment(string Raw, string Token, string Alignment, string Format) { }
+    }
+    public abstract class InterpolatedStringSegment : System.IEquatable<StringTokenFormatter.Impl.InterpolatedStringSegment>
+    {
+        protected InterpolatedStringSegment(string Raw) { }
+        public string Raw { get; init; }
+    }
+    public static class InterpolatedStringSegmentExtensions
+    {
+        extension(StringTokenFormatter.Impl.InterpolatedStringCommandSegment segment)
+        {
+            public bool IsCommandEqual(string command) { }
+        }
+        extension(StringTokenFormatter.Impl.InterpolatedStringTokenSegment segment)
+        {
+            public bool IsPseudoEqual(string pseudoTokenCommand) { }
+        }
+    }
+    public abstract class InterpolatedStringTokenOnlySegment : StringTokenFormatter.Impl.InterpolatedStringSegment, System.IEquatable<StringTokenFormatter.Impl.InterpolatedStringTokenOnlySegment>
+    {
+        protected InterpolatedStringTokenOnlySegment(string Raw, string Token) { }
+        public string Token { get; init; }
+    }
+    public class InterpolatedStringTokenSegment : StringTokenFormatter.Impl.InterpolatedStringTokenOnlySegment, System.IEquatable<StringTokenFormatter.Impl.InterpolatedStringTokenSegment>
+    {
+        public InterpolatedStringTokenSegment(string Raw, string Token, string Alignment, string Format) { }
+        public string Alignment { get; init; }
+        public string Format { get; init; }
+    }
+    public sealed class LoopBlockCommand : StringTokenFormatter.Impl.IExpanderCommand, StringTokenFormatter.Impl.IExpanderPseudoCommands
+    {
+        public void Evaluate(StringTokenFormatter.Impl.ExpanderContext context) { }
+        public void Finished(StringTokenFormatter.Impl.ExpanderContext context) { }
+        public void Init(StringTokenFormatter.Impl.ExpanderContext context) { }
+        public StringTokenFormatter.Impl.TryGetResult TryMapPseudo(StringTokenFormatter.Impl.ExpanderContext context, string tokenName) { }
+        public static int GetCurrentIteration(StringTokenFormatter.Impl.ExpanderContext context, StringTokenFormatter.Impl.ISequenceTokenValueContainer sequence) { }
+    }
+    public sealed class MapCommand : StringTokenFormatter.Impl.IExpanderCommand
+    {
+        public void Evaluate(StringTokenFormatter.Impl.ExpanderContext context) { }
+        public void Finished(StringTokenFormatter.Impl.ExpanderContext context) { }
+        public void Init(StringTokenFormatter.Impl.ExpanderContext context) { }
+    }
+    public sealed class ObjectTokenValueContainer<T> : StringTokenFormatter.Impl.ITokenValueContainer
+        where T :  notnull
+    {
+        public void Frozen() { }
+        public StringTokenFormatter.Impl.TryGetResult TryMap(string token) { }
+    }
+    public static class OrdinalValueHelper
+    {
+        public static bool AreEqual(string a, string b) { }
+        public static int? IndexOf(string super, string sub) { }
+        public static bool StartsWith(string super, string sub) { }
+    }
+    public static class PropertyCache<T>
+    {
+        public static readonly System.Collections.Generic.IReadOnlyCollection<StringTokenFormatter.Impl.PropertyCache<T>.PropertyPairs> Properties;
+        public static int Count { get; }
+        public class PropertyPairs : System.IEquatable<StringTokenFormatter.Impl.PropertyCache<T>.PropertyPairs>
+        {
+            public PropertyPairs(string PropertyName, System.Func<T, object> GetValue) { }
+            public System.Func<T, object> GetValue { get; init; }
+            public string PropertyName { get; init; }
+        }
+    }
+    public static class RegexInterpolatedStringParser
+    {
+        public static StringTokenFormatter.Impl.InterpolatedString Parse(string source, StringTokenFormatter.IInterpolatedStringSettings settings) { }
+    }
+    public sealed class SequenceTokenValueContainer : StringTokenFormatter.Impl.ISequenceTokenValueContainer, StringTokenFormatter.Impl.ITokenValueContainer
+    {
+        public int Count { get; }
+        public StringTokenFormatter.Impl.TryGetResult TryMap(string token) { }
+        public StringTokenFormatter.Impl.TryGetResult TryMap(string token, int position) { }
+    }
+    public sealed class SingleTokenValueContainer<T> : StringTokenFormatter.Impl.ITokenValueContainer
+        where T :  notnull
+    {
+        public StringTokenFormatter.Impl.TryGetResult TryMap(string token) { }
+    }
+    public static class SpanInterpolatedStringParser
+    {
+        public static StringTokenFormatter.Impl.InterpolatedString Parse(string source, StringTokenFormatter.IInterpolatedStringSettings settings) { }
+    }
+    public sealed class StandardCommand : StringTokenFormatter.Impl.IExpanderCommand
+    {
+        public void Evaluate(StringTokenFormatter.Impl.ExpanderContext context) { }
+        public void Finished(StringTokenFormatter.Impl.ExpanderContext context) { }
+        public void Init(StringTokenFormatter.Impl.ExpanderContext context) { }
+    }
+    public static class TokenResolutionPolicyExtensions
+    {
+        extension(StringTokenFormatter.TokenResolutionPolicy policy)
+        {
+            public bool Satisfies(object? value) { }
+        }
+    }
+    public static class TokenValueContainerFactory
+    {
+        public static StringTokenFormatter.Impl.CompositeTokenValueContainer FromCombination(StringTokenFormatter.ICompositeTokenValueContainerSettings settings, params StringTokenFormatter.Impl.ITokenValueContainer[] containers) { }
+        public static StringTokenFormatter.Impl.CompositeTokenValueContainer FromCombination(StringTokenFormatter.ICompositeTokenValueContainerSettings settings, System.Collections.Generic.IEnumerable<StringTokenFormatter.Impl.ITokenValueContainer> containers) { }
+        public static StringTokenFormatter.Impl.FuncTokenValueContainer<T> FromFunc<T>(StringTokenFormatter.ITokenValueContainerSettings settings, System.Func<string, T> func) { }
+        public static StringTokenFormatter.Impl.HierarchicalTokenValueContainer FromHierarchical(StringTokenFormatter.IHierarchicalTokenValueContainerSettings settings, string prefix, StringTokenFormatter.Impl.ITokenValueContainer container) { }
+        public static StringTokenFormatter.Impl.ObjectTokenValueContainer<T> FromObject<T>(StringTokenFormatter.ITokenValueContainerSettings settings, T source)
+            where T :  notnull { }
+        public static StringTokenFormatter.Impl.DictionaryTokenValueContainer<T> FromPairs<T>(StringTokenFormatter.ITokenValueContainerSettings settings, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, T>> source) { }
+        public static StringTokenFormatter.Impl.SequenceTokenValueContainer FromSequence(StringTokenFormatter.IHierarchicalTokenValueContainerSettings settings, string token, System.Collections.Generic.IEnumerable<StringTokenFormatter.Impl.ITokenValueContainer> values) { }
+        public static StringTokenFormatter.Impl.SequenceTokenValueContainer FromSequence<T>(StringTokenFormatter.IHierarchicalTokenValueContainerSettings settings, string token, System.Collections.Generic.IEnumerable<T> values)
+            where T :  notnull { }
+        public static StringTokenFormatter.Impl.SingleTokenValueContainer<T> FromSingle<T>(StringTokenFormatter.ITokenValueContainerSettings settings, string token, T value)
+            where T :  notnull { }
+        public static StringTokenFormatter.Impl.DictionaryTokenValueContainer<T> FromTuples<T>(StringTokenFormatter.ITokenValueContainerSettings settings, [System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                "TokenName",
+                "Value"})] System.Collections.Generic.IEnumerable<System.ValueTuple<string, T>> source) { }
+    }
+    public delegate StringTokenFormatter.Impl.TryGetResult TokenValueConverter(object? value, string tokenName);
+    public static class TokenValueConverterFactory
+    {
+        public static StringTokenFormatter.Impl.TokenValueConverter FuncConverter<T>() { }
+        public static StringTokenFormatter.Impl.TokenValueConverter FuncConverterNonGeneric() { }
+        public static StringTokenFormatter.Impl.TokenValueConverter LazyConverter<T>() { }
+        public static StringTokenFormatter.Impl.TokenValueConverter NullConverter() { }
+        public static StringTokenFormatter.Impl.TokenValueConverter PrimitiveConverter() { }
+        public static StringTokenFormatter.Impl.TokenValueConverter ToStringConverter<T>() { }
+        public static StringTokenFormatter.Impl.TokenValueConverter TokenFuncConverter<T>() { }
+        public static StringTokenFormatter.Impl.TokenValueConverter TokenFuncConverterNonGeneric() { }
+    }
+    public readonly struct TryGetResult : System.IEquatable<StringTokenFormatter.Impl.TryGetResult>
+    {
+        public TryGetResult(bool IsSuccess, object? Value) { }
+        public bool IsSuccess { get; init; }
+        public object? Value { get; init; }
+        public static StringTokenFormatter.Impl.TryGetResult Success(object? Value) { }
+    }
+}
