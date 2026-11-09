@@ -1,6 +1,4 @@
-# StringTokenFormatter pre-release v10
-
-This is the pre-release version of v10, for v9 see https://github.com/andywilsonuk/StringTokenFormatter/tree/v9.1.
+# StringTokenFormatter v10
 
 Provides token replacement for template strings which cannot be interpolated at compile time such as those retrieved from data stores (file system, database, API, config files etc) using a variety of token to value mappers.
 
@@ -21,7 +19,7 @@ var client = new {
 string message = interpolatedString.FormatFromObject(client);
 ```
 
-See the [v9 migration page](/migration-v9.md) for details on breaking changes and how to upgrade from version 8 to version 9.
+See the [v9-to-v10 migration page](/migration-v10.md) for upgrade guidance. For changes from version 8 to version 9, see the [v8-to-v9 migration page](/migration-v9.md).
 
 # Overview
 
