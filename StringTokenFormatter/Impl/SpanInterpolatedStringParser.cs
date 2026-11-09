@@ -11,13 +11,13 @@ public static class SpanInterpolatedStringParser
         Guard.NotNull(settings, nameof(settings)).Validate();
         if (string.IsNullOrEmpty(source))
         {
-            return new InterpolatedString([], settings);
+            return InterpolatedString.CreateEmpty(settings);
         }
 
         (string? startToken, string? endToken, string? escapedStartToken) = settings.Syntax;
         List<TokenMatch> matches = GetTokenMatches(source, startToken, endToken, escapedStartToken);
         IEnumerable<InterpolatedStringSegment> segments = ConvertToSegments(source, matches, startToken, endToken);
-        return new InterpolatedString(segments.ToList().AsReadOnly(), settings);
+        return InterpolatedString.Create(segments, settings);
     }
 
     private static List<TokenMatch> GetTokenMatches(string source, string startToken, string endToken, string escapedStartToken)

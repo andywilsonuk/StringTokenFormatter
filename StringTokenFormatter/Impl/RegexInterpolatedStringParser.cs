@@ -17,11 +17,11 @@ public static class RegexInterpolatedStringParser
         Guard.NotNull(settings, nameof(settings)).Validate();
         if (string.IsNullOrEmpty(source))
         {
-            return new InterpolatedString([], settings);
+            return InterpolatedString.CreateEmpty(settings);
         }
         IEnumerable<Match> matches = GetRegexMatches(source, settings.Syntax);
         IEnumerable<InterpolatedStringSegment> segments = ConvertToSegments(source, matches, settings.Syntax);
-        return new InterpolatedString(segments.ToList().AsReadOnly(), settings);
+        return InterpolatedString.Create(segments, settings);
     }
 
     private static IEnumerable<Match> GetRegexMatches(string source, TokenSyntax syntax)

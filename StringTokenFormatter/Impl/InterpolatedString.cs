@@ -1,6 +1,43 @@
 ﻿namespace StringTokenFormatter.Impl;
 
-public record InterpolatedString(IReadOnlyCollection<InterpolatedStringSegment> Segments, IInterpolatedStringSettings Settings);
+public record InterpolatedString
+{
+    private static readonly IReadOnlyList<InterpolatedStringSegment> emptySegments =
+        Array.AsReadOnly(Array.Empty<InterpolatedStringSegment>());
+
+    private InterpolatedString(IReadOnlyList<InterpolatedStringSegment> segments, IInterpolatedStringSettings settings)
+    {
+        Segments = segments;
+        Settings = settings;
+    }
+
+    public IReadOnlyList<InterpolatedStringSegment> Segments { get; }
+    public IInterpolatedStringSettings Settings { get; init; }
+
+    /// <summary>
+    /// Creates an interpolated string with no segments.
+    /// </summary>
+    public static InterpolatedString CreateEmpty(IInterpolatedStringSettings settings)
+    {
+        Guard.NotNull(settings, nameof(settings));
+        return new InterpolatedString(emptySegments, settings);
+    }
+
+    /// <summary>
+    /// Creates an interpolated string with an owned, read-only copy of the supplied segments.
+    /// </summary>
+    public static InterpolatedString Create(IEnumerable<InterpolatedStringSegment> segments, IInterpolatedStringSettings settings)
+    {
+        Guard.NotNull(segments, nameof(segments));
+        Guard.NotNull(settings, nameof(settings));
+
+        InterpolatedStringSegment[] ownedSegments = [.. segments];
+        IReadOnlyList<InterpolatedStringSegment> readOnlySegments = ownedSegments.Length == 0
+            ? emptySegments
+            : Array.AsReadOnly(ownedSegments);
+        return new InterpolatedString(readOnlySegments, settings);
+    }
+}
 
 public static class InterpolatedStringExtensions
 {

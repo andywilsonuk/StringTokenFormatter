@@ -10,7 +10,7 @@ public class InterpolatedStringExpanderTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Literal("text only")
             .Build();
-        InterpolatedString interpolatedString = new(segments, StringTokenFormatterSettings.Default);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, StringTokenFormatterSettings.Default);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -24,7 +24,7 @@ public class InterpolatedStringExpanderTests
             .Literal("one ")
             .Token("two", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, StringTokenFormatterSettings.Default);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("two", 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -41,7 +41,7 @@ public class InterpolatedStringExpanderTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token(token, alignment, format)
             .Build();
-        InterpolatedString interpolatedString = new(segments, StringTokenFormatterSettings.Default);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("two", 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -60,7 +60,7 @@ public class InterpolatedStringExpanderTests
             .Literal("one ")
             .Token("three", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", 2);
 
         Assert.Throws<UnresolvedTokenException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
@@ -77,7 +77,7 @@ public class InterpolatedStringExpanderTests
             .Literal("one ")
             .Token("three", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -97,7 +97,7 @@ public class InterpolatedStringExpanderTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", -16325.62m);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -119,7 +119,7 @@ public class InterpolatedStringExpanderTests
 
             .Token(token, alignment, format)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", 2.12m);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -135,7 +135,7 @@ public class InterpolatedStringExpanderTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, StringTokenFormatterSettings.Default);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("two", tokenValue);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -154,7 +154,7 @@ public class InterpolatedStringExpanderTests
         {
             ValueConverters = [base2Converter],
         };
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -178,7 +178,7 @@ public class InterpolatedStringExpanderTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -196,7 +196,7 @@ public class InterpolatedStringExpanderTests
         {
             ValueConverters = [TokenValueConverterFactory.NullConverter()],
         };
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", "2");
 
         Assert.Throws<MissingValueConverterException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
@@ -208,7 +208,7 @@ public class InterpolatedStringExpanderTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, StringTokenFormatterSettings.Default);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, StringTokenFormatterSettings.Default);
         valuesContainer.Add("two", new { });
 
         Assert.Throws<MissingValueConverterException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
@@ -220,7 +220,7 @@ public class InterpolatedStringExpanderTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, StringTokenFormatterSettings.Default);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, StringTokenFormatterSettings.Default);
         Func<string, object?> func = token => token == "two" ? 2 : null;
         valuesContainer.Add("two", func);
 
@@ -239,7 +239,7 @@ public class InterpolatedStringExpanderTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, "Z")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", 2);
 
         Assert.Throws<TokenValueFormatException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
@@ -255,7 +255,7 @@ public class InterpolatedStringExpanderTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, "Z")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -273,7 +273,7 @@ public class InterpolatedStringExpanderTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, "Z")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -291,7 +291,7 @@ public class InterpolatedStringExpanderTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Pseudo("unknown", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);

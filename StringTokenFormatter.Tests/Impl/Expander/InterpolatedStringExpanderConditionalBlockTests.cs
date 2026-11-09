@@ -26,7 +26,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             .Literal("two")
             .Command("ifend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("IsValid", true);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -43,7 +43,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             .Token("two", string.Empty, string.Empty)
             .Command("ifend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", 2);
         valuesContainer.Add("IsValid", true);
 
@@ -61,7 +61,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             .Literal("two")
             .Command("ifend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("IsValid", false);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -84,7 +84,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             .Command("ifend", string.Empty, string.Empty)
             .Command("ifend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("IsValid", true);
         valuesContainer.Add("IsAlsoValid", true);
         valuesContainer.Add("IsNotValid", false);
@@ -101,7 +101,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             .Literal("one ")
             .Command("if", "IsValid", string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("IsValid", true);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
@@ -114,7 +114,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             .Literal("one ")
             .Command("ifend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
 
@@ -126,7 +126,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             .Command("if", "IsValid", string.Empty)
             .Command("ifend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("IsValid", 1);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
@@ -139,7 +139,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             .Command("if", "IsValid", string.Empty)
             .Command("ifend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("IsValid", true);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -156,7 +156,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             .Literal(" two")
             .Command("ifend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("IsValid", true);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -173,7 +173,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             .Token("Suppressed", string.Empty, string.Empty)
             .Command("ifend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         valuesContainer.Add("IsValid", true);
         valuesContainer.Add("Suppressed", () => Assert.Fail("This value should not be called"));
@@ -191,7 +191,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             .Literal("Included")
             .Command("ifend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         valuesContainer.Add("IsValid", () => true);
 
@@ -217,7 +217,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
             .Literal("four")
             .Command("ifend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("IsValid", true);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -237,7 +237,7 @@ public class InterpolatedStringExpanderConditionalBlockTests
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
         };
-        InterpolatedString interpolatedString = new(segments, customSettings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, customSettings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 

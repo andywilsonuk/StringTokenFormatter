@@ -112,7 +112,7 @@ public class TokenAwareFormatterTests
         BasicContainer values = new();
         values.Add("plain", 42);
         values.Add("amount", 42);
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, values);
 
@@ -135,7 +135,7 @@ public class TokenAwareFormatterTests
         values.Add("amount", 42);
 
         ArgumentException exception = Assert.Throws<ArgumentException>(() =>
-            InterpolatedStringExpander.Expand(new InterpolatedString(segments, settings), values));
+            InterpolatedStringExpander.Expand(InterpolatedString.Create(segments, settings), values));
 
         Assert.Contains("Duplicate Formatter Definition detected", exception.Message);
     }
@@ -218,7 +218,7 @@ public class TokenAwareFormatterTests
         values.Add("amount", "replace custom");
         Assert.Equal(2, callback.GetMethodInfo().GetParameters().Length);
 
-        string actual = InterpolatedStringExpander.Expand(new InterpolatedString(segments, settings), values);
+        string actual = InterpolatedStringExpander.Expand(InterpolatedString.Create(segments, settings), values);
 
         Assert.Equal("replace amount", actual);
     }
@@ -293,7 +293,7 @@ public class TokenAwareFormatterTests
         BasicContainer values = new();
         values.Add(tokenName, 42);
 
-        return InterpolatedStringExpander.Expand(new InterpolatedString(segments, settings), values);
+        return InterpolatedStringExpander.Expand(InterpolatedString.Create(segments, settings), values);
     }
 
     private static string FormatClosedStaticLegacy(string prefix, int value, string formatString) =>

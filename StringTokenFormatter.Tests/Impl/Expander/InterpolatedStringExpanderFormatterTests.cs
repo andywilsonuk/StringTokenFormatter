@@ -24,7 +24,7 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForType((decimal value, string formatString) => new string(formatString[0], (int)value)),
             ]
         };
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", (decimal)2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -46,7 +46,7 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForTokenName("two", (int value, string formatString) => new string(formatString[0], value)),
             ]
         };
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -66,7 +66,7 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForFormatString("x", (int value, string formatString) => new string(formatString[0], value)),
             ]
         };
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -86,7 +86,7 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForTokenNameAndFormatString("two", "x", (int value, string formatString) => new string(formatString[0], value)),
             ]
         };
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -112,7 +112,7 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForTokenNameAndFormatString("tok2", "x", (int value, string formatString) => "d"),
             ]
         };
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("tok0", 0);
         valuesContainer.Add("tok1", 1);
         valuesContainer.Add("tok2", 2);
@@ -136,7 +136,7 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForType((decimal value, string formatString) => new string(formatString[0], (int)value)),
             ]
         };
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", (decimal)2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -157,7 +157,7 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForTokenName("two", (int value, string formatString) => new string(formatString[0], value)),
             ]
         };
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -177,7 +177,7 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForType((int value, string formatString) => "a"),
             ]
         };
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         Assert.Throws<TokenValueFormatException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
@@ -195,7 +195,7 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForType((int value, string formatString) => throw new Exception()),
             ]
         };
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         Assert.Throws<TokenValueFormatException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
@@ -214,7 +214,7 @@ public class InterpolatedStringExpanderFormatterTests
                 FormatterDefinition.ForType((int value, string formatString) => new string(formatString[0], value)),
             ]
         };
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -236,7 +236,7 @@ public class InterpolatedStringExpanderFormatterTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("two", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("two", -16325.62m);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);

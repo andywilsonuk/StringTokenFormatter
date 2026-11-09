@@ -25,7 +25,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Literal("lit")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -40,7 +40,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Literal("lit")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("Iterations", 3);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -56,7 +56,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Literal("lit")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("Iterations", 3);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -72,7 +72,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Token("tok", string.Empty, string.Empty)
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("tok", 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -92,7 +92,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Literal("b")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -106,7 +106,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Command("loop", string.Empty, "3")
             .Literal("lit")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
@@ -118,7 +118,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Literal("lit")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
@@ -131,7 +131,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Literal("lit")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
     }
@@ -144,7 +144,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Literal("lit")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -159,7 +159,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Literal("lit")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -187,7 +187,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             };
         };
 
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("Val", calls);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -203,7 +203,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Token("Iterator", "4", string.Empty)
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", ["a", "b"]);
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
@@ -220,7 +220,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Token("Iterator.Name", "4", string.Empty)
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { Name = "a" });
         var o2 = TokenValueContainerFactory.FromObject(settings, new { Name = "b" });
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [o1, o2]);
@@ -239,7 +239,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Token("Iterator", "4", string.Empty)
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", Array.Empty<string>());
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
@@ -256,7 +256,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Token("Iterator", "4", string.Empty)
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", ["a", "b"]);
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
@@ -273,7 +273,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Token("::loopiteration", "4", "D2")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -287,7 +287,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Command("loop", string.Empty, "3")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -302,7 +302,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Token("Iterations", string.Empty, string.Empty)
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("Iterations", 3);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -318,7 +318,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Token("Iterator.Name", string.Empty, string.Empty)
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { NotName = "a" });
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [o1]);
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
@@ -334,7 +334,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Token("Iterator", string.Empty, string.Empty)
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [new object()]);
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
@@ -349,7 +349,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Token("Iterator.Name", string.Empty, string.Empty)
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { Name = new object() });
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [o1]);
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
@@ -369,7 +369,7 @@ public class InterpolatedStringExpanderLoopBlockTests
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
         };
-        InterpolatedString interpolatedString = new(segments, customSettings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, customSettings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { NotName = "a" });
         var o2 = TokenValueContainerFactory.FromObject(settings, new { NotName = "b" });
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [o1, o2]);
@@ -386,7 +386,7 @@ public class InterpolatedStringExpanderLoopBlockTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Token("Iterator", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [new object()]);
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
@@ -399,7 +399,7 @@ public class InterpolatedStringExpanderLoopBlockTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Pseudo("loopiteration", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [new object()]);
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
@@ -419,7 +419,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Pseudo("loopiteration", string.Empty, string.Empty)
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -437,7 +437,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Command("loopend", string.Empty, string.Empty)
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         SequenceTokenValueContainer sequence1 = TokenValueContainerFactory.FromSequence(settings, "S1", ["a", "b"]);
         SequenceTokenValueContainer sequence2 = TokenValueContainerFactory.FromSequence(settings, "S2", ["c"]);
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence1, sequence2);
@@ -461,7 +461,7 @@ public class InterpolatedStringExpanderLoopBlockTests
         {
             Commands = new[] { ExpanderCommandFactory.Conditional }.Concat(settings.Commands).ToList(),
         };
-        InterpolatedString interpolatedString = new(segments, customSettings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, customSettings);
         var o1 = TokenValueContainerFactory.FromObject(customSettings, new { IsValue = false, Name = "a" });
         var o2 = TokenValueContainerFactory.FromObject(customSettings, new { IsValue = true, Name = "b" });
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(customSettings, "Iterator", [o1, o2]);
@@ -480,7 +480,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Pseudo("loopcount", string.Empty, string.Empty)
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", ["a", "b"]);
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
@@ -497,7 +497,7 @@ public class InterpolatedStringExpanderLoopBlockTests
             .Pseudo("loopcount", string.Empty, string.Empty)
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", ["a", "b"]);
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
@@ -519,7 +519,7 @@ public class InterpolatedStringExpanderLoopBlockTests
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
         };
-        InterpolatedString interpolatedString = new(segments, customSettings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, customSettings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 

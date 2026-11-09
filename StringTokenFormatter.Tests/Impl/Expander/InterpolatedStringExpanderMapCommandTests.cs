@@ -27,7 +27,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "First=a,Second=b")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", TestEnum.Second);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -41,7 +41,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "true=a,false=b")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", false);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -55,7 +55,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "FIRST=a,SECOND=b")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", "second");
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -69,7 +69,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "1=a,2=b,3=c")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", 3);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -83,7 +83,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "1=a")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", 0);
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
@@ -99,7 +99,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "1=a")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -117,7 +117,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "1=a")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -131,7 +131,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "1=a,2=b")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", () => 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -145,7 +145,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "1=,2=b")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", 1);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -159,7 +159,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "=ignored,broken,Last=left=right")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", "Last");
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -173,7 +173,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "caf\u00E9=matched")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", "cafe\u0301");
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -191,7 +191,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, customSettings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, customSettings);
         valuesContainer.Add("TestCase", "unmapped");
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -205,7 +205,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "_=fallback,Other=actual,broken")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", "Missing");
 
         Assert.Throws<ExpanderException>(() => InterpolatedStringExpander.Expand(interpolatedString, valuesContainer));
@@ -221,7 +221,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "1=a")
             .Build();
-        InterpolatedString interpolatedString = new(segments, customSettings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, customSettings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
@@ -234,7 +234,7 @@ public class InterpolatedStringExpanderMapCommandTests
         List<InterpolatedStringSegment> segments = new SegmentBuilder()
             .Command("map", "TestCase", "1=a,_=c")
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", 2);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -250,7 +250,7 @@ public class InterpolatedStringExpanderMapCommandTests
             .Command("map", "TestCase", "First=a,Second=b")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         valuesContainer.Add("TestCase", TestEnum.Second);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
@@ -266,7 +266,7 @@ public class InterpolatedStringExpanderMapCommandTests
             .Command("map", "Iterator", "First=a,Second=b")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [TestEnum.First, TestEnum.Second]);
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
@@ -283,7 +283,7 @@ public class InterpolatedStringExpanderMapCommandTests
             .Command("map", "Iterator.Name", "First=a,Second=b")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         var o1 = TokenValueContainerFactory.FromObject(settings, new { Name = TestEnum.First });
         var o2 = TokenValueContainerFactory.FromObject(settings, new { Name = TestEnum.Second });
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", [o1, o2]);
@@ -302,7 +302,7 @@ public class InterpolatedStringExpanderMapCommandTests
             .Command("map", "::loopiteration", "1=first,2=second,_=other")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", ["a", "b", "c"]);
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
@@ -319,7 +319,7 @@ public class InterpolatedStringExpanderMapCommandTests
             .Command("map", "::loopcount", "1=first,2=second,3=third")
             .Command("loopend", string.Empty, string.Empty)
             .Build();
-        InterpolatedString interpolatedString = new(segments, settings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
         SequenceTokenValueContainer sequence = TokenValueContainerFactory.FromSequence(settings, "Iterator", ["a", "b", "c"]);
         CompositeTokenValueContainer wrapperContainer = TokenValueContainerFactory.FromCombination(settings, sequence);
 
@@ -338,7 +338,7 @@ public class InterpolatedStringExpanderMapCommandTests
         {
             UnresolvedTokenBehavior = UnresolvedTokenBehavior.LeaveUnresolved,
         };
-        InterpolatedString interpolatedString = new(segments, customSettings);
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, customSettings);
 
         string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
 
