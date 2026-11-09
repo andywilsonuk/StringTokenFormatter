@@ -69,6 +69,60 @@ public class InterpolatedStringExpanderConditionalBlockTests
         Assert.Equal("one ", actual);
     }
 
+    [Theory]
+    [InlineData("comment", "included")]
+    [InlineData("", "")]
+    [InlineData(" ", "included")]
+    [InlineData("false", "included")]
+    public void StringCondition_IncludesWhenNonEmpty(string conditionValue, string expected)
+    {
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
+            .Command("if", "Condition", string.Empty)
+            .Literal("included")
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
+        valuesContainer.Add("Condition", conditionValue);
+
+        string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void NullCondition_IsFalse()
+    {
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
+            .Command("if", "Condition", string.Empty)
+            .Literal("included")
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
+        valuesContainer.Add("Condition", null);
+
+        string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal(string.Empty, actual);
+    }
+
+    [Theory]
+    [InlineData("", "included")]
+    [InlineData("comment", "")]
+    public void NegatedStringCondition_IncludesWhenEmpty(string conditionValue, string expected)
+    {
+        List<InterpolatedStringSegment> segments = new SegmentBuilder()
+            .Command("if", "!Condition", string.Empty)
+            .Literal("included")
+            .Command("ifend", string.Empty, string.Empty)
+            .Build();
+        InterpolatedString interpolatedString = InterpolatedString.Create(segments, settings);
+        valuesContainer.Add("Condition", conditionValue);
+
+        string actual = InterpolatedStringExpander.Expand(interpolatedString, valuesContainer);
+
+        Assert.Equal(expected, actual);
+    }
+
     [Fact]
     public void NestedConditions_StringWithNestedValue()
     {

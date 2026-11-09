@@ -55,10 +55,13 @@ public sealed class ConditionalBlockCommand : IExpanderCommand
             return;
         }
         object? convertedValue = context.ApplyValueConverter(tokenValueResult.Value, conditionalTokenName);
-        if (convertedValue is not bool conditionEnabled)
+        bool conditionEnabled = convertedValue switch
         {
-            throw new ExpanderException($"Conditional token value '{conditionalTokenName}' is not a boolean");
-        }
+            bool booleanValue => booleanValue,
+            string stringValue => stringValue.Length > 0,
+            null => false,
+            _ => throw new ExpanderException($"Conditional token value '{conditionalTokenName}' is not a boolean or string"),
+        };
 
         if (conditionEnabled != isNegated) { return; }
         data.DisabledCount += 1;

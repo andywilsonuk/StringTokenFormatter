@@ -376,9 +376,10 @@ Commands included by default are available in `ExpanderCommandFactory`.
 
 ## Conditional block command
 
-Simple boolean conditions can be used to exclude blocks of text. 
+Conditions can be used to include blocks of text.
 
-The starting command format is `:if,token` where `token` resolves to a boolean value dictating whether to include the block. The ending command is `:ifend` and can optionally include the token name.
+The starting command format is `:if,token`. where `token` resolves to a boolean value or a non-empty string value. Other value types are invalid.
+The ending command is `:ifend` and can optionally include the token name.
 
 ```C#
 string templateString = "start {:if,IsValid}{middle}{:ifend,IsValid} end";
